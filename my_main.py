@@ -1,10 +1,30 @@
 import ast
 
-from ChangeConstant import RewriteConstant
+from RewriteConstant import RewriteConstant
+from RewriteIf import RewriteIf
 
+
+def simple_if_block(x):
+    if x == 5:
+        print(5)
+    else:
+        print(6)
+    simple_if = """
+if x == 5: 
+#    print('trace1')
+    print('body if ')  
+else:         
+#    print('trace2')
+    print('body else')
+"""
+    return simple_if
 
 def simple_rewrtie_example(parsed_tree):
     rewrite_tree = RewriteConstant().visit(parsed_tree)
+    return rewrite_tree
+
+def simple_rewrtie_if_example(parsed_tree):
+    rewrite_tree = RewriteIf().visit(parsed_tree)
     return rewrite_tree
 
 def simple_unparse_example(parsed_tree):
@@ -20,6 +40,10 @@ def simple_parse_example(python_prog):
 
 if __name__ == "__main__":
     parsed_tree = simple_parse_example('x   +=   5')
-    unparsed_tree = simple_unparse_example(parsed_tree)
-    rewrite_tree =   simple_rewrtie_example(parsed_tree)
-    simple_unparse_example(rewrite_tree)
+#    unparsed_tree = simple_unparse_example(parsed_tree)
+#    rewrite_tree =   simple_rewrtie_example(parsed_tree)
+#    simple_unparse_example(rewrite_tree)
+    simple_if = simple_if_block(7)
+    print(simple_if)
+    parsed_tree = simple_parse_example(simple_if)
+    simple_rewrtie_if_example(parsed_tree)
