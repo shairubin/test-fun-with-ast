@@ -25,7 +25,8 @@ def simple_rewrtie_example(parsed_tree):
 
 def simple_rewrtie_if_example(parsed_tree):
     rewrite_tree = RewriteIf().visit(parsed_tree)
-    return rewrite_tree
+    rewrite_tree_recalcutate_positions = ast.fix_missing_locations(rewrite_tree)
+    return rewrite_tree_recalcutate_positions
 
 def simple_unparse_example(parsed_tree):
     unparsed_tree=ast.unparse(parsed_tree)
