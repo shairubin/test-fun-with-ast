@@ -40,11 +40,12 @@ def simple_parse_example(python_prog):
     return parsed_tree
 
 if __name__ == "__main__":
-    parsed_tree = simple_parse_example('x   +=   5')
+#    parsed_tree = simple_parse_example('x   +=   5')
 #    unparsed_tree = simple_unparse_example(parsed_tree)
 #    rewrite_tree =   simple_rewrtie_example(parsed_tree)
 #    simple_unparse_example(rewrite_tree)
     simple_if = simple_if_block(7)
     print(simple_if)
     parsed_tree = simple_parse_example(simple_if)
-    simple_rewrtie_if_example(parsed_tree)
+    rewrite_if_tree = simple_rewrtie_if_example(parsed_tree)
+    simple_unparse_example(rewrite_if_tree)

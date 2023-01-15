@@ -8,7 +8,7 @@ class RewriteIf(NodeTransformer):
     def visit_If(self, node):
         print("visited if node")
         node.body.append(node.body[0])
-        result = ast.NodeVisitor.generic_visit(self, node)
+        result = self.generic_visit(node)
         print('finish visit if node')
         return result
 
