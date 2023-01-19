@@ -10,7 +10,7 @@ def simple_if_block(x):
     else:
         print(6)
     simple_if = """
-if x == 5: 
+if x == 5 or y != 7: 
 #    print('trace1')
     print('body if ')  
 else:         
@@ -33,7 +33,7 @@ def simple_unparse_example(parsed_tree):
     print("** the unparsed tree: \n", unparsed_tree)
     return unparsed_tree
 
-def simple_parse_example(python_prog):
+def simple_parse_example(python_prog: str):
     parsed_tree= ast.parse(python_prog)
     parsed_tree_dump= ast.dump(parsed_tree, include_attributes=False, indent=5)
     print("** the parsed tree: \n", parsed_tree_dump)

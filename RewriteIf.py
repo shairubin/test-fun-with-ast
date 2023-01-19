@@ -1,14 +1,15 @@
 import ast
-from _ast import Constant
 from ast import NodeTransformer
-from random import  randrange
 
 
 class RewriteIf(NodeTransformer):
     def visit_If(self, node):
-        print("visited if node")
-        node.body.append(node.body[0])
+        unparsted_if_node = ast.unparse(node.test)
+        print("visited if node. Test is: "+ unparsted_if_node)
+        node.body.append(self._add_log_to_if_body(node, unparsted_if_node))
         result = self.generic_visit(node)
         print('finish visit if node')
         return result
 
+    def _add_log_to_if_body(self, if_node, text):
+        return if_node.body[0]
