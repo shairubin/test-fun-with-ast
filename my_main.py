@@ -10,9 +10,12 @@ def simple_if_block(x):
     else:
         print(6)
     simple_if = """
+import logging 
 if x == 5 or y != 7: 
 #    print('trace1')
-    print('body if ')  
+    print('body if ')
+    logging.info('shai rubin')  
+    my_func(1,'hello')
 else:         
 #    print('trace2')
     print('body else')

@@ -12,4 +12,9 @@ class RewriteIf(NodeTransformer):
         return result
 
     def _add_log_to_if_body(self, if_node, text):
-        return if_node.body[0]
+#        return if_node.body[0]
+        func_name = ast.Name(id='my_function', ctx=ast.Load())
+        args = [ast.Num(n=1), ast.Str(s='my function inserted')]
+        call = ast.Call(func=func_name, args=args, keywords=[])
+        result = ast.Expr(value=call)
+        return result
