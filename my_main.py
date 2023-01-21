@@ -1,21 +1,18 @@
 import ast
+import logging
 
 from RewriteConstant import RewriteConstant
 from RewriteIf import RewriteIf
 
-
 def simple_if_block(x):
     if x == 5:
-        print(5)
+        logging.warning(f'the value of x is: {x}')
     else:
-        print(6)
+        pass
     simple_if = """
-import logging 
-if x == 5 or y != 7: 
+if x == 5 or y != 7 and z == 6: 
 #    print('trace1')
     print('body if ')
-    logging.info('shai rubin')  
-    my_func(1,'hello')
 else:         
 #    print('trace2')
     print('body else')
