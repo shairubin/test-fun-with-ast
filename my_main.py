@@ -48,4 +48,5 @@ if __name__ == "__main__":
     print(simple_if)
     parsed_tree = simple_parse_example(simple_if)
     rewrite_if_tree = simple_rewrtie_if_example(parsed_tree)
+    simple_parse_example(rewrite_if_tree)
     simple_unparse_example(rewrite_if_tree)
