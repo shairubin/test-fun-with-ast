@@ -11,7 +11,7 @@ from my_main import simple_parse_example
 
 
 
-class TestBasicReWrite():
+class TestBasicSanity():
     input1 = "x+5"
     input2 = "x+6"
     input3 = """ 
@@ -21,16 +21,16 @@ def datetime_cast_date_sql(self, sql, params, tzname):
 """
     @pytest.fixture
     def input_value1(self):
-        return TestBasicReWrite.input1
+        return TestBasicSanity.input1
 
 
     @pytest.fixture
     def input_value2(self):
-        return TestBasicReWrite.input2
+        return TestBasicSanity.input2
 
     @pytest.fixture
     def input_value3(self):
-        return TestBasicReWrite.input3
+        return TestBasicSanity.input3
 
     @pytest.mark.parametrize("input", [input1 , input2, input3])
     def test_rewriteIf_no_if1(self, input):

@@ -25,12 +25,6 @@ class RewriteIf(NodeTransformer):
         result = self.__generate_log_node(if_node)
         return result
 
-    # def __add_log_to_orelse(self, orelse_node, formated_string_node):
-    #     if orelse_node:
-    #         result = self.__generate_log_line(formated_string_node)
-    #     else:
-    #         result = []
-    #     return result
 
     def __generate_log_node(self, if_node):
         log_func = ast.Attribute(value=ast.Name(id='logging', ctx=ast.Load()),
@@ -55,13 +49,7 @@ class RewriteIf(NodeTransformer):
             raise NotImplementedError
         for variable in ids:
             string_for_log += ' '+ variable + ' is:' + '{' + variable +'}'
-#            formated_value = ast.FormattedValue(value=ast.Name(id=variable, ctx=ast.Load()),
-#                                                ctx=ast.Load(),
-#                                                conconversion=-1 )
-#            formated_Values.append(ast.Constant(value='--'))
-#            formated_Values.append(formated_value)
         result_string = 'f\" '+ string_for_log + ' \"'
         result = ast.parse(result_string)
-#        result = ast.Expr(value=ast.JoinedStr(values=formated_value))
         print(ast.unparse(result))
         return [result.body[0].value]
