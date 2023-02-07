@@ -1,6 +1,6 @@
 # A utility function that returns true if x is perfect square
 import math
-
+import logging
 
 def isPerfectSquare(x):
     s = int(math.sqrt(x))

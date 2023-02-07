@@ -14,7 +14,7 @@ if x == 5 or (y != 7 and z == 6):
 """
     simple_if_1_logged = """
 if x == 5 or (y != 7 and z == 6):
-    logging.warn(f'  x is:{x} y is:{y} z is:{z} ')
+    logging.info(f' x=5 BoolOp y!=7 BoolOp z=6 ')
     print(simple_if_1)
 """
 

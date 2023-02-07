@@ -1,5 +1,8 @@
 import ast
 import logging
+
+from RewriteImports import RewriteImports
+
 logging.basicConfig(level=logging.INFO)
 from RewriteConstant import RewriteConstant
 from RewriteIf import RewriteIf
@@ -30,7 +33,13 @@ def simple_rewrtie_if_example(parsed_tree):
 def simple_unparse_example(parsed_tree):
     unparsed_tree=ast.unparse(parsed_tree)
     logging.info(f"** the unparsed tree: \n{unparsed_tree}")
+    print(unparsed_tree)
     return unparsed_tree
+
+def simple_rewrite_import_example(parsed_tree):
+    rewrite_tree = RewriteImports().visit(parsed_tree)
+    rewrite_tree_recalcutate_positions = ast.fix_missing_locations(rewrite_tree)
+    return rewrite_tree_recalcutate_positions
 
 def simple_parse_example(python_prog: str):
     parsed_tree= ast.parse(python_prog)
