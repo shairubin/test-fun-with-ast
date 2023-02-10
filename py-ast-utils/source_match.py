@@ -501,7 +501,7 @@ class ArgsDefaultsPlaceholder(CompositePlaceholder):
 class KeysValuesPlaceholder(ArgsDefaultsPlaceholder):
 
   def _GetArgsKwargs(self, node):
-    return [], zip(node.keys, node.values)
+    return [], list(zip(node.keys, node.values))
 
 
 class ArgsKeywordsPlaceholder(ArgsDefaultsPlaceholder):
