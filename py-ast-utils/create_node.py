@@ -55,7 +55,7 @@ def _ToArgsDefaults(args=(), keys=(), values=()):
   return args, defaults
 
 
-def _WrapWithName(to_wrap, ctx_type=CtxEnum.PARAM):
+def _WrapWithName(to_wrap, ctx_type=CtxEnum.LOAD):
   if isinstance(to_wrap, _ast.AST):
     return to_wrap
   return Name(to_wrap, ctx_type=ctx_type)
@@ -293,7 +293,8 @@ def Call(caller, args=(), keys=(), values=(), starargs=None,
         'len(keys)={} != len(values)={}'.format(len(keys), len(values)))
   if isinstance(caller, str):
     caller = VarReference(*caller.split('.'))
-  if not isinstance(caller, (_ast.Str, _ast.Name, _ast.Attribute)):
+  if not isinstance(caller, (_ast.Name, _ast.Name, _ast.Attribute)):
+#  if not isinstance(caller, (_ast.Str, _ast.Name, _ast.Attribute)):
     raise ValueError(
         'caller must be a: \n'
         '1. string\n'
