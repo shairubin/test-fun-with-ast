@@ -651,7 +651,7 @@ class SourceMatcher(object):
     remaining_string = string
     matched_parts = []
     try:
-      for unused_i in xrange(len(self.start_paren_matchers)):
+      for unused_i in range(len(self.start_paren_matchers)):
         end_paren_matcher = GetEndParenMatcher()
         remaining_string = MatchPlaceholder(
             remaining_string, None, end_paren_matcher)
@@ -1583,7 +1583,7 @@ class StrSourceMatcher(SourceMatcher):
     source_list = [self.GetStartParenText()]
     source_list.append(_GetListDefault(
         self.quote_parts, 0, None).GetSource(None))
-    for index in xrange(len(self.quote_parts[1:])):
+    for index in range(len(self.quote_parts[1:])):
       source_list.append(_GetListDefault(
           self.separators, index,
           self.separator_placeholder).GetSource(None))
