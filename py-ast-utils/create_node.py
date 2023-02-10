@@ -820,8 +820,8 @@ def Sub():
   return _ast.Sub()
 
 
-def Subscript(value, upper=None, lower=None, step=None, ctx=CtxEnum.STORE):
-  value = _WrapWithName(value)
+def Subscript(value, upper=None, lower=None, step=None, ctx=CtxEnum.LOAD):
+  value = _WrapWithName(value, ctx)
   return _ast.Subscript(
       value=value, slice=Slice(upper, lower, step), ctx=GetCtx(ctx))
 
