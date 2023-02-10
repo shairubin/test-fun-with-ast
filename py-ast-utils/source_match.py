@@ -466,7 +466,7 @@ class ArgsDefaultsPlaceholder(CompositePlaceholder):
     return new_placeholder
 
   def _GetArgsKwargs(self, node):
-    kwargs = zip(node.args[len(node.args)-len(node.defaults):], node.defaults)
+    kwargs = list(zip(node.args[len(node.args)-len(node.defaults):], node.defaults))
     args = node.args[:-len(kwargs)] if kwargs else node.args
     return args, kwargs
 
