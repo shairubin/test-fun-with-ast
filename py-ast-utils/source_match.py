@@ -409,7 +409,7 @@ class ListFieldPlaceholder(CompositePlaceholder):
     elements = []
     if self.prefix_placeholder and field_value:
       elements.append(self.prefix_placeholder)
-    for i in xrange(len(field_value)):
+    for i in range(len(field_value)):
       elements.extend(self.GetValueAtIndex(field_value, i))
     return elements
 
