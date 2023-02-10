@@ -539,7 +539,7 @@ class ArgsKeywordsPlaceholder(ArgsDefaultsPlaceholder):
 class OpsComparatorsPlaceholder(ArgsDefaultsPlaceholder):
 
   def _GetArgsKwargs(self, node):
-    return [], zip(node.ops, node.comparators)
+    return [], list(zip(node.ops, node.comparators))
 
 
 class BodyPlaceholder(ListFieldPlaceholder):
