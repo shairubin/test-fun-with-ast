@@ -814,7 +814,8 @@ def Slice(lower=None, upper=None, step=None):
 
 def Str(s):
   """Creates an _ast.Str node."""
-  return _ast.Str(s=s)
+#  return _ast.Str(s=s)
+  return _ast.Constant(s=s)
 
 
 def Sub():

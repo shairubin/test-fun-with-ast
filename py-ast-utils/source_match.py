@@ -1643,6 +1643,9 @@ def get_TryExcept_expected_parts():
           'orelse',
           prefix_placeholder=TextPlaceholder(r'[ \t]*else:\n', 'else:\n'))
   ]
+class ConstantSourceMatcher(StrSourceMatcher):
+  def __init__(self, node, starting_parens=None):
+    super(ConstantSourceMatcher, self).__init__(node, starting_parens)
 
 
 class TryFinallySourceMatcher(DefaultSourceMatcher):
@@ -1845,6 +1848,7 @@ _matchers = {
     _ast.SetComp: get_SetComp_expected_parts,
     _ast.Subscript: get_Subscript_expected_parts,
 #    _ast.Str: StrSourceMatcher,
+    _ast.Constant: ConstantSourceMatcher,
     create_node.SyntaxFreeLine: get_SyntaxFreeLine_expected_parts,
     _ast.Tuple: TupleSourceMatcher,
 #    _ast.TryExcept: get_TryExcept_expected_parts,
