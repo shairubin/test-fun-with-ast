@@ -1658,12 +1658,18 @@ class ConstantSourceMatcher():
   def Match(self, string):
     if isinstance(self.constant_node.n, int) and isinstance(self.constant_node.s, int):
       return self.num_matcher.Match(string)
+
+    if isinstance(self.constant_node.n, str) and isinstance(self.constant_node.s, str):
+      return self.str_matcher.Match(string)
     raise NotImplementedError
 
 
   def GetSource(self):
     if isinstance(self.constant_node.n, int) and isinstance(self.constant_node.s, int):
       return self.num_matcher.GetSource()
+    if isinstance(self.constant_node.n, str) and isinstance(self.constant_node.s, str):
+      return self.str_matcher.GetSource()
+
     raise NotImplementedError
 
 
