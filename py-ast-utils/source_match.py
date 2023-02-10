@@ -25,7 +25,8 @@ import node_tree_util
 
 
 class Error(Exception):
-  pass
+  def __init__(self, message):
+    self.message = message
 
 
 class BadlySpecifiedTemplateError(Error):
