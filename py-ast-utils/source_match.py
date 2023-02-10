@@ -17,6 +17,7 @@ Module for annotating an AST with .matcher objects. See README.
 """
 
 import _ast
+import ast
 import pprint
 import re
 
@@ -1643,9 +1644,27 @@ def get_TryExcept_expected_parts():
           'orelse',
           prefix_placeholder=TextPlaceholder(r'[ \t]*else:\n', 'else:\n'))
   ]
-class ConstantSourceMatcher(StrSourceMatcher):
+#python 3 matching for ast.Constant
+
+class ConstantSourceMatcher():
   def __init__(self, node, starting_parens=None):
-    super(ConstantSourceMatcher, self).__init__(node, starting_parens)
+    if not isinstance(node, ast.Constant):
+      raise ValueError
+    self.constant_node = node
+    self.str_matcher = StrSourceMatcher(node, starting_parens)
+    self.num_matcher = NumSourceMatcher(node, starting_parens)
+    print('success')
+
+  def Match(self, string):
+    if isinstance(self.constant_node.n, int) and isinstance(self.constant_node.s, int):
+      return self.num_matcher.Match(string)
+    raise NotImplementedError
+
+
+  def GetSource(self):
+    if isinstance(self.constant_node.n, int) and isinstance(self.constant_node.s, int):
+      return self.num_matcher.GetSource()
+    raise NotImplementedError
 
 
 class TryFinallySourceMatcher(DefaultSourceMatcher):

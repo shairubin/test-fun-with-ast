@@ -750,7 +750,7 @@ def NotIn():
 
 def Num(number):
   """Creates an _ast.Num node."""
-  return _ast.Num(number)
+  return _ast.Constant(int(number))
 
 
 def Or():

@@ -1328,6 +1328,7 @@ class NameMatcherTest(unittest.TestCase):
 class NumMatcherTest(unittest.TestCase):
 
   def testBasicMatch(self):
+#    node = create_node.Num('1')
     node = create_node.Num('1')
     string = '1'
     matcher = source_match.GetMatcher(node)
