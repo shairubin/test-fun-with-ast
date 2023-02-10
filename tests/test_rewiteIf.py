@@ -3,7 +3,7 @@ import logging
 
 import pytest
 
-from RewriteIf import RewriteIf
+from rewrite.RewriteIf import RewriteIf
 from tests.test_utils import TestUtils
 
 

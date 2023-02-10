@@ -1,3 +1,4 @@
+import contextlib
 import os
 import subprocess
 import logging
@@ -11,14 +12,15 @@ from my_main import simple_parse_example, simple_rewrtie_if_example, simple_unpa
     simple_rewrite_import_example
 
 
-class TestE2E():
+class TestE2E:
     @pytest.mark.parametrize("test_program, output_program", [('./../test_programs/fibonacci_test.py', '/tmp/test.py')])
     def test_rewriteIf_no_if1(self, test_program, output_program):
-        os.remove(output_program)
+        with contextlib.suppress(FileNotFoundError):
+            os.remove(output_program)
         out2 = self._perform_sanity(test_program)
         # read whole file to a string
         python_string = self._read_file_as_string(test_program)
-        # tramsform the original program
+        # transform the original program
         python_result = self._rewrite_tree(python_string)
         rewrite_out = self._run_modified_program(python_result, output_program)
         self._comparte_asts(test_program, output_program)

@@ -6,7 +6,7 @@ import logging
 from tests.test_utils import TestUtils
 
 logger = logging.getLogger()
-from RewriteIf import RewriteIf
+from rewrite.RewriteIf import RewriteIf
 from my_main import simple_parse_example
 
 
