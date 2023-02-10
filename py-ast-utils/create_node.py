@@ -51,7 +51,7 @@ def _ToArgsDefaults(args=(), keys=(), values=()):
   for arg, default in zip(keys, values):
     args.append(arg)
     defaults.append(default)
-  args = [_WrapWithName(arg, ctx_type=CtxEnum.PARAM) for arg in args]
+  args = [_WrapWithName(arg, ctx_type=CtxEnum.LOAD) for arg in args]
   return args, defaults
 
 
