@@ -1688,9 +1688,9 @@ class TryFinallySourceMatcher(DefaultSourceMatcher):
 
   def Match(self, string):
     remaining_string = string
-    if not isinstance(self.node.body[0], _ast.TryExcept):
-      remaining_string = MatchPlaceholder(
-          remaining_string, None, self.optional_try)
+#    if not isinstance(self.node.body[0], _ast.TryExcept):
+#      remaining_string = MatchPlaceholder(
+#          remaining_string, None, self.optional_try)
     return super(TryFinallySourceMatcher, self).Match(remaining_string)
 
   def GetSource(self):
@@ -1878,6 +1878,8 @@ _matchers = {
     _ast.Tuple: TupleSourceMatcher,
 #    _ast.TryExcept: get_TryExcept_expected_parts,
 #    _ast.TryFinally: TryFinallySourceMatcher,
+    _ast.Try: TryFinallySourceMatcher,
+
     _ast.UAdd: get_UAdd_expected_parts,
     _ast.UnaryOp: get_UnaryOp_expected_parts,
     _ast.USub: get_USub_expected_parts,

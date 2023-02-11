@@ -897,14 +897,19 @@ def Tuple(*items, **kwargs):
   return _ast.Tuple(elts=new_items,
                     ctx=ctx)
 
+#python 2.7
+#def TryExcept(body, except_handlers, orelse=None):
+#  return _ast.TryExcept(body=body, handlers=except_handlers, orelse=orelse)
+def Try(body, except_handlers, orelse=None):
+  return _ast.Try(body=body, handlers=except_handlers, orelse=orelse)
 
-def TryExcept(body, except_handlers, orelse=None):
-  return _ast.TryExcept(body=body, handlers=except_handlers, orelse=orelse)
 
-
-def TryFinally(body, finalbody=None):
-  finalbody = FormatAndValidateBody(finalbody)
-  return _ast.TryFinally(body=body, finalbody=finalbody)
+def TryFinally(body, except_handlers, finalybody, orelse=None ):
+  finalbody = FormatAndValidateBody(finalybody)
+# python 2.7
+#  return _ast.TryFinally(body=body, finalbody=finalbody)
+# python 3
+  return _ast.Try(body=body, handlers=except_handlers, finalbody=finalbody, orelse=orelse)
 
 
 def UAdd():

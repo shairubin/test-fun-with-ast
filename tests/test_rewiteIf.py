@@ -4,7 +4,7 @@ import logging
 import pytest
 
 from rewrite.RewriteIf import RewriteIf
-from tests.test_utils import TestUtils
+from test_utils import TestUtils
 
 
 class TestRewtiteIf():

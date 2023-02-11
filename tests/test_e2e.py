@@ -5,7 +5,7 @@ import logging
 
 import pytest
 
-from tests.test_utils import TestUtils
+from test_utils import TestUtils
 
 logging.basicConfig(level=logging.INFO)
 from my_main import simple_parse_example, simple_rewrtie_if_example, simple_unparse_example, \
@@ -19,7 +19,8 @@ class TestE2E:
             os.remove(output_program)
         out2 = self._perform_sanity(test_program)
         # read whole file to a string
-        python_string = self._read_file_as_string(test_program)
+        test_utils = TestUtils()
+        python_string = test_utils.read_file_as_string(test_program)
         # transform the original program
         python_result = self._rewrite_tree(python_string)
         rewrite_out = self._run_modified_program(python_result, output_program)
@@ -40,11 +41,6 @@ class TestE2E:
         logging.info(python_result)
         return python_result
 
-    def _read_file_as_string(self, test_program):
-        text_file = open(test_program, 'r')
-        python_string = text_file.read()
-        text_file.close()
-        return python_string
 
     def _perform_sanity(self, test_program):
         out1 = subprocess.run(["python", test_program],
@@ -56,10 +52,10 @@ class TestE2E:
 
 
     def _comparte_asts(self, test_program, output_program):
+        test_utils = TestUtils()
         rewrite_string = subprocess.run(["grep", "-v", "info", output_program], stdout=subprocess.PIPE)
-        original_string = self._read_file_as_string(test_program)
+        original_string = test_utils.read_file_as_string(test_program)
         original_ast = simple_parse_example(original_string)
         rewrite_ast = simple_parse_example(rewrite_string.stdout)
-        test_utils = TestUtils()
         assert test_utils.compare_ast(original_ast, rewrite_ast)
 

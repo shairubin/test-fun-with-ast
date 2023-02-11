@@ -3,7 +3,7 @@ from itertools import zip_longest
 from typing import Union
 
 
-class TestUtils():
+class TestUtils:
 
     def compare_ast(self, node1: Union[ast.expr, list[ast.expr]], node2: Union[ast.expr, list[ast.expr]]) -> bool:
         if type(node1) is not type(node2):
@@ -26,3 +26,9 @@ class TestUtils():
         else:
             result = (node1 == node2)
             return result
+
+    def read_file_as_string(self, test_program):
+        text_file = open(test_program, 'r')
+        python_string = text_file.read()
+        text_file.close()
+        return python_string

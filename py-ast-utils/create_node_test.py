@@ -43,7 +43,7 @@ def ExpandTree(node):
           to_expand.append(child)
     else:
       node_fields.append(current)
-  print node_fields
+  print(node_fields)
   return node_fields
 
 

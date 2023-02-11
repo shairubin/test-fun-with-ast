@@ -3,7 +3,7 @@
 import pytest
 import logging
 
-from tests.test_utils import TestUtils
+from test_utils import TestUtils
 
 logger = logging.getLogger()
 from rewrite.RewriteIf import RewriteIf
