@@ -24,7 +24,9 @@ import create_node
 
 
 def GetNodeFromInput(string, body_index=0):
-  return ast.parse(string).body[body_index]
+  result = ast.parse(string)
+  body= result.body[body_index]
+  return body
 
 
 def ExpandTree(node):
@@ -36,14 +38,13 @@ def ExpandTree(node):
       node_fields.append(current.__class__)
       for field_name, child in ast.iter_fields(current):
         node_fields.append(field_name)
-        if isinstance(child, (list, tuple)):
+        if isinstance(child, (list,tuple)):
           for item in child:
             to_expand.append(item)
-        else:
-          to_expand.append(child)
+        else:a = to_expand.append(child)
     else:
       node_fields.append(current)
-  print(node_fields)
+  print("\n", node_fields, "\n")
   return node_fields
 
 
@@ -72,7 +73,7 @@ class CreateArgumentsTest(CreateNodeTestBase):
     expected_string = """def testFunc(a, b):
   pass"""
     expected_node = GetNodeFromInput(expected_string).args
-    test_node = create_node.arguments(args=('a', 'b'))
+    test_node = create_node.arguments(args=['a', 'b'])
     self.assertNodesEqual(expected_node, test_node)
 
   def testStringKwargs(self):
@@ -341,15 +342,14 @@ class CreateCallTest(CreateNodeTestBase):
   def testCallWithStarargsString(self):
     expected_string = 'a(*b)'
     expected_node = GetNodeFromInput(expected_string).value
-    test_node = create_node.Call(
-        'a', starargs='b')
+    test_node = create_node.Call('a', [create_node.Starred(create_node.Name('b'))])
     self.assertNodesEqual(expected_node, test_node)
 
   def testCallWithStarargsNode(self):
     expected_string = 'a(*[b])'
     expected_node = GetNodeFromInput(expected_string).value
     test_node = create_node.Call(
-        'a', starargs=create_node.List(create_node.Name('b')))
+        'a', [create_node.Starred(create_node.List(create_node.Name('b')))])
     self.assertNodesEqual(expected_node, test_node)
 
   def testCallWithKwargsString(self):

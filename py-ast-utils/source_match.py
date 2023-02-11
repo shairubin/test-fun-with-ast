@@ -326,7 +326,11 @@ class FieldPlaceholder(CompositePlaceholder):
     self.before_placeholder = before_placeholder
 
   def GetElements(self, node):
-    field_value = getattr(node, self.field_name)
+    if isinstance(node,ast.Call) and self.field_name=='kwargs':
+      field_value = getattr(node, self.field_name, None)
+    else:
+      field_value = getattr(node, self.field_name)
+
     if not field_value:
       return []
 
@@ -337,7 +341,10 @@ class FieldPlaceholder(CompositePlaceholder):
     return elements
 
   def Validate(self, node):
-    field_value = getattr(node, self.field_name)
+    if isinstance(node, ast.Call) and self.field_name == 'kwargs':
+      field_value = getattr(node, self.field_name, None)
+    else:
+      field_value = getattr(node, self.field_name)
     if isinstance(field_value, (list, tuple)):
       raise BadlySpecifiedTemplateError(
           'Field {} of node {} is a list. please use a ListFieldPlaceholder'
@@ -523,7 +530,7 @@ class ArgsKeywordsPlaceholder(ArgsDefaultsPlaceholder):
       if index != len(args)-1 or keywords:
         elements.append(self._GetArgSeparator(arg_index))
         arg_index += 1
-    if node.starargs:
+    if getattr(node, 'starargs', False):
       elements.append(self.stararg_separator)
       elements.append(NodePlaceholder(node.starargs))
       if keywords:

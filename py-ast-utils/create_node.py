@@ -45,14 +45,23 @@ CtxEnum = Enum(
     PARAM='param')
 
 
-def _ToArgsDefaults(args=(), keys=(), values=()):
-  args = list(args)
+def _ToArgsDefaults(args, keys=(), values=()):
+  if not isinstance(args, list):
+      raise ValueError('args must be a list')
   defaults = []
   for arg, default in zip(keys, values):
     args.append(arg)
     defaults.append(default)
-  args = [_WrapWithName(arg, ctx_type=CtxEnum.LOAD) for arg in args]
+  args = [_WrapWithArgs(arg) for arg in args]
   return args, defaults
+
+
+
+
+def _WrapWithArgs(to_wrap):
+  if isinstance(to_wrap, _ast.AST):
+    return to_wrap
+  return Arg(to_wrap)
 
 
 def _WrapWithName(to_wrap, ctx_type=CtxEnum.LOAD):
@@ -104,8 +113,7 @@ def ChangeCtx(node, new_ctx_type):
 ###############################################################################
 
 
-def arguments(
-    args=(), keys=(), values=(), vararg_name=None, kwarg_name=None):
+def arguments(posonlyargs=[], args=[], vararg=None, kwonlyargs=[], kw_defaults=[], kwarg=None, defaults=[]):
   """Creates an _ast.FunctionDef node.
 
   Args:
@@ -121,12 +129,18 @@ def arguments(
   Returns:
     An _ast.FunctionDef node.
   """
-  args, defaults = _ToArgsDefaults(args=args, keys=keys, values=values)
+  if not isinstance(args,list):
+      raise ValueError('args must be a list')
+
+  args , defaults = _ToArgsDefaults(args=args)
   return _ast.arguments(
+      posonlyargs=posonlyargs,
       args=args,
-      defaults=defaults,
-      vararg=vararg_name,
-      kwarg=kwarg_name)
+      vararg=vararg,
+      kwonlyargs=kwonlyargs,
+      kw_defaults=kw_defaults,
+      kwarg=kwarg,
+      defaults=defaults)
 
 
 def Add():
@@ -267,7 +281,7 @@ def BitXor():
   return _ast.BitXor()
 
 
-def Call(caller, args=(), keys=(), values=(), starargs=None,
+def Call(caller, args=[], keys=(), values=(), starargs=None,
          kwargs=None):
   """Creates an _ast.Call node.
 
@@ -288,12 +302,14 @@ def Call(caller, args=(), keys=(), values=(), starargs=None,
   Returns:
     An _ast.Call object.
   """
+  if not isinstance(args,list):
+      raise ValueError('args must be a list')
   if len(keys) != len(values):
     raise ValueError(
         'len(keys)={} != len(values)={}'.format(len(keys), len(values)))
   if isinstance(caller, str):
     caller = VarReference(*caller.split('.'))
-  if not isinstance(caller, (_ast.Name, _ast.Name, _ast.Attribute)):
+  if not isinstance(caller, (_ast.Name, _ast.Attribute)):
 #  if not isinstance(caller, (_ast.Str, _ast.Name, _ast.Attribute)):
     raise ValueError(
         'caller must be a: \n'
@@ -309,13 +325,13 @@ def Call(caller, args=(), keys=(), values=(), starargs=None,
     starargs = VarReference(*starargs.split('.'))
   if isinstance(kwargs, str):
     kwargs = VarReference(*kwargs.split('.'))
-  return _ast.Call(
+  result = _ast.Call(
       func=caller,
       args=args,
       keywords=keywords,
       starargs=starargs,
       kwargs=kwargs)
-
+  return result
 
 def ClassDef(
     name, bases=(), body=None, decorator_list=()):
@@ -720,6 +736,9 @@ def Module(*body_items):
 def Mult():
   return _ast.Mult()
 
+def Arg(arg):
+    return _ast.arg(arg)
+
 
 def Name(name_id, ctx_type=CtxEnum.LOAD):
   """Creates an _ast.Name node.
@@ -816,6 +835,11 @@ def Str(s):
   """Creates an _ast.Str node."""
 #  return _ast.Str(s=s)
   return _ast.Constant(s=s)
+
+def Starred(s):
+  """Creates an _ast.Starred node."""
+#  return _ast.Str(s=s)
+  return _ast.Starred(value=s, ctx=GetCtx(CtxEnum.LOAD))
 
 
 def Sub():

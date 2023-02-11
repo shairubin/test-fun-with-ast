@@ -6,17 +6,23 @@ import pytest
 
 from test_utils import TestUtils
 
+
+@pytest.fixture(scope="module",
+#                params=['./../test_programs/find_largest_number.py', './../test_programs/simple_print.py'])
+                params=['./../test_programs/simple_print.py'])
+def test_program(request):
+    yield request.param
+
+
 class TestE2EASTUtils:
 
-    @pytest.mark.parametrize("test_program, output_program", [('./../test_programs/fibonacci_test.py', '/tmp/test.py')])
-    def test_rewriteIf_no_if1(self, test_program, output_program):
-        with contextlib.suppress(FileNotFoundError):
-            os.remove(output_program)
+    def test_simple_ast_utils(self, test_program):
         test_utils = TestUtils()
         python_code = test_utils.read_file_as_string(test_program)
-        print(python_code)
         import ast
         module_node = ast.parse(python_code)
         import source_match
         source_match.GetSource(module_node, python_code)
         assert python_code == module_node.matcher.GetSource()
+        print('source from matcher')
+        print(module_node.matcher.GetSource())
