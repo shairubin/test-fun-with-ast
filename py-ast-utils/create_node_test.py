@@ -329,7 +329,7 @@ class CreateCallTest(CreateNodeTestBase):
   def testCallWithArgs(self):
     expected_string = 'a(b)'
     expected_node = GetNodeFromInput(expected_string).value
-    test_node = create_node.Call('a', args=('b'))
+    test_node = create_node.Call('a', args=['b'])
     self.assertNodesEqual(expected_node, test_node)
 
   def testCallWithKwargs(self):
