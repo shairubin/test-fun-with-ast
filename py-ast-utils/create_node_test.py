@@ -105,7 +105,7 @@ class CreateArgumentsTest(CreateNodeTestBase):
     expected_string = """def testFunc(**kwargs):
   pass"""
     expected_node = GetNodeFromInput(expected_string).args
-    test_node = create_node.arguments(kwarg_name='kwargs')
+    test_node = create_node.arguments(kwarg='kwargs')
     self.assertNodesEqual(expected_node, test_node)
 
 
