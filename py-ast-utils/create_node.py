@@ -138,6 +138,8 @@ def arguments(posonlyargs=[], args=[], vararg=None, kwonlyargs=[], kw_defaults=[
       raise ValueError('args must be a list')
   if kwarg :
       kwarg = _WrapWithArgs(kwarg)
+  if vararg :
+      vararg = _WrapWithArgs(vararg)
   args , defaults = _ToArgsWithDefaults(args, defaults)
   return _ast.arguments(
       posonlyargs=posonlyargs,
