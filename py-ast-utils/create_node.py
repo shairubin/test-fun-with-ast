@@ -289,7 +289,7 @@ def BitXor():
   return _ast.BitXor()
 
 
-def Call(caller, args=[],  keywords=[], starargs=None, kwargs=None):
+def Call(caller, args=[],  keywords=[], starargs=None, kwargs={}):
   """Creates an _ast.Call node.
 
   Args:
