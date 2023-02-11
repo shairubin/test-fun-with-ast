@@ -45,14 +45,19 @@ CtxEnum = Enum(
     PARAM='param')
 
 
-def _ToArgsDefaults(args, keys=(), values=()):
-  if not isinstance(args, list):
+def _ToArgsWithDefaults(_args, _defaults):
+  if not isinstance(_args, list):
       raise ValueError('args must be a list')
+  if not isinstance(_defaults, list):
+      raise ValueError('defaults must be a list')
+  args = []
   defaults = []
-  for arg, default in zip(keys, values):
+  for arg in _args:
     args.append(arg)
+  for default in _defaults:
     defaults.append(default)
   args = [_WrapWithArgs(arg) for arg in args]
+  defaults = [_WrapWithName(default) for default in defaults]
   return args, defaults
 
 
@@ -133,7 +138,7 @@ def arguments(posonlyargs=[], args=[], vararg=None, kwonlyargs=[], kw_defaults=[
       raise ValueError('args must be a list')
   if kwarg :
       kwarg = _WrapWithArgs(kwarg)
-  args , defaults = _ToArgsDefaults(args=args)
+  args , defaults = _ToArgsWithDefaults(args, defaults)
   return _ast.arguments(
       posonlyargs=posonlyargs,
       args=args,

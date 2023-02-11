@@ -90,8 +90,8 @@ class CreateArgumentsTest(CreateNodeTestBase):
   pass"""
     expected_node = GetNodeFromInput(expected_string).args
     test_node = create_node.arguments(
-        keys=['a', 'c'],
-        values=[create_node.Name('b'), create_node.Name('d')])
+        args=['a', 'c'],
+        defaults=['b', 'd'])
     self.assertNodesEqual(expected_node, test_node)
 
   def testVararg(self):
