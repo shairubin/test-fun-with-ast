@@ -364,11 +364,13 @@ class CreateCallTest(CreateNodeTestBase):
     expected_node = GetNodeFromInput(expected_string).value
     test_node = create_node.Call(
         'a',
-        kwargs=create_node.Dict(
-            keys=(create_node.Name('b'),),
-            values=(create_node.Name('c'),)
-        )
-    )
+        kwargs={'b':'c'})
+
+#        reate_node.Dict(
+#            keys=(create_node.Name('b'),),
+#            values=(create_node.Name('c'),)
+#        )
+#    )
     self.assertNodesEqual(expected_node, test_node)
 
 

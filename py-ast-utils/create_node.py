@@ -289,8 +289,7 @@ def BitXor():
   return _ast.BitXor()
 
 
-def Call(caller, args=[], keys=(), values=(), starargs=None,
-         kwargs=None):
+def Call(caller, args=[],  keywords=[], starargs=None, kwargs=None):
   """Creates an _ast.Call node.
 
   Args:
@@ -312,22 +311,24 @@ def Call(caller, args=[], keys=(), values=(), starargs=None,
   """
   if not isinstance(args,list):
       raise ValueError('args must be a list')
-  if len(keys) != len(values):
-    raise ValueError(
-        'len(keys)={} != len(values)={}'.format(len(keys), len(values)))
+#  if len(keys) != len(values):
+#    raise ValueError(
+#        'len(keys)={} != len(values)={}'.format(len(keys), len(values)))
   if isinstance(caller, str):
     caller = VarReference(*caller.split('.'))
+  if not isinstance(kwargs, dict):
+      raise ValueError('kwargs must be a ast.Dict')
   if not isinstance(caller, (_ast.Name, _ast.Attribute)):
-#  if not isinstance(caller, (_ast.Str, _ast.Name, _ast.Attribute)):
-    raise ValueError(
-        'caller must be a: \n'
-        '1. string\n'
-        '2. _ast.Str node\n'
-        '3. _ast.Name node\n'
-        '4. _ast.Attr node\n'
-        'not {}'.format(caller))
-  keywords = [_ast.keyword(arg=key, value=val)
-              for key, val in zip(keys, values)]
+      raise ValueError('caller not the expected value')
+#  raise ValueError(
+#        'caller must be a: \n'
+#        '1. string\n'
+#        '2. _ast.Str node\n'
+#        '3. _ast.Name node\n'
+#        '4. _ast.Attr node\n'
+#        'not {}'.format(caller))
+  keywords = [_ast.keyword(value=Dict(key, val))
+              for key, val in kwargs.items()]
   args = [_WrapWithName(arg, ctx_type=CtxEnum.LOAD) for arg in args]
   if isinstance(starargs, str):
     starargs = VarReference(*starargs.split('.'))
@@ -432,7 +433,9 @@ def Dict(keys=(), values=()):
   if len(keys) != len(values):
     raise ValueError(
         'len(keys)={} != len(values)={}'.format(len(keys), len(values)))
-  return _ast.Dict(list(keys), list(values))
+  keys = [_WrapWithName(key) for key in keys]
+  values =[_WrapWithName(value) for value in values]
+  return _ast.Dict(keys, values)
 
 
 def DictComp(left_side_key, left_side_value, for_part, in_part, *ifs):
