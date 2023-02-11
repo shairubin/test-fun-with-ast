@@ -12,9 +12,14 @@ from my_main import simple_parse_example, simple_rewrtie_if_example, simple_unpa
     simple_rewrite_import_example
 
 
+@pytest.fixture(scope="module", params=['./../test_programs/fibonacci_test.py', './../test_programs/find_largest_number.py'])
+def test_program(request):
+    yield request.param
+
+
 class TestE2E:
-    @pytest.mark.parametrize("test_program, output_program", [('./../test_programs/fibonacci_test.py', '/tmp/test.py')])
-    def test_rewriteIf_no_if1(self, test_program, output_program):
+
+    def test_rewriteIf_no_if1(self, test_program, output_program='/tmp/test.py'):
         with contextlib.suppress(FileNotFoundError):
             os.remove(output_program)
         out2 = self._perform_sanity(test_program)

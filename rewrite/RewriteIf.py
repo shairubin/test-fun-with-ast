@@ -91,5 +91,7 @@ class RewriteIf(NodeTransformer):
             return '='
         elif isinstance(ast_op, ast.NotEq):
             return '!='
+        elif isinstance(ast_op, ast.GtE):
+            return '>='
         else:
             raise NotImplementedError
