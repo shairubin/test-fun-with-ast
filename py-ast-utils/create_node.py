@@ -311,7 +311,9 @@ def Call(caller, args=[],  keywords=[], starargs=None, kwargs={}):
   """
   if not isinstance(args,list):
       raise ValueError('args must be a list')
-#  if len(keys) != len(values):
+  if not isinstance(keywords, list):
+    raise ValueError('args must be a list')
+    #  if len(keys) != len(values):
 #    raise ValueError(
 #        'len(keys)={} != len(values)={}'.format(len(keys), len(values)))
   if isinstance(caller, str):
@@ -764,6 +766,9 @@ def Name(name_id, ctx_type=CtxEnum.LOAD):
   ctx = GetCtx(ctx_type)
   return _ast.Name(id=name_id,
                    ctx=ctx)
+
+#def Keyword(arg, value):
+#  return _ast.Keyword(arg, _ast.Constant(value=value,   ctx = GetCtx(CtxEnum.LOAD)))
 
 
 def Not():

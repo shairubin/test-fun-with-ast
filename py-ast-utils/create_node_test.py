@@ -81,8 +81,8 @@ class CreateArgumentsTest(CreateNodeTestBase):
   pass"""
     expected_node = GetNodeFromInput(expected_string).args
     test_node = create_node.arguments(
-        keys=['a', 'c'],
-        values=[create_node.Str('b'), create_node.Str('d')])
+        args=['a', 'c'],
+        defaults=[create_node.Str('b'), create_node.Str('d')])
     self.assertNodesEqual(expected_node, test_node)
 
   def testNameKwargs(self):
@@ -336,7 +336,7 @@ class CreateCallTest(CreateNodeTestBase):
     expected_string = 'a(b="c")'
     expected_node = GetNodeFromInput(expected_string).value
     test_node = create_node.Call(
-        'a', keys=('b',), values=(create_node.Str('c'),))
+        'a', keywords=[{'key': 'b','value':'c'}])
     self.assertNodesEqual(expected_node, test_node)
 
   def testCallWithStarargsString(self):
