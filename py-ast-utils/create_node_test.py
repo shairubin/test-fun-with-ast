@@ -977,7 +977,7 @@ class CreateTupleTest(CreateNodeTestBase):
     expected_string = 'a = ("b",)'
     expected_node = GetNodeFromInput(expected_string).value
     test_node = create_node.Tuple(
-        create_node.Str('b'), ctx_type=create_node.CtxEnum.LOAD)
+        create_node.Constant('b'), ctx_type=create_node.CtxEnum.LOAD)
     self.assertNodesEqual(expected_node, test_node)
 
   def testTupleWithStrings(self):
@@ -1056,23 +1056,21 @@ class CreateWithTest(CreateNodeTestBase):
     expected_string = 'with a:\n  pass\n'
     expected_node = GetNodeFromInput(expected_string)
     test_node = create_node.With(
-        create_node.Name('a'))
+        [create_node.withitem('a')], [(create_node.Pass())])
     self.assertNodesEqual(expected_node, test_node)
 
   def testBasicWithAs(self):
     expected_string = 'with a as b:\n  pass\n'
     expected_node = GetNodeFromInput(expected_string)
     test_node = create_node.With(
-        create_node.Name('a'), as_part=create_node.Name('b'))
+        [create_node.withitem('a', 'b')], [(create_node.Pass())])
     self.assertNodesEqual(expected_node, test_node)
 
   def testWithAsTuple(self):
     expected_string = 'with a as (b, c):\n  pass\n'
     expected_node = GetNodeFromInput(expected_string)
     test_node = create_node.With(
-        create_node.Name('a'),
-        as_part=create_node.Tuple(create_node.Name('b'),
-                                  create_node.Name('c')))
+        [create_node.withitem('a', ('b', 'c'))], [(create_node.Pass())])
     self.assertNodesEqual(expected_node, test_node)
 
 
@@ -1095,9 +1093,9 @@ class GetCtxTest(CreateNodeTestBase):
     self.assertIsInstance(create_node.GetCtx(create_node.CtxEnum.DEL),
                           _ast.Del)
 
-  def testGetParam(self):
-    self.assertIsInstance(create_node.GetCtx(create_node.CtxEnum.PARAM),
-                          _ast.Param)
+#  def testGetParam(self):
+#    self.assertIsInstance(create_node.GetCtx(create_node.CtxEnum.PARAM),
+#                          _ast.Param)
 
 
 class VarReferenceTest(CreateNodeTestBase):

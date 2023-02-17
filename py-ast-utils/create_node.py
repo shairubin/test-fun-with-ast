@@ -27,15 +27,15 @@ import re
 
 
 class Error(Exception):
-  pass
+    pass
 
 
 class InvalidCtx(Error):
-  pass
+    pass
 
 
 def Enum(**enums):
-  return type('Enum', (), enums)
+    return type('Enum', (), enums)
 
 
 CtxEnum = Enum(
@@ -46,71 +46,69 @@ CtxEnum = Enum(
 
 
 def _ToArgsWithDefaults(_args, _defaults):
-  if not isinstance(_args, list):
-      raise ValueError('args must be a list')
-  if not isinstance(_defaults, list):
-      raise ValueError('defaults must be a list')
-  args = []
-  defaults = []
-  for arg in _args:
-    args.append(arg)
-  for default in _defaults:
-    defaults.append(default)
-  args = [_WrapWithArgs(arg) for arg in args]
-  defaults = [_WrapWithName(default) for default in defaults]
-  return args, defaults
-
-
+    if not isinstance(_args, list):
+        raise ValueError('args must be a list')
+    if not isinstance(_defaults, list):
+        raise ValueError('defaults must be a list')
+    args = []
+    defaults = []
+    for arg in _args:
+        args.append(arg)
+    for default in _defaults:
+        defaults.append(default)
+    args = [_WrapWithArgs(arg) for arg in args]
+    defaults = [_WrapWithName(default) for default in defaults]
+    return args, defaults
 
 
 def _WrapWithArgs(to_wrap):
-  if isinstance(to_wrap, _ast.AST):
-    return to_wrap
-  return Arg(to_wrap)
+    if isinstance(to_wrap, _ast.AST):
+        return to_wrap
+    return Arg(to_wrap)
 
 
 def _WrapWithName(to_wrap, ctx_type=CtxEnum.LOAD):
-  if isinstance(to_wrap, _ast.AST):
-    return to_wrap
-  return Name(to_wrap, ctx_type=ctx_type)
+    if isinstance(to_wrap, _ast.AST):
+        return to_wrap
+    return Name(to_wrap, ctx_type=ctx_type)
 
 
 def _LeftmostNodeInDotVar(node):
-  while not hasattr(node, 'id'):
-    if not hasattr(node, 'value'):
-      return node
-    node = node.value
-  return node
+    while not hasattr(node, 'id'):
+        if not hasattr(node, 'value'):
+            return node
+        node = node.value
+    return node
 
 
 def FormatAndValidateBody(body):
-  if body is None:
-    body = [Pass()]
-  for child in body:
-    if not isinstance(child, _ast.stmt):
-      raise ValueError(
-          'All body nodes must be stmt nodes, and {} is not. '
-          'Try wrapping your node in an Expr node.'
-          .format(child))
-  return body
+    if body is None:
+        body = [Pass()]
+    for child in body:
+        if not isinstance(child, _ast.stmt):
+            raise ValueError(
+                'All body nodes must be stmt nodes, and {} is not. '
+                'Try wrapping your node in an Expr node.'
+                    .format(child))
+    return body
 
 
 class ChangeCtxTransform(ast.NodeTransformer):
 
-  def __init__(self, new_ctx_type):
-    super(ChangeCtxTransform, self).__init__()
-    self._new_ctx_type = new_ctx_type
+    def __init__(self, new_ctx_type):
+        super(ChangeCtxTransform, self).__init__()
+        self._new_ctx_type = new_ctx_type
 
-  def generic_visit(self, node):
-    node = super(ChangeCtxTransform, self).generic_visit(node)
-    if hasattr(node, 'ctx'):
-      node.ctx = GetCtx(self._new_ctx_type)
-    return node
+    def generic_visit(self, node):
+        node = super(ChangeCtxTransform, self).generic_visit(node)
+        if hasattr(node, 'ctx'):
+            node.ctx = GetCtx(self._new_ctx_type)
+        return node
 
 
 def ChangeCtx(node, new_ctx_type):
-  transform = ChangeCtxTransform(new_ctx_type)
-  transform.visit(node)
+    transform = ChangeCtxTransform(new_ctx_type)
+    transform.visit(node)
 
 
 ###############################################################################
@@ -119,7 +117,7 @@ def ChangeCtx(node, new_ctx_type):
 
 
 def arguments(posonlyargs=[], args=[], vararg=None, kwonlyargs=[], kw_defaults=[], kwarg=None, defaults=[]):
-  """Creates an _ast.FunctionDef node.
+    """Creates an _ast.FunctionDef node.
 
   Args:
     args: A list of args.
@@ -134,37 +132,37 @@ def arguments(posonlyargs=[], args=[], vararg=None, kwonlyargs=[], kw_defaults=[
   Returns:
     An _ast.FunctionDef node.
   """
-  if not isinstance(args,list):
-      raise ValueError('args must be a list')
-  if kwarg :
-      kwarg = _WrapWithArgs(kwarg)
-  if vararg :
-      vararg = _WrapWithArgs(vararg)
-  args , defaults = _ToArgsWithDefaults(args, defaults)
-  return _ast.arguments(
-      posonlyargs=posonlyargs,
-      args=args,
-      vararg=vararg,
-      kwonlyargs=kwonlyargs,
-      kw_defaults=kw_defaults,
-      kwarg=kwarg,
-      defaults=defaults)
+    if not isinstance(args, list):
+        raise ValueError('args must be a list')
+    if kwarg:
+        kwarg = _WrapWithArgs(kwarg)
+    if vararg:
+        vararg = _WrapWithArgs(vararg)
+    args, defaults = _ToArgsWithDefaults(args, defaults)
+    return _ast.arguments(
+        posonlyargs=posonlyargs,
+        args=args,
+        vararg=vararg,
+        kwonlyargs=kwonlyargs,
+        kw_defaults=kw_defaults,
+        kwarg=kwarg,
+        defaults=defaults)
 
 
 def Add():
-  return _ast.Add()
+    return _ast.Add()
 
 
 def And():
-  return _ast.And()
+    return _ast.And()
 
 
 def Assert(check, message=None):
-  return _ast.Assert(test=check, msg=message)
+    return _ast.Assert(test=check, msg=message)
 
 
 def Assign(left, right):
-  """Creates an _ast.Assign node.
+    """Creates an _ast.Assign node.
 
   Args:
     left: The node on the left side of the equal sign.
@@ -175,23 +173,23 @@ def Assign(left, right):
   Returns:
     An _ast.Assign node.
   """
-  if not isinstance(left, (list, tuple)):
-    targets = [left]
-  else:
-    targets = left
-  new_targets = []
-  for target in targets:
-    if isinstance(target, str):
-      new_targets.append(_WrapWithName(target, ctx_type=CtxEnum.STORE))
+    if not isinstance(left, (list, tuple)):
+        targets = [left]
     else:
-      new_targets.append(target)
-  return _ast.Assign(
-      targets=new_targets,
-      value=right)
+        targets = left
+    new_targets = []
+    for target in targets:
+        if isinstance(target, str):
+            new_targets.append(_WrapWithName(target, ctx_type=CtxEnum.STORE))
+        else:
+            new_targets.append(target)
+    return _ast.Assign(
+        targets=new_targets,
+        value=right)
 
 
 def AugAssign(left, op, right):
-  """Creates an _ast.AugAssign node.
+    """Creates an _ast.AugAssign node.
 
   Args:
     left: The node on the left side of the equal sign.
@@ -203,15 +201,15 @@ def AugAssign(left, op, right):
   Returns:
     An _ast.Assign node.
   """
-  left = _WrapWithName(left)
-  return _ast.AugAssign(
-      target=left,
-      op=op,
-      value=right)
+    left = _WrapWithName(left)
+    return _ast.AugAssign(
+        target=left,
+        op=op,
+        value=right)
 
 
 def BinOp(left, op, right):
-  """Creates an _ast.BinOp node.
+    """Creates an _ast.BinOp node.
 
   Args:
     left: The node on the left side of the equal sign.
@@ -221,17 +219,17 @@ def BinOp(left, op, right):
   Returns:
     An _ast.BinOp node.
   """
-  if not isinstance(op, _ast.AST):
-    op = BinOpMap(op)
+    if not isinstance(op, _ast.AST):
+        op = BinOpMap(op)
 
-  return _ast.BinOp(
-      left=left,
-      op=op,
-      right=right)
+    return _ast.BinOp(
+        left=left,
+        op=op,
+        right=right)
 
 
 def BoolOp(left, *alternating_ops_values):
-  """Creates an _ast.BoolOp node.
+    """Creates an _ast.BoolOp node.
 
   Args:
     left: The node on the left side of the equal sign.
@@ -243,57 +241,58 @@ def BoolOp(left, *alternating_ops_values):
   Returns:
     An _ast.BoolOp node.
   """
-  values = [left]
-  op = None
-  op_next = True
-  alternating_ops_values = list(alternating_ops_values)
-  while alternating_ops_values:
-    op_or_value = alternating_ops_values.pop(0)
-    if op_next:
-      if not isinstance(op_or_value, _ast.AST):
-        op_or_value = BoolOpMap(op_or_value)
-      if not op:
-        op = op_or_value
-      elif op and op == op_or_value:
-        continue
-      else:
-        # Or's take priority over And's
-        if isinstance(op, _ast.And):
-          return BoolOp(_ast.BoolOp(op=op, values=values),
-                        op_or_value,
-                        *alternating_ops_values)
+    values = [left]
+    op = None
+    op_next = True
+    alternating_ops_values = list(alternating_ops_values)
+    while alternating_ops_values:
+        op_or_value = alternating_ops_values.pop(0)
+        if op_next:
+            if not isinstance(op_or_value, _ast.AST):
+                op_or_value = BoolOpMap(op_or_value)
+            if not op:
+                op = op_or_value
+            elif op and op == op_or_value:
+                continue
+            else:
+                # Or's take priority over And's
+                if isinstance(op, _ast.And):
+                    return BoolOp(_ast.BoolOp(op=op, values=values),
+                                  op_or_value,
+                                  *alternating_ops_values)
+                else:
+                    last_value = values.pop()
+                    values.append(BoolOp(last_value,
+                                         op_or_value,
+                                         *alternating_ops_values))
+                    return _ast.BoolOp(
+                        op=_ast.Or(),
+                        values=values)
         else:
-          last_value = values.pop()
-          values.append(BoolOp(last_value,
-                               op_or_value,
-                               *alternating_ops_values))
-          return _ast.BoolOp(
-              op=_ast.Or(),
-              values=values)
-    else:
-      values.append(op_or_value)
-    op_next = not op_next
+            values.append(op_or_value)
+        op_next = not op_next
 
-  return _ast.BoolOp(op=op, values=values)
+    return _ast.BoolOp(op=op, values=values)
 
 
 def BitAnd():
-  return _ast.BitAnd()
+    return _ast.BitAnd()
 
 
 def BitOr():
-  return _ast.BitOr()
+    return _ast.BitOr()
 
 
 def BitXor():
-  return _ast.BitXor()
+    return _ast.BitXor()
+
 
 def keyword(arg, value):
-  return _ast.keyword(arg, value)
+    return _ast.keyword(arg, value)
 
 
-def Call(caller, args=[],  keywords=[], starargs=None, kwargs={}):
-  """Creates an _ast.Call node.
+def Call(caller, args=[], keywords=[], starargs=None, kwargs={}):
+    """Creates an _ast.Call node.
 
   Args:
     caller: Either a node of the appropriate type
@@ -312,43 +311,44 @@ def Call(caller, args=[],  keywords=[], starargs=None, kwargs={}):
   Returns:
     An _ast.Call object.
   """
-  if not isinstance(args,list):
-    raise ValueError('args must be a list')
-    raise ValueError('args must be a list')
-    #  if len(keys) != len(values):
-#    raise ValueError(
-#        'len(keys)={} != len(values)={}'.format(len(keys), len(values)))
-  if isinstance(caller, str):
-    caller = VarReference(*caller.split('.'))
-  if not isinstance(kwargs, dict):
-      raise ValueError('kwargs must be a ast.Dict')
-  if not isinstance(caller, (_ast.Name, _ast.Attribute)):
-      raise ValueError('caller not the expected value')
-#  raise ValueError(
-#        'caller must be a: \n'
-#        '1. string\n'
-#        '2. _ast.Str node\n'
-#        '3. _ast.Name node\n'
-#        '4. _ast.Attr node\n'
-#        'not {}'.format(caller))
-#  keywords = [_ast.keyword(value=Dict(key, val))
-#              for key, val in kwargs.items()]
-  args = [_WrapWithName(arg, ctx_type=CtxEnum.LOAD) for arg in args]
-  if isinstance(starargs, str):
-    starargs = VarReference(*starargs.split('.'))
-  if isinstance(kwargs, str):
-    kwargs = VarReference(*kwargs.split('.'))
-  result = _ast.Call(
-      func=caller,
-      args=args,
-      keywords=keywords,
-      starargs=starargs,
-      kwargs=kwargs)
-  return result
+    if not isinstance(args, list):
+        raise ValueError('args must be a list')
+        raise ValueError('args must be a list')
+        #  if len(keys) != len(values):
+    #    raise ValueError(
+    #        'len(keys)={} != len(values)={}'.format(len(keys), len(values)))
+    if isinstance(caller, str):
+        caller = VarReference(*caller.split('.'))
+    if not isinstance(kwargs, dict):
+        raise ValueError('kwargs must be a ast.Dict')
+    if not isinstance(caller, (_ast.Name, _ast.Attribute)):
+        raise ValueError('caller not the expected value')
+    #  raise ValueError(
+    #        'caller must be a: \n'
+    #        '1. string\n'
+    #        '2. _ast.Str node\n'
+    #        '3. _ast.Name node\n'
+    #        '4. _ast.Attr node\n'
+    #        'not {}'.format(caller))
+    #  keywords = [_ast.keyword(value=Dict(key, val))
+    #              for key, val in kwargs.items()]
+    args = [_WrapWithName(arg, ctx_type=CtxEnum.LOAD) for arg in args]
+    if isinstance(starargs, str):
+        starargs = VarReference(*starargs.split('.'))
+    if isinstance(kwargs, str):
+        kwargs = VarReference(*kwargs.split('.'))
+    result = _ast.Call(
+        func=caller,
+        args=args,
+        keywords=keywords,
+        starargs=starargs,
+        kwargs=kwargs)
+    return result
+
 
 def ClassDef(
-    name, bases=(), body=None, decorator_list=()):
-  """Creates an _ast.ClassDef node.
+        name, bases=(), body=None, decorator_list=()):
+    """Creates an _ast.ClassDef node.
 
   Args:
     name: The name of the class.
@@ -362,17 +362,17 @@ def ClassDef(
   Returns:
     An _ast.ClassDef node.
   """
-  body = FormatAndValidateBody(body)
-  bases = [_WrapWithName(base, ctx_type=CtxEnum.LOAD) for base in bases]
-  return _ast.ClassDef(
-      name=name,
-      bases=bases,
-      body=body,
-      decorator_list=list(decorator_list))
+    body = FormatAndValidateBody(body)
+    bases = [_WrapWithName(base, ctx_type=CtxEnum.LOAD) for base in bases]
+    return _ast.ClassDef(
+        name=name,
+        bases=bases,
+        body=body,
+        decorator_list=list(decorator_list))
 
 
 def Compare(*args):
-  """Creates an _ast.Compare node.
+    """Creates an _ast.Compare node.
 
   Args:
     *args: List which should alternate between regular nodes and _ast.cmpop.
@@ -384,27 +384,27 @@ def Compare(*args):
   Returns:
     An _ast.Compare node.
   """
-  if len(args) < 3:
-    raise ValueError('Must have at least 3 args')
-  ops = []
-  comparators = []
-  for index, arg in enumerate(args):
-    if index % 2 == 1:
-      if not isinstance(arg, _ast.AST):
-        arg = CompareOpMap(arg)
-      if not isinstance(arg, _ast.cmpop):
-        raise ValueError('Odd args must be instances of _ast.cmpop')
-      ops.append(arg)
-    else:
-      if index != 0:
-        comparators.append(_WrapWithName(arg, ctx_type=CtxEnum.LOAD))
-  return _ast.Compare(left=_WrapWithName(args[0], ctx_type=CtxEnum.LOAD),
-                      ops=ops,
-                      comparators=comparators)
+    if len(args) < 3:
+        raise ValueError('Must have at least 3 args')
+    ops = []
+    comparators = []
+    for index, arg in enumerate(args):
+        if index % 2 == 1:
+            if not isinstance(arg, _ast.AST):
+                arg = CompareOpMap(arg)
+            if not isinstance(arg, _ast.cmpop):
+                raise ValueError('Odd args must be instances of _ast.cmpop')
+            ops.append(arg)
+        else:
+            if index != 0:
+                comparators.append(_WrapWithName(arg, ctx_type=CtxEnum.LOAD))
+    return _ast.Compare(left=_WrapWithName(args[0], ctx_type=CtxEnum.LOAD),
+                        ops=ops,
+                        comparators=comparators)
 
 
 def comprehension(for_part, in_part, *ifs):
-  """Create an _ast.comprehension node, used in _ast.ListComprehension.
+    """Create an _ast.comprehension node, used in _ast.ListComprehension.
 
   Args:
     for_part: The part after "for "
@@ -414,15 +414,15 @@ def comprehension(for_part, in_part, *ifs):
   Returns:
     {_ast.comprehension}
   """
-  for_part = _WrapWithName(for_part, ctx_type=CtxEnum.STORE)
-  in_part = _WrapWithName(in_part, ctx_type=CtxEnum.LOAD)
-  return _ast.comprehension(target=for_part,
-                            iter=in_part,
-                            ifs=list(ifs))
+    for_part = _WrapWithName(for_part, ctx_type=CtxEnum.STORE)
+    in_part = _WrapWithName(in_part, ctx_type=CtxEnum.LOAD)
+    return _ast.comprehension(target=for_part,
+                              iter=in_part,
+                              ifs=list(ifs))
 
 
 def Dict(keys=(), values=()):
-  """Creates an _ast.Dict node. This represents a dict literal.
+    """Creates an _ast.Dict node. This represents a dict literal.
 
   Args:
     keys: A list of keys as nodes. Must be the same length as values.
@@ -434,16 +434,16 @@ def Dict(keys=(), values=()):
   Returns:
     An _ast.Dict node.
   """
-  if len(keys) != len(values):
-    raise ValueError(
-        'len(keys)={} != len(values)={}'.format(len(keys), len(values)))
-  keys = [_WrapWithName(key) for key in keys]
-  values =[_WrapWithName(value) for value in values]
-  return _ast.Dict(keys, values)
+    if len(keys) != len(values):
+        raise ValueError(
+            'len(keys)={} != len(values)={}'.format(len(keys), len(values)))
+    keys = [_WrapWithName(key) for key in keys]
+    values = [_WrapWithName(value) for value in values]
+    return _ast.Dict(keys, values)
 
 
 def DictComp(left_side_key, left_side_value, for_part, in_part, *ifs):
-  """Creates _ast.DictComp nodes.
+    """Creates _ast.DictComp nodes.
 
   'left_side', 'left_side_value' for 'for_part' in 'in_part' if 'ifs'
 
@@ -457,31 +457,31 @@ def DictComp(left_side_key, left_side_value, for_part, in_part, *ifs):
   Returns:
     {_ast.DictComp}
   """
-  left_side_key = _WrapWithName(left_side_key, ctx_type=CtxEnum.LOAD)
-  left_side_value = _WrapWithName(left_side_value, ctx_type=CtxEnum.LOAD)
-  for_part = _WrapWithName(for_part, ctx_type=CtxEnum.STORE)
-  in_part = _WrapWithName(in_part, ctx_type=CtxEnum.LOAD)
-  return _ast.DictComp(
-      key=left_side_key,
-      value=left_side_value,
-      generators=[comprehension(for_part, in_part, *ifs)])
+    left_side_key = _WrapWithName(left_side_key, ctx_type=CtxEnum.LOAD)
+    left_side_value = _WrapWithName(left_side_value, ctx_type=CtxEnum.LOAD)
+    for_part = _WrapWithName(for_part, ctx_type=CtxEnum.STORE)
+    in_part = _WrapWithName(in_part, ctx_type=CtxEnum.LOAD)
+    return _ast.DictComp(
+        key=left_side_key,
+        value=left_side_value,
+        generators=[comprehension(for_part, in_part, *ifs)])
 
 
 def Div():
-  return _ast.Div()
+    return _ast.Div()
 
 
 def Eq():
-  return _ast.Eq()
+    return _ast.Eq()
 
 
 def ExceptHandler(exception_type=None, name=None, body=None):
-  body = FormatAndValidateBody(body)
-  return _ast.ExceptHandler(type=exception_type, name=name, body=body)
+    body = FormatAndValidateBody(body)
+    return _ast.ExceptHandler(type=exception_type, name=name, body=body)
 
 
 def Expr(value):
-  """Creates an _ast.Expr node.
+    """Creates an _ast.Expr node.
 
   Note that this node is mostly used to wrap other nodes so they're treated
   as whole-line statements.
@@ -495,21 +495,21 @@ def Expr(value):
   Returns:
     An _ast.Expr node.
   """
-  if isinstance(value, _ast.stmt):
-    raise ValueError(
-        'value must not be an _ast.stmt node, because those nodes don\'t need '
-        'to be wrapped in an Expr node. Value passed: {}'.format(value))
-  return _ast.Expr(value)
+    if isinstance(value, _ast.stmt):
+        raise ValueError(
+            'value must not be an _ast.stmt node, because those nodes don\'t need '
+            'to be wrapped in an Expr node. Value passed: {}'.format(value))
+    return _ast.Expr(value)
 
 
 def FloorDiv():
-  return _ast.FloorDiv()
+    return _ast.FloorDiv()
 
 
 def FunctionDef(
-    name, args=(), keys=(), values=(), body=None, vararg_name=None,
-    kwarg_name=None, decorator_list=()):
-  """Creates an _ast.FunctionDef node.
+        name, args=(), keys=(), values=(), body=None, vararg_name=None,
+        kwarg_name=None, decorator_list=()):
+    """Creates an _ast.FunctionDef node.
 
   Args:
     name: The name of the function.
@@ -526,19 +526,19 @@ def FunctionDef(
   Returns:
     An _ast.FunctionDef node.
   """
-  body = FormatAndValidateBody(body)
-  args = arguments(
-      args=args, keys=keys, values=values,
-      vararg_name=vararg_name, kwarg_name=kwarg_name)
-  return _ast.FunctionDef(
-      name=name,
-      args=args,
-      body=body,
-      decorator_list=list(decorator_list))
+    body = FormatAndValidateBody(body)
+    args = arguments(
+        args=args, keys=keys, values=values,
+        vararg_name=vararg_name, kwarg_name=kwarg_name)
+    return _ast.FunctionDef(
+        name=name,
+        args=args,
+        body=body,
+        decorator_list=list(decorator_list))
 
 
 def GeneratorExp(left_side, for_part, in_part, *ifs):
-  """Creates _ast.GeneratorExp nodes.
+    """Creates _ast.GeneratorExp nodes.
 
   'left_side' for 'for_part' in 'in_part' if 'ifs'
 
@@ -551,24 +551,24 @@ def GeneratorExp(left_side, for_part, in_part, *ifs):
   Returns:
     {_ast.GeneratorExp}
   """
-  left_side = _WrapWithName(left_side, ctx_type=CtxEnum.LOAD)
-  for_part = _WrapWithName(for_part, ctx_type=CtxEnum.STORE)
-  in_part = _WrapWithName(in_part, ctx_type=CtxEnum.LOAD)
-  return _ast.GeneratorExp(
-      elt=left_side,
-      generators=[comprehension(for_part, in_part, *ifs)])
+    left_side = _WrapWithName(left_side, ctx_type=CtxEnum.LOAD)
+    for_part = _WrapWithName(for_part, ctx_type=CtxEnum.STORE)
+    in_part = _WrapWithName(in_part, ctx_type=CtxEnum.LOAD)
+    return _ast.GeneratorExp(
+        elt=left_side,
+        generators=[comprehension(for_part, in_part, *ifs)])
 
 
 def Gt():
-  return _ast.Gt()
+    return _ast.Gt()
 
 
 def GtE():
-  return _ast.GtE()
+    return _ast.GtE()
 
 
 def If(conditional, body, orelse=None):
-  """Creates an _ast.If node.
+    """Creates an _ast.If node.
 
   Args:
     conditional: The expression we evaluate for its truthiness.
@@ -586,21 +586,21 @@ def If(conditional, body, orelse=None):
   Returns:
     An _ast.If node.
   """
-  body = FormatAndValidateBody(body)
-  if orelse is None:
-    orelse = []
-  if isinstance(orelse, (list, tuple)):
-    for child in body:
-      if not isinstance(child, _ast.stmt):
-        raise ValueError(
-            'All body nodes must be stmt nodes, and {} is not. '
-            'Try wrapping your node in an Expr node.'
-            .format(child))
-  return _ast.If(test=conditional, body=body, orelse=orelse)
+    body = FormatAndValidateBody(body)
+    if orelse is None:
+        orelse = []
+    if isinstance(orelse, (list, tuple)):
+        for child in body:
+            if not isinstance(child, _ast.stmt):
+                raise ValueError(
+                    'All body nodes must be stmt nodes, and {} is not. '
+                    'Try wrapping your node in an Expr node.'
+                        .format(child))
+    return _ast.If(test=conditional, body=body, orelse=orelse)
 
 
 def IfExp(conditional, true_case, false_case):
-  """Creates an _ast.IfExp node.
+    """Creates an _ast.IfExp node.
 
   Note that this is python's ternary operator, not to be confused with _ast.If.
 
@@ -612,11 +612,11 @@ def IfExp(conditional, true_case, false_case):
   Returns:
     An _ast.IfExp node.
   """
-  return _ast.IfExp(body=true_case, test=conditional, orelse=false_case)
+    return _ast.IfExp(body=true_case, test=conditional, orelse=false_case)
 
 
 def Import(import_part='', from_part='', asname=None):
-  """Creates either an _ast.Import node or an _ast.ImportFrom node.
+    """Creates either an _ast.Import node or an _ast.ImportFrom node.
 
   Args:
     import_part: The text that follows "import".
@@ -627,39 +627,39 @@ def Import(import_part='', from_part='', asname=None):
   Returns:
     An _ast.Import or _ast.ImportFrom node.
   """
-  names = [_ast.alias(name=import_part,
-                      asname=asname)]
-  if from_part:
-    return _ast.ImportFrom(
-        level=0,
-        module=from_part,
-        names=names)
-  else:
-    return _ast.Import(names=names)
+    names = [_ast.alias(name=import_part,
+                        asname=asname)]
+    if from_part:
+        return _ast.ImportFrom(
+            level=0,
+            module=from_part,
+            names=names)
+    else:
+        return _ast.Import(names=names)
 
 
 def In():
-  return _ast.In()
+    return _ast.In()
 
 
 def Index(value):
-  return _ast.Index(value)
+    return _ast.Index(value)
 
 
 def Invert():
-  return _ast.Invert()
+    return _ast.Invert()
 
 
 def Is():
-  return _ast.Is()
+    return _ast.Is()
 
 
 def IsNot():
-  return _ast.IsNot()
+    return _ast.IsNot()
 
 
 def Lambda(body, args=None):
-  """Creates an _ast.Lambda object.
+    """Creates an _ast.Lambda object.
 
   Args:
     body: {_ast.AST}
@@ -671,15 +671,15 @@ def Lambda(body, args=None):
   Returns:
     {_ast.Lambda}
   """
-  if isinstance(args, (list, tuple)):
-    raise ValueError('Body should be a single element, not a list or tuple')
-  if not args:
-    args = arguments()
-  return _ast.Lambda(args=args, body=body)
+    if isinstance(args, (list, tuple)):
+        raise ValueError('Body should be a single element, not a list or tuple')
+    if not args:
+        args = arguments()
+    return _ast.Lambda(args=args, body=body)
 
 
 def List(*items, **kwargs):
-  """Creates an _ast.List node.
+    """Creates an _ast.List node.
 
   Automatically adjusts inner ctx attrs.
 
@@ -691,21 +691,21 @@ def List(*items, **kwargs):
   Returns:
     An _ast.List node.
   """
-  ctx_type = kwargs.pop('ctx_type', CtxEnum.LOAD)
+    ctx_type = kwargs.pop('ctx_type', CtxEnum.LOAD)
 
-  for item in items:
-    if isinstance(item, _ast.Name):
-      item.ctx = GetCtx(ctx_type)
-    elif isinstance(item, _ast.Attribute):
-      name_node = _LeftmostNodeInDotVar(item)
-      name_node.ctx = GetCtx(ctx_type)
-  ctx = GetCtx(ctx_type)
-  return _ast.List(elts=list(items),
-                   ctx=ctx)
+    for item in items:
+        if isinstance(item, _ast.Name):
+            item.ctx = GetCtx(ctx_type)
+        elif isinstance(item, _ast.Attribute):
+            name_node = _LeftmostNodeInDotVar(item)
+            name_node.ctx = GetCtx(ctx_type)
+    ctx = GetCtx(ctx_type)
+    return _ast.List(elts=list(items),
+                     ctx=ctx)
 
 
 def ListComp(left_side, for_part, in_part, *ifs):
-  """Creates _ast.ListComp nodes.
+    """Creates _ast.ListComp nodes.
 
   'left_side' for 'for_part' in 'in_part' if 'ifs'
 
@@ -718,48 +718,50 @@ def ListComp(left_side, for_part, in_part, *ifs):
   Returns:
     {_ast.ListComp}
   """
-  left_side = _WrapWithName(left_side, ctx_type=CtxEnum.LOAD)
-  for_part = _WrapWithName(for_part, ctx_type=CtxEnum.STORE)
-  in_part = _WrapWithName(in_part, ctx_type=CtxEnum.LOAD)
-  return _ast.ListComp(
-      elt=left_side,
-      generators=[comprehension(for_part, in_part, *ifs)])
+    left_side = _WrapWithName(left_side, ctx_type=CtxEnum.LOAD)
+    for_part = _WrapWithName(for_part, ctx_type=CtxEnum.STORE)
+    in_part = _WrapWithName(in_part, ctx_type=CtxEnum.LOAD)
+    return _ast.ListComp(
+        elt=left_side,
+        generators=[comprehension(for_part, in_part, *ifs)])
 
 
 def LShift():
-  return _ast.LShift()
+    return _ast.LShift()
 
 
 def Lt():
-  return _ast.Lt()
+    return _ast.Lt()
 
 
 def LtE():
-  return _ast.LtE()
+    return _ast.LtE()
 
 
 def Mod():
-  return _ast.Mod()
+    return _ast.Mod()
 
 
 def Module(*body_items):
-  if not body_items:
-    raise ValueError('Must have at least one argument in the body')
-  return _ast.Module(body=list(body_items))
+    if not body_items:
+        raise ValueError('Must have at least one argument in the body')
+    return _ast.Module(body=list(body_items))
 
 
 def Mult():
-  return _ast.Mult()
+    return _ast.Mult()
+
 
 def Arg(arg):
     return _ast.arg(arg)
 
 
 def Constant(value):
-  return _ast.Constant(value=value)
+    return _ast.Constant(value=value)
+
 
 def Name(name_id, ctx_type=CtxEnum.LOAD):
-  """Creates an _ast.Name node.
+    """Creates an _ast.Name node.
 
   Args:
     name_id: Name of the node.
@@ -768,54 +770,55 @@ def Name(name_id, ctx_type=CtxEnum.LOAD):
   Returns:
     An _ast.Name node.
   """
-  ctx = GetCtx(ctx_type)
-  return _ast.Name(id=name_id,
-                   ctx=ctx)
+    ctx = GetCtx(ctx_type)
+    return _ast.Name(id=name_id,
+                     ctx=ctx)
 
-#def keyword(arg, value):
+
+# def keyword(arg, value):
 #  return _ast.keyword(arg, _ast.Constant(value=value,   ctx = GetCtx(CtxEnum.LOAD)))
 
 
 def Not():
-  return _ast.Not()
+    return _ast.Not()
 
 
 def NotEq():
-  return _ast.NotEq()
+    return _ast.NotEq()
 
 
 def NotIn():
-  return _ast.NotIn()
+    return _ast.NotIn()
 
 
 def Num(number):
-  """Creates an _ast.Num node."""
-  return _ast.Constant(int(number))
+    """Creates an _ast.Num node."""
+    return _ast.Constant(int(number))
 
 
 def Or():
-  return _ast.Or()
+    return _ast.Or()
 
 
 def Pass():
-  """Creates an _ast.Pass node."""
-  return _ast.Pass()
+    """Creates an _ast.Pass node."""
+    return _ast.Pass()
 
 
 def Pow():
-  return _ast.Pow()
+    return _ast.Pow()
 
 
 def Return(value):
-  return _ast.Return(value=value)
+    return _ast.Return(value=value)
 
 
 def RShift():
-  return _ast.RShift()
+    return _ast.RShift()
 
 
 def Set(*items):
-  """Creates an _ast.Set node.
+    """Creates an _ast.Set node.
 
   Args:
     *items: The items in the set.
@@ -823,11 +826,11 @@ def Set(*items):
   Returns:
     An _ast.Set node.
   """
-  return _ast.Set(elts=list(items))
+    return _ast.Set(elts=list(items))
 
 
 def SetComp(left_side, for_part, in_part, *ifs):
-  """Creates _ast.SetComp nodes.
+    """Creates _ast.SetComp nodes.
 
   'left_side' for 'for_part' in 'in_part' if 'ifs'
 
@@ -840,78 +843,79 @@ def SetComp(left_side, for_part, in_part, *ifs):
   Returns:
     {_ast.SetComp}
   """
-  left_side = _WrapWithName(left_side, ctx_type=CtxEnum.LOAD)
-  for_part = _WrapWithName(for_part, ctx_type=CtxEnum.STORE)
-  in_part = _WrapWithName(in_part, ctx_type=CtxEnum.LOAD)
-  return _ast.SetComp(
-      elt=left_side,
-      generators=[comprehension(for_part, in_part, *ifs)])
+    left_side = _WrapWithName(left_side, ctx_type=CtxEnum.LOAD)
+    for_part = _WrapWithName(for_part, ctx_type=CtxEnum.STORE)
+    in_part = _WrapWithName(in_part, ctx_type=CtxEnum.LOAD)
+    return _ast.SetComp(
+        elt=left_side,
+        generators=[comprehension(for_part, in_part, *ifs)])
 
 
 def Slice(lower=None, upper=None, step=None):
-  return _ast.Slice(lower=lower, upper=upper, step=step)
+    return _ast.Slice(lower=lower, upper=upper, step=step)
 
 
 def Str(s):
-  """Creates an _ast.Str node."""
-#  return _ast.Str(s=s)
-  return _ast.Constant(s=s)
+    """Creates an _ast.Str node."""
+    #  return _ast.Str(s=s)
+    return _ast.Constant(s=s)
+
 
 def Starred(s):
-  """Creates an _ast.Starred node."""
-#  return _ast.Str(s=s)
-  return _ast.Starred(value=s, ctx=GetCtx(CtxEnum.LOAD))
+    """Creates an _ast.Starred node."""
+    #  return _ast.Str(s=s)
+    return _ast.Starred(value=s, ctx=GetCtx(CtxEnum.LOAD))
 
 
 def Sub():
-  return _ast.Sub()
+    return _ast.Sub()
 
 
 def Subscript(value, upper=None, lower=None, step=None, ctx=CtxEnum.LOAD):
-  value = _WrapWithName(value, ctx)
-  return _ast.Subscript(
-      value=value, slice=Slice(upper, lower, step), ctx=GetCtx(ctx))
+    value = _WrapWithName(value, ctx)
+    return _ast.Subscript(
+        value=value, slice=Slice(upper, lower, step), ctx=GetCtx(ctx))
 
 
 class SyntaxFreeLine(_ast.stmt):
-  """Class defining a new node that has no syntax (only optional comments)."""
+    """Class defining a new node that has no syntax (only optional comments)."""
 
-  def __init__(self, comment=None, col_offset=0, comment_indent=1):
-    super(SyntaxFreeLine, self).__init__()
-    self.col_offset = col_offset
-    self._fields = ['full_line']
-    self.comment = comment
-    self.comment_indent = comment_indent
+    def __init__(self, comment=None, col_offset=0, comment_indent=1):
+        super(SyntaxFreeLine, self).__init__()
+        self.col_offset = col_offset
+        self._fields = ['full_line']
+        self.comment = comment
+        self.comment_indent = comment_indent
 
-  @property
-  def full_line(self):
-    if self.comment is not None:
-      return '{}#{}{}'.format(' '*self.col_offset,
-                              ' '*self.comment_indent,
-                              self.comment)
-    return ''
+    @property
+    def full_line(self):
+        if self.comment is not None:
+            return '{}#{}{}'.format(' ' * self.col_offset,
+                                    ' ' * self.comment_indent,
+                                    self.comment)
+        return ''
 
-  @classmethod
-  def MatchesStart(cls, text):
-    return re.match('^([ \t]*)(?:|(#)([ \t]*)(.*))\n', text)
+    @classmethod
+    def MatchesStart(cls, text):
+        return re.match('^([ \t]*)(?:|(#)([ \t]*)(.*))\n', text)
 
-  def SetFromSrcLine(self, line):
-    match = self.MatchesStart(line)
-    if not match:
-      raise ValueError('line {} is not a valid SyntaxFreeLine'.format(line))
-    self.col_offset = len(match.group(1))
-    self.comment_indent = 0
-    self.comment = None
-    if match.group(2):
-      self.comment = ''
-      if match.group(3):
-        self.comment_indent = len(match.group(3))
-      if match.group(4):
-        self.comment = match.group(4)
+    def SetFromSrcLine(self, line):
+        match = self.MatchesStart(line)
+        if not match:
+            raise ValueError('line {} is not a valid SyntaxFreeLine'.format(line))
+        self.col_offset = len(match.group(1))
+        self.comment_indent = 0
+        self.comment = None
+        if match.group(2):
+            self.comment = ''
+            if match.group(3):
+                self.comment_indent = len(match.group(3))
+            if match.group(4):
+                self.comment = match.group(4)
 
 
 def Tuple(*items, **kwargs):
-  """Creates an _ast.Tuple node.
+    """Creates an _ast.Tuple node.
 
   Automatically adjusts inner ctx attrs.
 
@@ -923,73 +927,73 @@ def Tuple(*items, **kwargs):
   Returns:
     An _ast.Tuple node.
   """
-  ctx_type = kwargs.pop('ctx_type', CtxEnum.LOAD)
+    ctx_type = kwargs.pop('ctx_type', CtxEnum.LOAD)
 
-  new_items = []
-  for item in items:
-    if isinstance(item, str):
-      new_items.append(_WrapWithName(item))
-    else:
-      new_items.append(item)
+    new_items = []
+    for item in items:
+        if isinstance(item, str):
+            new_items.append(_WrapWithName(item))
+        else:
+            new_items.append(item)
 
-  for item in new_items:
-    if isinstance(item, _ast.Name):
-      item.ctx = GetCtx(ctx_type)
-    elif isinstance(item, _ast.Attribute):
-      name_node = _LeftmostNodeInDotVar(item)
-      name_node.ctx = GetCtx(ctx_type)
-  ctx = GetCtx(ctx_type)
-  return _ast.Tuple(elts=new_items,
-                    ctx=ctx)
+    for item in new_items:
+        if isinstance(item, _ast.Name):
+            item.ctx = GetCtx(ctx_type)
+        elif isinstance(item, _ast.Attribute):
+            name_node = _LeftmostNodeInDotVar(item)
+            name_node.ctx = GetCtx(ctx_type)
+    ctx = GetCtx(ctx_type)
+    return _ast.Tuple(elts=new_items,
+                      ctx=ctx)
 
-#python 2.7
-#def TryExcept(body, except_handlers, orelse=None):
+
+# python 2.7
+# def TryExcept(body, except_handlers, orelse=None):
 #  return _ast.TryExcept(body=body, handlers=except_handlers, orelse=orelse)
 def Try(body, except_handlers, orelse=None):
-  return _ast.Try(body=body, handlers=except_handlers, orelse=orelse)
+    return _ast.Try(body=body, handlers=except_handlers, orelse=orelse)
 
 
-def TryFinally(body, except_handlers, finalybody, orelse=None ):
-  finalbody = FormatAndValidateBody(finalybody)
-# python 2.7
-#  return _ast.TryFinally(body=body, finalbody=finalbody)
-# python 3
-  return _ast.Try(body=body, handlers=except_handlers, finalbody=finalbody, orelse=orelse)
+def TryFinally(body, except_handlers, finalybody, orelse=None):
+    finalbody = FormatAndValidateBody(finalybody)
+    # python 2.7
+    #  return _ast.TryFinally(body=body, finalbody=finalbody)
+    # python 3
+    return _ast.Try(body=body, handlers=except_handlers, finalbody=finalbody, orelse=orelse)
 
 
 def UAdd():
-  return _ast.UAdd()
+    return _ast.UAdd()
 
 
 def UnaryOp(operator, operand):
-  """Operator literals ('not') also accepted."""
-  if not isinstance(operator, _ast.AST):
-    operator = UnaryOpMap(operator)
-  return _ast.UnaryOp(op=operator, operand=operand)
+    """Operator literals ('not') also accepted."""
+    if not isinstance(operator, _ast.AST):
+        operator = UnaryOpMap(operator)
+    return _ast.UnaryOp(op=operator, operand=operand)
 
 
 def USub():
-  return _ast.USub()
+    return _ast.USub()
 
+def withitem(name, optional_value=None):
+    if optional_value:
+        optional_value = Name(optional_value, ctx_type=CtxEnum.STORE)
+    return _ast.withitem(Name(name), optional_value)
 
-def With(with_part, as_part=None, body=None):
-  """Creates an _ast.With node.
+def With(withitems, body, as_part=[], type_comment=None):
+    if not isinstance(body, list):
+        raise ValueError('With-body must be a list')
 
-  Args:
-    with_part: The part after "with ".
-    as_part: The part after "with [with_part] as ".
-    body: The body of the with statement.
+    if not isinstance(withitems, list):
+        raise ValueError('Withitemsy must be a list')
 
-  Returns:
-    An _ast.With node.
-  """
-  body = FormatAndValidateBody(body)
-  if as_part:
-    ChangeCtx(as_part, CtxEnum.STORE)
+    body = FormatAndValidateBody(body)
+#    if as_part:
+#        ChangeCtx(as_part, CtxEnum.STORE)
 
-  return _ast.With(context_expr=with_part,
-                   optional_vars=as_part,
-                   body=body)
+    return _ast.With(items=withitems,
+                     body=body, type_comment=None)
 
 
 ###############################################################################
@@ -998,80 +1002,80 @@ def With(with_part, as_part=None, body=None):
 
 
 def GetCtx(ctx_type):
-  """Creates Load, Store, Del, and Param, used in the ctx kwarg."""
-  if ctx_type == CtxEnum.LOAD:
-    return _ast.Load()
-  elif ctx_type == CtxEnum.STORE:
-    return _ast.Store()
-  elif ctx_type == CtxEnum.DEL:
-    return _ast.Del()
-  elif ctx_type == CtxEnum.PARAM:
-    return _ast.Param()
-  raise InvalidCtx('ctx_type {} isn\'t a valid type'.format(ctx_type))
+    """Creates Load, Store, Del, and Param, used in the ctx kwarg."""
+    if ctx_type == CtxEnum.LOAD:
+        return _ast.Load()
+    elif ctx_type == CtxEnum.STORE:
+        return _ast.Store()
+    elif ctx_type == CtxEnum.DEL:
+        return _ast.Del()
+    elif ctx_type == CtxEnum.PARAM:
+        return _ast.Param()
+    raise InvalidCtx('ctx_type {} isn\'t a valid type'.format(ctx_type))
 
 
 def UnaryOpMap(operator):
-  """Maps operator strings for unary operations to their _ast node."""
-  op_dict = {
-      '+': _ast.UAdd,
-      '-': _ast.USub,
-      'not': _ast.Not,
-      '~': _ast.Invert,
-  }
+    """Maps operator strings for unary operations to their _ast node."""
+    op_dict = {
+        '+': _ast.UAdd,
+        '-': _ast.USub,
+        'not': _ast.Not,
+        '~': _ast.Invert,
+    }
 
-  return op_dict[operator]()
+    return op_dict[operator]()
 
 
 def BinOpMap(operator):
-  """Maps operator strings for binary operations to their _ast node."""
-  op_dict = {
-      '+': _ast.Add,
-      '-': _ast.Sub,
-      '*': _ast.Mult,
-      '**': _ast.Pow,
-      '/': _ast.Div,
-      '//': _ast.FloorDiv,
-      '%': _ast.Mod,
-      '<<': _ast.LShift,
-      '>>': _ast.RShift,
-      '|': _ast.BitOr,
-      '&': _ast.BitAnd,
-      '^': _ast.BitXor,
-  }
+    """Maps operator strings for binary operations to their _ast node."""
+    op_dict = {
+        '+': _ast.Add,
+        '-': _ast.Sub,
+        '*': _ast.Mult,
+        '**': _ast.Pow,
+        '/': _ast.Div,
+        '//': _ast.FloorDiv,
+        '%': _ast.Mod,
+        '<<': _ast.LShift,
+        '>>': _ast.RShift,
+        '|': _ast.BitOr,
+        '&': _ast.BitAnd,
+        '^': _ast.BitXor,
+    }
 
-  return op_dict[operator]()
+    return op_dict[operator]()
 
 
 def BoolOpMap(operator):
-  """Maps operator strings for boolean operations to their _ast node."""
-  op_dict = {
-      'and': _ast.And,
-      'or': _ast.Or,
-  }
+    """Maps operator strings for boolean operations to their _ast node."""
+    op_dict = {
+        'and': _ast.And,
+        'or': _ast.Or,
+    }
 
-  return op_dict[operator]()
+    return op_dict[operator]()
 
 
 def CompareOpMap(operator):
-  """Maps operator strings for boolean operations to their _ast node."""
-  op_dict = {
-      '==': _ast.Eq,
-      '!=': _ast.NotEq,
-      '<': _ast.Lt,
-      '<=': _ast.LtE,
-      '>': _ast.Gt,
-      '>=': _ast.GtE,
-      'is': _ast.Is,
-      'is not': _ast.IsNot,
-      'in': _ast.In,
-      'not in': _ast.NotIn,
-  }
+    """Maps operator strings for boolean operations to their _ast node."""
+    op_dict = {
+        '==': _ast.Eq,
+        '!=': _ast.NotEq,
+        '<': _ast.Lt,
+        '<=': _ast.LtE,
+        '>': _ast.Gt,
+        '>=': _ast.GtE,
+        'is': _ast.Is,
+        'is not': _ast.IsNot,
+        'in': _ast.In,
+        'not in': _ast.NotIn,
+    }
 
-  return op_dict[operator]()
+    return op_dict[operator]()
 
 
 def VarReference(*parts, **kwargs):
-  """By this we mean either a single name string or one or more Attr nodes.
+    """By this we mean either a single name string or one or more Attr nodes.
 
   This is used whenever we have things like 'a' or 'a.b' or 'a.b.c'.
 
@@ -1086,15 +1090,15 @@ def VarReference(*parts, **kwargs):
   Returns:
     An _ast.Name node or _ast.Attribute node
   """
-  ctx_type = kwargs.pop('ctx_type', CtxEnum.LOAD)
+    ctx_type = kwargs.pop('ctx_type', CtxEnum.LOAD)
 
-  if not parts:
-    raise ValueError('Must have at least one part specified')
-  if len(parts) == 1:
-    if isinstance(parts[0], str):
-      return _ast.Name(id=parts[0], ctx=GetCtx(ctx_type))
-    return parts[0]
-  return _ast.Attribute(
-      value=VarReference(*parts[:-1], **kwargs),
-      attr=parts[-1],
-      ctx=GetCtx(ctx_type))
+    if not parts:
+        raise ValueError('Must have at least one part specified')
+    if len(parts) == 1:
+        if isinstance(parts[0], str):
+            return _ast.Name(id=parts[0], ctx=GetCtx(ctx_type))
+        return parts[0]
+    return _ast.Attribute(
+        value=VarReference(*parts[:-1], **kwargs),
+        attr=parts[-1],
+        ctx=GetCtx(ctx_type))
