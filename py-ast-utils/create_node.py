@@ -288,6 +288,9 @@ def BitOr():
 def BitXor():
   return _ast.BitXor()
 
+def keyword(arg, value):
+  return _ast.keyword(arg, value)
+
 
 def Call(caller, args=[],  keywords=[], starargs=None, kwargs={}):
   """Creates an _ast.Call node.
@@ -310,8 +313,7 @@ def Call(caller, args=[],  keywords=[], starargs=None, kwargs={}):
     An _ast.Call object.
   """
   if not isinstance(args,list):
-      raise ValueError('args must be a list')
-  if not isinstance(keywords, list):
+    raise ValueError('args must be a list')
     raise ValueError('args must be a list')
     #  if len(keys) != len(values):
 #    raise ValueError(
@@ -329,8 +331,8 @@ def Call(caller, args=[],  keywords=[], starargs=None, kwargs={}):
 #        '3. _ast.Name node\n'
 #        '4. _ast.Attr node\n'
 #        'not {}'.format(caller))
-  keywords = [_ast.keyword(value=Dict(key, val))
-              for key, val in kwargs.items()]
+#  keywords = [_ast.keyword(value=Dict(key, val))
+#              for key, val in kwargs.items()]
   args = [_WrapWithName(arg, ctx_type=CtxEnum.LOAD) for arg in args]
   if isinstance(starargs, str):
     starargs = VarReference(*starargs.split('.'))
@@ -565,7 +567,7 @@ def GtE():
   return _ast.GtE()
 
 
-def If(conditional, body=None, orelse=None):
+def If(conditional, body, orelse=None):
   """Creates an _ast.If node.
 
   Args:
@@ -753,6 +755,9 @@ def Arg(arg):
     return _ast.arg(arg)
 
 
+def Constant(value):
+  return _ast.Constant(value=value)
+
 def Name(name_id, ctx_type=CtxEnum.LOAD):
   """Creates an _ast.Name node.
 
@@ -764,11 +769,11 @@ def Name(name_id, ctx_type=CtxEnum.LOAD):
     An _ast.Name node.
   """
   ctx = GetCtx(ctx_type)
-  return _ast.Name(id=name_id,
+  return _ast.Constant(id=name_id,
                    ctx=ctx)
 
-#def Keyword(arg, value):
-#  return _ast.Keyword(arg, _ast.Constant(value=value,   ctx = GetCtx(CtxEnum.LOAD)))
+#def keyword(arg, value):
+#  return _ast.keyword(arg, _ast.Constant(value=value,   ctx = GetCtx(CtxEnum.LOAD)))
 
 
 def Not():

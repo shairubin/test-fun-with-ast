@@ -336,7 +336,8 @@ class CreateCallTest(CreateNodeTestBase):
     expected_string = 'a(b="c")'
     expected_node = GetNodeFromInput(expected_string).value
     test_node = create_node.Call(
-        'a', keywords=[{'key': 'b','value':'c'}])
+#        'a', keywords=[{'key': 'b','value':'c'}])
+        'a', keywords=[create_node.keyword('b', create_node.Str('c'))])
     self.assertNodesEqual(expected_node, test_node)
 
   def testCallWithStarargsString(self):
@@ -657,14 +658,15 @@ class CreateIfTest(CreateNodeTestBase):
     expected_string = """if True:\n  pass"""
     expected_node = GetNodeFromInput(expected_string)
     test_node = create_node.If(
-        create_node.Name('True'))
+        create_node.Constant(True),
+        body=[create_node.Pass()])
     self.assertNodesEqual(expected_node, test_node)
 
   def testBasicIfElse(self):
     expected_string = """if True:\n  pass\nelse:\n  pass"""
     expected_node = GetNodeFromInput(expected_string)
-    test_node = create_node.If(
-        create_node.Name('True'), orelse=[create_node.Pass()])
+    test_node = create_node.If(conditional=create_node.Constant(True),
+          body=[create_node.Pass()], orelse=[create_node.Pass()])
     self.assertNodesEqual(expected_node, test_node)
 
   def testBasicIfElif(self):
@@ -675,8 +677,9 @@ elif False:
 """
     expected_node = GetNodeFromInput(expected_string)
     test_node = create_node.If(
-        create_node.Name('True'),
-        orelse=[create_node.If(create_node.Name('False'))])
+        create_node.Constant(True),
+        body=[create_node.Pass()],
+        orelse=[create_node.If(create_node.Constant(False), body=[create_node.Pass()])])
     self.assertNodesEqual(expected_node, test_node)
 
   def testIfInElse(self):
@@ -688,8 +691,8 @@ else:
 """
     expected_node = GetNodeFromInput(expected_string)
     test_node = create_node.If(
-        create_node.Name('True'),
-        orelse=[create_node.If(create_node.Name('False'))])
+        create_node.Constant(True), body=[create_node.Pass()],
+        orelse=[create_node.If(conditional=create_node.Constant(False), body=[create_node.Pass()])])
     self.assertNodesEqual(expected_node, test_node)
 
   def testIfAndOthersInElse(self):
@@ -702,9 +705,9 @@ else:
 """
     expected_node = GetNodeFromInput(expected_string)
     test_node = create_node.If(
-        create_node.Name('True'),
-        orelse=[create_node.If(create_node.Name('False')),
-                create_node.Expr(create_node.Name('True'))])
+        create_node.Constant(True), body=[create_node.Pass()],
+        orelse=[create_node.If(conditional=create_node.Constant(False), body=[create_node.Pass()]),
+                create_node.Expr(create_node.Constant(True))])
     self.assertNodesEqual(expected_node, test_node)
 
 
