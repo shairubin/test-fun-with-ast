@@ -841,7 +841,7 @@ class CreateNumTest(CreateNodeTestBase):
   def testNumWithFloat(self):
     expected_string = '0.25'
     expected_node = GetNodeFromInput(expected_string).value
-    test_node = create_node.Num(0.25)
+    test_node = create_node.Constant(0.25)
     self.assertNodesEqual(expected_node, test_node)
 
 
