@@ -346,8 +346,7 @@ def Call(caller, args=[], keywords=[], starargs=None, kwargs={}):
     return result
 
 
-def ClassDef(
-        name, bases=(), body=None, decorator_list=()):
+def ClassDef(name, bases=[], body=[] , keywords=[], starargs=None, kwargs=None, decorator_list=[]):
     """Creates an _ast.ClassDef node.
 
   Args:
@@ -362,12 +361,21 @@ def ClassDef(
   Returns:
     An _ast.ClassDef node.
   """
+    if not body:
+        raise ValueError('class body must be a non empty')
+    if kwargs is not None:
+        raise NotImplementedError('Non None kwargs is not supported')
+    if starargs is not None:
+        raise NotImplementedError('Non None starargs is not supported')
+    if not isinstance(bases, list):
+        raise ValueError('bases must be a list')
     body = FormatAndValidateBody(body)
     bases = [_WrapWithName(base, ctx_type=CtxEnum.LOAD) for base in bases]
     return _ast.ClassDef(
         name=name,
         bases=bases,
         body=body,
+        keywords=keywords,
         decorator_list=list(decorator_list))
 
 
