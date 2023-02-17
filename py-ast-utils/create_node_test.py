@@ -717,7 +717,7 @@ class CreateIfExpTest(CreateNodeTestBase):
     expected_string = """a if True else b"""
     expected_node = GetNodeFromInput(expected_string).value
     test_node = create_node.IfExp(
-        create_node.Name('True'), create_node.Name('a'), create_node.Name('b'))
+        create_node.Constant(True), create_node.Name('a'), create_node.Name('b'))
     self.assertNodesEqual(expected_node, test_node)
 
 

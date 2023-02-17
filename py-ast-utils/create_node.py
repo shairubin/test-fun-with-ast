@@ -769,7 +769,7 @@ def Name(name_id, ctx_type=CtxEnum.LOAD):
     An _ast.Name node.
   """
   ctx = GetCtx(ctx_type)
-  return _ast.Constant(id=name_id,
+  return _ast.Name(id=name_id,
                    ctx=ctx)
 
 #def keyword(arg, value):
