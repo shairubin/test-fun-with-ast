@@ -411,7 +411,7 @@ def Compare(*args):
                         comparators=comparators)
 
 
-def comprehension(for_part, in_part, *ifs):
+def comprehension(for_part, in_part, is_async, *ifs):
     """Create an _ast.comprehension node, used in _ast.ListComprehension.
 
   Args:
@@ -421,12 +421,14 @@ def comprehension(for_part, in_part, *ifs):
 
   Returns:
     {_ast.comprehension}
+    :param is_async:
   """
     for_part = _WrapWithName(for_part, ctx_type=CtxEnum.STORE)
     in_part = _WrapWithName(in_part, ctx_type=CtxEnum.LOAD)
     return _ast.comprehension(target=for_part,
                               iter=in_part,
-                              ifs=list(ifs))
+                              ifs=list(ifs),
+                              is_async=is_async)
 
 
 def Dict(keys=(), values=()):
@@ -450,7 +452,7 @@ def Dict(keys=(), values=()):
     return _ast.Dict(keys, values)
 
 
-def DictComp(left_side_key, left_side_value, for_part, in_part, *ifs):
+def DictComp(left_side_key, left_side_value, for_part, in_part,  *ifs, is_async=0):
     """Creates _ast.DictComp nodes.
 
   'left_side', 'left_side_value' for 'for_part' in 'in_part' if 'ifs'
@@ -464,6 +466,7 @@ def DictComp(left_side_key, left_side_value, for_part, in_part, *ifs):
 
   Returns:
     {_ast.DictComp}
+    :param is_async:
   """
     left_side_key = _WrapWithName(left_side_key, ctx_type=CtxEnum.LOAD)
     left_side_value = _WrapWithName(left_side_value, ctx_type=CtxEnum.LOAD)
@@ -472,7 +475,7 @@ def DictComp(left_side_key, left_side_value, for_part, in_part, *ifs):
     return _ast.DictComp(
         key=left_side_key,
         value=left_side_value,
-        generators=[comprehension(for_part, in_part, *ifs)])
+        generators=[comprehension(for_part, in_part, is_async, *ifs)])
 
 
 def Div():
