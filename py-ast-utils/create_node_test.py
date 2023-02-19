@@ -627,10 +627,10 @@ def testFunc(**kwargs):
   pass"""
     expected_node = GetNodeFromInput(expected_string)
     test_node = create_node.FunctionDef(
-        'testFunc', kwarg_name='kwargs',
+        'testFunc', create_node.arguments(kwarg='kwargs'), body=[create_node.Pass()],
         decorator_list=[
             create_node.Name('decorator'),
-            create_node.Call('other_decorator', args=['arg'])
+            create_node.Call('other_decorator', ['arg'])
         ])
     self.assertNodesEqual(expected_node, test_node)
 

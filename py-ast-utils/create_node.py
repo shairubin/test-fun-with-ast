@@ -313,7 +313,7 @@ def Call(caller, args=[], keywords=[], starargs=None, kwargs={}):
   """
     if not isinstance(args, list):
         raise ValueError('args must be a list')
-        raise ValueError('args must be a list')
+
         #  if len(keys) != len(values):
     #    raise ValueError(
     #        'len(keys)={} != len(values)={}'.format(len(keys), len(values)))
@@ -518,8 +518,7 @@ def FloorDiv():
 
 
 def FunctionDef(
-        name, args=(), keys=(), values=(), body=None, vararg_name=None,
-        kwarg_name=None, decorator_list=()):
+        name, args, body=[], decorator_list=[], returns=None, type_comment=None):
     """Creates an _ast.FunctionDef node.
 
   Args:
@@ -538,13 +537,13 @@ def FunctionDef(
     An _ast.FunctionDef node.
   """
     body = FormatAndValidateBody(body)
-    args = arguments(
-        args=args, keys=keys, values=values,
-        vararg_name=vararg_name, kwarg_name=kwarg_name)
+    args = args
     return _ast.FunctionDef(
         name=name,
         args=args,
         body=body,
+        returns=returns,
+        type_comment=type_comment,
         decorator_list=list(decorator_list))
 
 
