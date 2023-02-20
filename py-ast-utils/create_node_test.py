@@ -357,7 +357,7 @@ class CreateCallTest(CreateNodeTestBase):
     expected_string = 'a(**b)'
     expected_node = GetNodeFromInput(expected_string).value
     test_node = create_node.Call(
-        'a', kwargs='b')
+        'a', keywords=create_node.keyword(None, create_node.Name('b')))
     self.assertNodesEqual(expected_node, test_node)
 
   def testCallWithKwargsNode(self):
@@ -365,7 +365,7 @@ class CreateCallTest(CreateNodeTestBase):
     expected_node = GetNodeFromInput(expected_string).value
     test_node = create_node.Call(
         'a',
-        kwargs={'b':'c'})
+        keywords=create_node.keyword(None, create_node.Dict(('b'), ('c'))))
 
 #        reate_node.Dict(
 #            keys=(create_node.Name('b'),),
