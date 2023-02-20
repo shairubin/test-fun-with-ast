@@ -575,7 +575,7 @@ class CreateFunctionDefTest(CreateNodeTestBase):
     expected_string = """def testFunc(a, b):
   pass"""
     expected_node = GetNodeFromInput(expected_string)
-    test_node = create_node.FunctionDef('testFunc', args=('a', 'b'))
+    test_node = create_node.FunctionDef('testFunc', create_node.arguments(args=['a', 'b']), body = [create_node.Pass()])
     self.assertNodesEqual(expected_node, test_node)
 
   def testFunctionDefWithStringKwargs(self):
