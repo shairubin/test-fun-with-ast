@@ -518,7 +518,7 @@ def FloorDiv():
 
 
 def FunctionDef(
-        name, args=[], body=[], decorator_list=[], returns=None, type_comment=None):
+        name, args=None, body=[], decorator_list=[], returns=None, type_comment=None):
     """Creates an _ast.FunctionDef node.
 
   Args:
@@ -536,10 +536,13 @@ def FunctionDef(
   Returns:
     An _ast.FunctionDef node.
   """
-#    if not isinstance(args, list):
-#        raise ValueError('args must be a list')
+    if args and not isinstance(args, ast.arguments):
+        raise ValueError('args must be a list')
+    if not args:
+       args = arguments()
+    else:
+        args=args
     body = FormatAndValidateBody(body)
-    args = args
     return _ast.FunctionDef(
         name=name,
         args=args,
