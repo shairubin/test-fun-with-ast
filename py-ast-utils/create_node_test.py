@@ -609,7 +609,7 @@ class CreateFunctionDefTest(CreateNodeTestBase):
   pass"""
     expected_node = GetNodeFromInput(expected_string)
     test_node = create_node.FunctionDef(
-        'testFunc', vararg_name='args')
+        'testFunc', create_node.arguments(vararg='args'), body=[create_node.Pass()])
     self.assertNodesEqual(expected_node, test_node)
 
   def testFunctionDefWithKwarg(self):
@@ -617,7 +617,7 @@ class CreateFunctionDefTest(CreateNodeTestBase):
   pass"""
     expected_node = GetNodeFromInput(expected_string)
     test_node = create_node.FunctionDef(
-        'testFunc', kwarg_name='kwargs')
+        'testFunc', create_node.arguments(kwarg='kwargs'), body=[create_node.Pass()])
     self.assertNodesEqual(expected_node, test_node)
 
   def testDecoratorList(self):
