@@ -738,7 +738,7 @@ def ListComp(left_side, for_part, in_part, *ifs):
     in_part = _WrapWithName(in_part, ctx_type=CtxEnum.LOAD)
     return _ast.ListComp(
         elt=left_side,
-        generators=[comprehension(for_part, in_part, *ifs)])
+        generators=[comprehension(for_part, in_part, False, *ifs)])
 
 
 def LShift():
