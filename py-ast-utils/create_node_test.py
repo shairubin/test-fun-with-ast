@@ -583,17 +583,15 @@ class CreateFunctionDefTest(CreateNodeTestBase):
   pass"""
     expected_node = GetNodeFromInput(expected_string)
     test_node = create_node.FunctionDef(
-        'testFunc', keys=['a', 'c'],
-        values=[create_node.Str('b'), create_node.Str('d')])
+        'testFunc',
+        create_node.arguments(args=['a', 'c'], defaults=[create_node.Str('b'), create_node.Str('d')]), body=[create_node.Pass()])
     self.assertNodesEqual(expected_node, test_node)
 
   def testFunctionDefWithNameKwargs(self):
     expected_string = """def testFunc(a=b, c=d):
   pass"""
     expected_node = GetNodeFromInput(expected_string)
-    test_node = create_node.FunctionDef(
-        'testFunc', keys=['a', 'c'],
-        values=[create_node.Name('b'), create_node.Name('d')])
+    test_node = create_node.FunctionDef('testFunc', create_node.arguments(args=['a', 'c'], defaults=['b', 'd']), body = [create_node.Pass()])
     self.assertNodesEqual(expected_node, test_node)
 
   def testFunctionDefWithBody(self):
