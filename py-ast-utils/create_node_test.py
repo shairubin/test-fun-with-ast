@@ -147,7 +147,7 @@ class CreateAssignTest(CreateNodeTestBase):
     expected_string = '(a, c) = "b"'
     expected_node = GetNodeFromInput(expected_string)
     test_node = create_node.Assign(
-        create_node.Tuple('a', 'c', ctx_type=create_node.CtxEnum.STORE),
+        create_node.Tuple(['a', 'c'], ctx_type=create_node.CtxEnum.STORE),
         create_node.Str('b'))
     self.assertNodesEqual(expected_node, test_node)
 
@@ -974,41 +974,34 @@ class CreateTupleTest(CreateNodeTestBase):
   def testTupleLoad(self):
     expected_string = 'a = ("b",)'
     expected_node = GetNodeFromInput(expected_string).value
-    test_node = create_node.Tuple(
-        create_node.Constant('b'), ctx_type=create_node.CtxEnum.LOAD)
+    test_node = create_node.Tuple([create_node.Constant('b')], ctx_type=create_node.CtxEnum.LOAD)
     self.assertNodesEqual(expected_node, test_node)
 
   def testTupleWithStrings(self):
     expected_string = 'a = (b,c)'
     expected_node = GetNodeFromInput(expected_string).value
-    test_node = create_node.Tuple(
-        'b', 'c', ctx_type=create_node.CtxEnum.LOAD)
+    test_node = create_node.Tuple(['b','c'],
+        ctx_type=create_node.CtxEnum.LOAD)
     self.assertNodesEqual(expected_node, test_node)
 
   def testTupleStore(self):
     expected_string = '(a, b) = ["c", "d"]'
     expected_node = GetNodeFromInput(expected_string).targets[0]
-    test_node = create_node.Tuple(
-        create_node.Name('a'),
-        create_node.Name('b'),
+    test_node = create_node.Tuple(['a', 'b'],
         ctx_type=create_node.CtxEnum.STORE)
     self.assertNodesEqual(expected_node, test_node)
 
   def testDeleteInvalid(self):
     expected_string = 'del (a, b)'
     expected_node = GetNodeFromInput(expected_string).targets[0]
-    test_node = create_node.Tuple(
-        create_node.Name('a'),
-        create_node.Name('b'),
+    test_node = create_node.Tuple(['a','b'],
         ctx_type=create_node.CtxEnum.DEL)
     self.assertNodesEqual(expected_node, test_node)
 
   def testTupleOverridesInnerCtx(self):
     expected_string = 'a = (b, c)'
     expected_node = GetNodeFromInput(expected_string).value
-    test_node = create_node.Tuple(
-        create_node.Name('b', ctx_type=create_node.CtxEnum.DEL),
-        create_node.Name('c', ctx_type=create_node.CtxEnum.STORE),
+    test_node = create_node.Tuple(['b','c'],
         ctx_type=create_node.CtxEnum.LOAD)
     self.assertNodesEqual(expected_node, test_node)
 
@@ -1060,15 +1053,14 @@ class CreateWithTest(CreateNodeTestBase):
   def testBasicWithAs(self):
     expected_string = 'with a as b:\n  pass\n'
     expected_node = GetNodeFromInput(expected_string)
-    test_node = create_node.With(
-        [create_node.withitem('a', 'b')], [(create_node.Pass())])
+    test_node = create_node.With([create_node.withitem('a', optional_vars = 'b')], [create_node.Pass()])
     self.assertNodesEqual(expected_node, test_node)
 
   def testWithAsTuple(self):
     expected_string = 'with a as (b, c):\n  pass\n'
     expected_node = GetNodeFromInput(expected_string)
     test_node = create_node.With(
-        [create_node.withitem('a', ('b', 'c'))], [(create_node.Pass())])
+        [create_node.withitem('a', create_node.Tuple(['b', 'c'], ctx_type=create_node.CtxEnum.STORE))], [create_node.Pass()])
     self.assertNodesEqual(expected_node, test_node)
 
 

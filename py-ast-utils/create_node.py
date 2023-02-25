@@ -72,6 +72,11 @@ def _WrapWithName(to_wrap, ctx_type=CtxEnum.LOAD):
         return to_wrap
     return Name(to_wrap, ctx_type=ctx_type)
 
+def _WrapWithTuple(to_wrap, ctx_type=CtxEnum.LOAD):
+    if not isinstance(to_wrap, list):
+        raise NotImplementedError
+    return Tuple(to_wrap, ctx_type=ctx_type)
+
 
 def _LeftmostNodeInDotVar(node):
     while not hasattr(node, 'id'):
@@ -569,10 +574,10 @@ def GeneratorExp(left_side, for_part, in_part, *ifs):
     left_side = _WrapWithName(left_side, ctx_type=CtxEnum.LOAD)
     for_part = _WrapWithName(for_part, ctx_type=CtxEnum.STORE)
     in_part = _WrapWithName(in_part, ctx_type=CtxEnum.LOAD)
-    return _ast.GeneratorExp(
+    result = _ast.GeneratorExp(
         elt=left_side,
-        generators=[comprehension(for_part, in_part, *ifs)])
-
+        generators=[comprehension(for_part, in_part, 0, *ifs)])
+    return result
 
 def Gt():
     return _ast.Gt()
@@ -929,7 +934,7 @@ class SyntaxFreeLine(_ast.stmt):
                 self.comment = match.group(4)
 
 
-def Tuple(*items, **kwargs):
+def Tuple(items, **kwargs):
     """Creates an _ast.Tuple node.
 
   Automatically adjusts inner ctx attrs.
@@ -942,6 +947,8 @@ def Tuple(*items, **kwargs):
   Returns:
     An _ast.Tuple node.
   """
+    if not isinstance(items, list):
+        raise ValueError('items in tuple should be a list')
     ctx_type = kwargs.pop('ctx_type', CtxEnum.LOAD)
 
     new_items = []
@@ -991,17 +998,19 @@ def UnaryOp(operator, operand):
 def USub():
     return _ast.USub()
 
-def withitem(name, optional_value=None):
-    if optional_value:
-        optional_value = Name(optional_value, ctx_type=CtxEnum.STORE)
-    return _ast.withitem(Name(name), optional_value)
+def withitem(name, optional_vars=None):
+    if isinstance(optional_vars, str):
+        optional_vars = Name(optional_vars, ctx_type=CtxEnum.STORE)
+    elif optional_vars and not isinstance(optional_vars, (ast.Tuple, ast.List) )  :
+        raise ValueError('withitem must be str, tuple, or list')
+    return _ast.withitem(Name(name), optional_vars)
 
 def With(withitems, body, as_part=[], type_comment=None):
     if not isinstance(body, list):
         raise ValueError('With-body must be a list')
 
     if not isinstance(withitems, list):
-        raise ValueError('Withitemsy must be a list')
+        raise ValueError('withitems must be a list')
 
     body = FormatAndValidateBody(body)
 #    if as_part:
