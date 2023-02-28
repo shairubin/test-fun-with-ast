@@ -1057,7 +1057,7 @@ class FunctionDefMatcherTest(unittest.TestCase):
     self.assertEqual(string, matcher.GetSource())
 
   def testMultipleArgs(self):
-    node = create_node.FunctionDef('test_fun', args=('a', 'b'))
+    node = create_node.FunctionDef('test_fun', create_node.arguments(args=['a', 'b']), body = [create_node.Pass()])
     string = 'def test_fun(a, b):\n  pass\n'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)
