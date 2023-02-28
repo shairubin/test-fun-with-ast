@@ -1050,7 +1050,7 @@ class FunctionDefMatcherTest(unittest.TestCase):
     self.assertEqual(string, matcher.GetSource())
 
   def testSingleArg(self):
-    node = create_node.FunctionDef('test_fun', args=('a'))
+    node = create_node.FunctionDef('test_fun', create_node.arguments(args=['a']), body = [create_node.Pass()])
     string = 'def test_fun(a):\n  pass\n'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)
@@ -1079,8 +1079,11 @@ class FunctionDefMatcherTest(unittest.TestCase):
     self.assertEqual(string, matcher.GetSource())
 
   def testArgsAndDefaults(self):
+#    node = create_node.FunctionDef(
+#        'test_fun', args=('e', 'f'), keys=('a', 'c'), values=('b', 'd'))
     node = create_node.FunctionDef(
-        'test_fun', args=('e', 'f'), keys=('a', 'c'), values=('b', 'd'))
+        'test_fun', create_node.arguments(args=['e', 'f'],  kwonlyargs=['a', 'c'], kw_defaults=['b','d']), body = [create_node.Pass()])
+
     string = 'def test_fun(e, f, a=b, c=d):\n  pass\n'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)

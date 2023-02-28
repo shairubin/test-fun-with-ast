@@ -815,6 +815,9 @@ def get_alias_expected_parts():
 def get_And_expected_parts():
   return [TextPlaceholder(r'and')]
 
+def get_arg_expected_parts():
+  result = [FieldPlaceholder('arg')]
+  return result
 
 def get_arguments_expected_parts():
   return [
@@ -1818,6 +1821,7 @@ _matchers = {
     _ast.Attribute: get_Attribute_expected_parts,
     _ast.AugAssign: get_AugAssign_expected_parts,
     _ast.arguments: get_arguments_expected_parts,
+    _ast.arg: get_arg_expected_parts,
     _ast.BinOp: get_BinOp_expected_parts,
     _ast.BitAnd: get_BitAnd_expected_parts,
     _ast.BitOr: get_BitOr_expected_parts,
