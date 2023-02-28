@@ -421,7 +421,7 @@ class ParenWrappedTest(unittest.TestCase):
 
   def testWithTuple(self):
     node = create_node.Call('c', args=[create_node.Name('d'),
-                                       create_node.Tuple('a', 'b')])
+                                       create_node.Tuple(['a', 'b'])])
     string = 'c(d, (a, b))'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)
@@ -734,7 +734,7 @@ class CallMatcherTest(unittest.TestCase):
 class ClassDefMatcherTest(unittest.TestCase):
 
   def testBasicMatch(self):
-    node = create_node.ClassDef('TestClass')
+    node = create_node.ClassDef('TestClass', body=[create_node.Pass()])
     string = 'class TestClass():\n  pass\n'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)
@@ -742,7 +742,7 @@ class ClassDefMatcherTest(unittest.TestCase):
 
   def testMatchBases(self):
     node = create_node.ClassDef(
-        'TestClass', bases=('Base1', 'Base2'))
+        'TestClass', bases=['Base1', 'Base2'], body=[create_node.Pass()])
     string = 'class TestClass(Base1, Base2):\n  pass\n'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)
@@ -760,7 +760,7 @@ class ClassDefMatcherTest(unittest.TestCase):
     node = create_node.ClassDef(
         'TestClass',
         decorator_list=[create_node.Name('dec'),
-                        create_node.Call('dec2')])
+                        create_node.Call('dec2')], body=[create_node.Pass()])
     string = '@dec\n@dec2()\nclass TestClass():\n  pass\n'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)
@@ -769,7 +769,7 @@ class ClassDefMatcherTest(unittest.TestCase):
   def testComplete(self):
     node = create_node.ClassDef(
         'TestClass',
-        bases=('Base1', 'Base2'),
+        bases=['Base1', 'Base2'],
         body=[create_node.Expr(create_node.Name('a'))],
         decorator_list=[create_node.Name('dec'),
                         create_node.Call('dec2')])
@@ -781,7 +781,7 @@ class ClassDefMatcherTest(unittest.TestCase):
   def testCanChangeValues(self):
     node = create_node.ClassDef(
         'TestClass',
-        bases=('Base1', 'Base2'),
+        bases=['Base1', 'Base2'],
         body=[create_node.Expr(create_node.Name('a'))],
         decorator_list=[create_node.Name('dec'),
                         create_node.Call('dec2')])
@@ -1704,7 +1704,7 @@ class WithMatcherTest(unittest.TestCase):
 
   def testBasicWith(self):
     node = create_node.With(
-        create_node.Name('a'))
+        [create_node.withitem('a')], [create_node.Pass()])
     string = 'with a:\n  pass\n'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)

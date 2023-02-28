@@ -1005,7 +1005,7 @@ def withitem(name, optional_vars=None):
         raise ValueError('withitem must be str, tuple, or list')
     return _ast.withitem(Name(name), optional_vars)
 
-def With(withitems, body, as_part=[], type_comment=None):
+def With(withitems, body):
     if not isinstance(body, list):
         raise ValueError('With-body must be a list')
 
