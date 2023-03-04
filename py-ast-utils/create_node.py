@@ -972,8 +972,8 @@ def Tuple(items, **kwargs):
 # python 2.7
 # def TryExcept(body, except_handlers, orelse=None):
 #  return _ast.TryExcept(body=body, handlers=except_handlers, orelse=orelse)
-def Try(body, except_handlers, orelse=None):
-    return _ast.Try(body=body, handlers=except_handlers, orelse=orelse)
+#def Try(body, except_handlers, orelse=None):
+#    return _ast.Try(body=body, handlers=except_handlers, orelse=orelse)
 
 
 def TryFinally(body, except_handlers, finalybody, orelse=None):

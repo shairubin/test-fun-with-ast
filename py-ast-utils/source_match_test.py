@@ -1650,11 +1650,16 @@ finally:
 
   def testBasicMatchWithBlankLines(self):
     node = create_node.TryFinally(
-        [create_node.Expr(create_node.Name('a'))],
-        [create_node.Expr(create_node.Name('c'))])
+        body=[create_node.Expr(create_node.Name('a'))],
+        except_handlers=create_node.ExceptHandler('OtherException', 'e', [create_node.Expr(create_node.Name('b'))]),
+        finalybody=[create_node.Expr(create_node.Name('c'))])
     string = """try:
 
   a
+
+except OtherException as e: 
+
+  b
 
 finally:
 
@@ -1664,6 +1669,23 @@ finally:
     matcher.Match(string)
     self.assertEqual(string, matcher.GetSource())
 
+
+class IfMatcherTest(unittest.TestCase):
+  def testSimpleIfElse(self):
+    node = create_node.If(conditional=True, body=[create_node.Pass()], orelse=[create_node.Pass()])
+    string = 'if       True:   \n pass    \nelse:\n pass \n'
+    matcher = source_match.GetMatcher(node)
+    matcher.Match(string)
+    matcher_source = matcher.GetSource()
+    self.assertEqual(string, matcher_source)
+
+  def testSimpleIf(self):
+    node = create_node.If(conditional=True, body=[create_node.Pass()])
+    string = 'if       True:\n pass         \n'
+    matcher = source_match.GetMatcher(node)
+    matcher.Match(string)
+    matcher_source = matcher.GetSource()
+    self.assertEqual(string, matcher_source)
 
 class UnaryOpMatcherTest(unittest.TestCase):
 
