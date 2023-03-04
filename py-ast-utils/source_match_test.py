@@ -467,16 +467,17 @@ class ArgumentsMatcherTest(unittest.TestCase):
 
   def testArgsAndDefaults(self):
     node = create_node.arguments(
-        args=('e', 'f'), keys=('a', 'c'), values=('b', 'd'))
+        args=['e', 'f','a', 'c'], defaults=['b', 'd'])
     string = 'e, f, a=b, c=d'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)
-    self.assertEqual(string, matcher.GetSource())
+    matched_source = matcher.GetSource()
+    self.assertEqual(string, matched_source)
 
   def testArgsDefaultsVarargs(self):
     node = create_node.arguments(
-        args=('e', 'f'), keys=('a', 'c'), values=('b', 'd'),
-        vararg_name='args')
+        args=['e', 'f', 'a', 'c'], defaults=['b', 'd'],
+        vararg='args')
     string = 'e, f, a=b, c=d, *args'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)
@@ -484,8 +485,8 @@ class ArgumentsMatcherTest(unittest.TestCase):
 
   def testArgsDefaultsVarargsKwargs(self):
     node = create_node.arguments(
-        args=('e', 'f'), keys=('a', 'c'), values=('b', 'd'),
-        vararg_name='args', kwarg_name='kwargs')
+        args=['e', 'f', 'a', 'c'], defaults=['b', 'd'],
+        vararg='args', kwarg='kwargs')
     string = 'e, f, a=b, c=d, *args, **kwargs'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)
@@ -1091,7 +1092,7 @@ class FunctionDefMatcherTest(unittest.TestCase):
 
   def testArgsDefaultsVarargs(self):
     node = create_node.FunctionDef(
-        'test_fun', args=('e', 'f'), keys=('a', 'c'), values=('b', 'd'),
+        'test_fun',  arcg=('e', 'f'), keys=('a', 'c'), values=('b', 'd'),
         vararg_name='args')
     string = 'def test_fun(e, f, a=b, c=d, *args):\n  pass\n'
     matcher = source_match.GetMatcher(node)
