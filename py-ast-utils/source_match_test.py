@@ -438,28 +438,28 @@ class ArgumentsMatcherTest(unittest.TestCase):
     self.assertEqual(string, matcher.GetSource())
 
   def testSingleArg(self):
-    node = create_node.arguments(args=('a'))
+    node = create_node.arguments(args=['a'])
     string = 'a'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)
     self.assertEqual(string, matcher.GetSource())
 
   def testMultipleArgs(self):
-    node = create_node.arguments(args=('a', 'b'))
+    node = create_node.arguments(args=['a', 'b'])
     string = 'a, b'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)
     self.assertEqual(string, matcher.GetSource())
 
   def testDefault(self):
-    node = create_node.arguments(keys=('a'), values=('b'))
+    node = create_node.arguments(args=['a'], defaults=['b'])
     string = 'a=b'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)
     self.assertEqual(string, matcher.GetSource())
 
   def testDefaults(self):
-    node = create_node.arguments(keys=('a', 'c'), values=('b', 'd'))
+    node = create_node.arguments(args=['a', 'c'], defaults=['b', 'd'])
     string = 'a=b, c=d'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)
