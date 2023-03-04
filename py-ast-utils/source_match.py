@@ -1663,7 +1663,6 @@ class ConstantSourceMatcher():
     self.constant_node = node
     self.str_matcher = StrSourceMatcher(node, starting_parens)
     self.num_matcher = NumSourceMatcher(node, starting_parens)
-    print('success')
 
   def Match(self, string):
     if isinstance(self.constant_node.n, int) and isinstance(self.constant_node.s, int):

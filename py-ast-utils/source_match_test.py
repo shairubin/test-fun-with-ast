@@ -1450,22 +1450,23 @@ class StrMatcherTest(unittest.TestCase):
     node.s = 'foobaz'
     self.assertEqual('"foobaz"', matcher.GetSource())
 
-#unclear whether this is legal in python 3
-  # def testQuoteTypeChange(self):
-  #   node = create_node.Str('foobar')
-  #   string = '"foobar"'
-  #   matcher = source_match.GetMatcher(node)
-  #   matcher.Match(string)
-  #   matcher.quote_type = "'"
-  #   self.assertEqual("'foobar'", matcher.GetSource())
+
+  def testQuoteTypeChange(self):
+    node = create_node.Str('foobar')
+    string = '"foobar"'
+    matcher = source_match.GetMatcher(node)
+    matcher.Match(string)
+    matcher.str_matcher.quote_type = "'"
+    self.assertEqual("'foobar'", matcher.GetSource())
 
   def testQuoteTypeChangeToTripleQuote(self):
     node = create_node.Str('foobar')
     string = '"foobar"'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)
-    matcher.quote_type = "'''"
-    self.assertEqual("'''foobar'''", matcher.GetSource())
+    matcher.str_matcher.quote_type = "'''"
+    matched_source = matcher.GetSource()
+    self.assertEqual("'''foobar'''", matched_source)
 
 
 class SubscriptMatcherTest(unittest.TestCase):
