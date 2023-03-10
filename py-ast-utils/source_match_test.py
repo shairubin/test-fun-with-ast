@@ -537,6 +537,12 @@ class AugAssignMatcherTest(unittest.TestCase):
     matcher.Match(string)
     self.assertEqual(string, matcher.GetSource())
 
+  def testBasicMatchWithVar(self):
+    node = create_node.AugAssign('a', create_node.Add(), create_node.Name('b'))
+    string = 'a += b\n'
+    matcher = source_match.GetMatcher(node)
+    matcher.Match(string)
+    self.assertEqual(string, matcher.GetSource())
 
 class BinOpMatcherTest(unittest.TestCase):
 
@@ -1726,16 +1732,34 @@ class UnaryOpMatcherTest(unittest.TestCase):
     matcher.Match(string)
     self.assertEqual(string, matcher.GetSource())
 
+class WithItemMatcherTest(unittest.TestCase):
+
+  def testBasicWithItem(self):
+    node = create_node.withitem('a')
+    string = 'a'
+    matcher = source_match.GetMatcher(node)
+    matcher.Match(string)
+    matched_string = matcher.GetSource()
+    self.assertEqual(string, matched_string)
+
+  def testWithItemWithAs(self):
+    node = create_node.withitem('a', optional_vars='b')
+    string = 'a    as     b'
+    matcher = source_match.GetMatcher(node)
+    matcher.Match(string)
+    matched_string = matcher.GetSource()
+    self.assertEqual(string, matched_string)
 
 class WithMatcherTest(unittest.TestCase):
-
+# start here next time
   def testBasicWith(self):
     node = create_node.With(
         [create_node.withitem('a')], [create_node.Pass()])
     string = 'with a:\n  pass\n'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)
-    self.assertEqual(string, matcher.GetSource())
+    matched_string = matcher.GetSource()
+    self.assertEqual(string, matched_string)
 
   def testBasicWithAs(self):
     node = create_node.With(
