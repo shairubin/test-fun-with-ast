@@ -1572,7 +1572,9 @@ class TryExceptMatcherTest(unittest.TestCase):
     def testBasicMatch(self):
         node = create_node.Try(
             [create_node.Expr(create_node.Name('a'))],
-            [create_node.ExceptHandler()])
+            [create_node.ExceptHandler()],
+            finalybody=[])
+
         string = """try:
   a
 except:
@@ -1599,7 +1601,7 @@ except TestB:
         self.assertEqual(string, matcher.GetSource())
 
     def testMatchExceptAndOrElse(self):
-        node = create_node.TryExcept(
+        node = create_node.Try(
             [create_node.Expr(create_node.Name('a'))],
             [create_node.ExceptHandler()],
             orelse=[create_node.Pass()])
@@ -1632,7 +1634,7 @@ except:
 class TryFinallyMatcherTest(unittest.TestCase):
     # no exception handlers - not valid in python 3 ?
     #   def testBasicMatch(self):
-    #     node = create_node.TryFinally(
+    #     node = create_node.Try(
     #         [create_node.Expr(create_node.Name('a'))],
     #         [create_node.Expr(create_node.Name('c'))])
     #     string = """try:
@@ -1645,7 +1647,7 @@ class TryFinallyMatcherTest(unittest.TestCase):
     #    self.assertEqual(string, matcher.GetSource())
 
     def testBasicMatchWithExcept(self):
-        node = create_node.TryFinally(
+        node = create_node.Try(
             [create_node.Expr(create_node.Name('a'))],
             [create_node.ExceptHandler()],
             [create_node.Expr(create_node.Name('c'))])
@@ -1661,7 +1663,7 @@ finally:
         self.assertEqual(string, matcher.GetSource())
 
     def testBasicMatchWithBlankLines(self):
-        node = create_node.TryFinally(
+        node = create_node.Try(
             body=[create_node.Expr(create_node.Name('a'))],
             except_handlers=create_node.ExceptHandler('OtherException', 'e', [create_node.Expr(create_node.Name('b'))]),
             finalybody=[create_node.Expr(create_node.Name('c'))])

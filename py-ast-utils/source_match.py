@@ -1930,7 +1930,7 @@ _matchers = {
     create_node.SyntaxFreeLine: get_SyntaxFreeLine_expected_parts,
     _ast.Tuple: TupleSourceMatcher,
     #    _ast.TryExcept: get_TryExcept_expected_parts,
-    #    _ast.TryFinally: TryFinallySourceMatcher,
+    #    _ast.Try: TryFinallySourceMatcher,
     _ast.Try: TryFinallySourceMatcher,
 
     _ast.UAdd: get_UAdd_expected_parts,

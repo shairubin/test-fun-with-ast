@@ -31,7 +31,7 @@ TYPE_TO_INDENT_FIELD = {
     _ast.FunctionDef: ['body'],
     _ast.If: ['body', 'orelse'],
 #    _ast.TryExcept: ['body', 'orelse'],
-#    _ast.TryFinally: ['finalbody'],
+#    _ast.Try: ['finalbody'],
     _ast.While: ['body'],
     _ast.With: ['body'],
 }

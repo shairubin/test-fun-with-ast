@@ -977,6 +977,31 @@ class CreateSyntaxFreeLineTest(CreateNodeTestBase):
     with self.assertRaises(ValueError):
       test_node.SetFromSrcLine(test_input)
 
+class CreateExceptionHandlerTest(CreateNodeTestBase):
+
+    def testExceptionHadlerBasic(self):
+        string = """try:
+ a
+except:
+ pass
+"""
+        expected_node = GetNodeFromInput(string).handlers[0]
+        test_node = create_node.ExceptHandler(body=[(create_node.Pass())])
+        self.assertNodesEqual(expected_node, test_node)
+
+class CreateTryTest(CreateNodeTestBase):
+
+    def testTryBasic(self):
+        string = """try:
+  pass
+except:
+  pass
+"""
+        expected_node = GetNodeFromInput(string)
+        test_node = create_node.Try(body=[(create_node.Pass())], except_handlers=[create_node.ExceptHandler(None, None,[create_node.Pass()])])
+        self.assertNodesEqual(expected_node, test_node)
+
+
 
 class CreateTupleTest(CreateNodeTestBase):
 

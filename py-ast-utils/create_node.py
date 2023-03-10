@@ -978,11 +978,14 @@ def Tuple(items, **kwargs):
 #    return _ast.Try(body=body, handlers=except_handlers, orelse=orelse)
 
 
-def TryFinally(body, except_handlers, finalybody, orelse=None):
+def Try(body, except_handlers=[], finalybody=[], orelse=[]):
     finalbody = FormatAndValidateBody(finalybody)
     # python 2.7
-    #  return _ast.TryFinally(body=body, finalbody=finalbody)
+    #  return _ast.Try(body=body, finalbody=finalbody)
     # python 3
+
+    if (not except_handlers) or (not isinstance(except_handlers, list)):
+        raise ValueError('Exception handlers must be a non-empty list')
     return _ast.Try(body=body, handlers=except_handlers, finalbody=finalbody, orelse=orelse)
 
 
