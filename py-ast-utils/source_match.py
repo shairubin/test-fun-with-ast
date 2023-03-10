@@ -1750,7 +1750,7 @@ class WithItemSourceMatcher(SourceMatcher):
             'optional_vars',
             before_placeholder=TextPlaceholder(r' *as *', ' as '))
 
-    #    self.compound_separator = TextPlaceholder(r'\s*,\s*', ', ')
+        #self.compound_separator = TextPlaceholder(r'\s*,\s*', ', ')
 
     def Match(self, string):
         #    if 'as' not in string:
@@ -1787,12 +1787,12 @@ class WithSourceMatcher(SourceMatcher):
     def __init__(self, node, starting_parens=None):
         super(WithSourceMatcher, self).__init__(node, starting_parens)
         self.with_placeholder = TextPlaceholder(r' *(with)? *', 'with ')
-        self.withitems_placeholder = ListFieldPlaceholder('items')
+        self.withitems_placeholder = SeparatedListFieldPlaceholder('items',separator_placeholder=TextPlaceholder(r', *', ', '))
         #    self.context_expr = FieldPlaceholder('context_expr')
         #    self.optional_vars = FieldPlaceholder(
         #        'optional_vars',
         #        before_placeholder=TextPlaceholder(r' *as *', ' as '))
-        self.compound_separator = TextPlaceholder(r'\s*,\s*', ', ')
+#        self.compound_separator = TextPlaceholder(r'\s*,\s*', ', ')
         self.colon_placeholder = TextPlaceholder(r':\n?', ':\n')
         self.body_placeholder = BodyPlaceholder('body')
         self.is_compound_with = False
