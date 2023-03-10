@@ -932,7 +932,7 @@ class CompareMatcherTest(unittest.TestCase):
 class ComprehensionMatcherTest(unittest.TestCase):
 
     def testBasicMatch(self):
-        node = create_node.comprehension('a', 'b')
+        node = create_node.comprehension('a', 'b', False)
         string = 'for a in b'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
@@ -940,7 +940,7 @@ class ComprehensionMatcherTest(unittest.TestCase):
 
     def testBasicMatchWithIf(self):
         node = create_node.comprehension(
-            'a', 'b',
+            'a', 'b', True,
             create_node.Compare('c', '<', 'd'))
         string = 'for a in b if c < d'
         matcher = source_match.GetMatcher(node)
