@@ -1051,7 +1051,7 @@ class ExceptHandlerMatcherTest(unittest.TestCase):
 class FunctionDefMatcherTest(unittest.TestCase):
 
     def testEmpty(self):
-        node = create_node.FunctionDef('test_fun')
+        node = create_node.FunctionDef('test_fun', body=[create_node.Pass()])
         string = 'def test_fun():\n  pass\n'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
@@ -1071,47 +1071,49 @@ class FunctionDefMatcherTest(unittest.TestCase):
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
 
-    def testDefault(self):
-        node = create_node.FunctionDef('test_fun', keys=('a'), values=('b'))
-        string = 'def test_fun(a=b):\n  pass\n'
+    def testDefaultConstant(self):
+#        node = create_node.FunctionDef('test_fun', keys=('a'), values=('b'))
+        node = create_node.FunctionDef(
+            'test_fun', create_node.arguments(args=['a'], defaults=[1]),
+            body=[create_node.Pass()])
+
+        string = "def test_fun(a=1):\n  pass\n"
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
 
     def testDefaults(self):
         node = create_node.FunctionDef(
-            'test_fun', keys=('a', 'c'), values=('b', 'd'))
-        string = 'def test_fun(a=b, c=d):\n  pass\n'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testArgsAndDefaults(self):
-        #    node = create_node.FunctionDef(
-        #        'test_fun', args=('e', 'f'), keys=('a', 'c'), values=('b', 'd'))
-        node = create_node.FunctionDef(
-            'test_fun', create_node.arguments(args=['e', 'f'], kwonlyargs=['a', 'c'], kw_defaults=['b', 'd']),
+            'test_fun', create_node.arguments(args=['e', 'f','a','c'], defaults=['b', 'd']),
             body=[create_node.Pass()])
 
-        string = 'def test_fun(e, f, a=b, c=d):\n  pass\n'
+        string = 'def test_fun(e, f, a =b, c= d):\n  pass\n'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
 
     def testArgsDefaultsVarargs(self):
+        # node = create_node.FunctionDef(
+        #     'test_fun', arcg=('e', 'f'), keys=('a', 'c'), values=('b', 'd'),
+        #     vararg_name='args')
         node = create_node.FunctionDef(
-            'test_fun', arcg=('e', 'f'), keys=('a', 'c'), values=('b', 'd'),
-            vararg_name='args')
-        string = 'def test_fun(e, f, a=b, c=d, *args):\n  pass\n'
+            'test_fun', create_node.arguments(args=['e', 'f','a','c'], defaults=['b', 'd'], vararg='d'),
+            body=[create_node.Pass()])
+
+        string = 'def test_fun(e, f, a=b, c=d, *d):\n  pass\n'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
 
     def testArgsDefaultsVarargsKwargs(self):
+        # node = create_node.FunctionDef(
+        #     'test_fun', args=('e', 'f'), keys=('a', 'c'), values=('b', 'd'),
+        #     vararg_name='args', kwarg_name='kwargs')
         node = create_node.FunctionDef(
-            'test_fun', args=('e', 'f'), keys=('a', 'c'), values=('b', 'd'),
-            vararg_name='args', kwarg_name='kwargs')
-        string = 'def test_fun(e, f, a=b, c=d, *args, **kwargs):\n  pass\n'
+            'test_fun', create_node.arguments(args=['e', 'f','a','c'], defaults=['b', 'd'], vararg='d', kwarg='a'),
+            body=[create_node.Pass()])
+
+        string = 'def test_fun(e, f, a=b, c=d, *d, **a):\n  pass\n'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
@@ -1120,7 +1122,8 @@ class FunctionDefMatcherTest(unittest.TestCase):
         node = create_node.FunctionDef(
             'test_fun',
             decorator_list=[create_node.Name('dec'),
-                            create_node.Call('call_dec')])
+                            create_node.Call('call_dec')],
+            body=[create_node.Pass()])
         string = '@dec\n@call_dec()\ndef test_fun():\n  pass\n'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
@@ -1130,7 +1133,8 @@ class FunctionDefMatcherTest(unittest.TestCase):
         node = create_node.FunctionDef(
             'test_fun',
             decorator_list=[create_node.Name('dec'),
-                            create_node.Call('call_dec')])
+                            create_node.Call('call_dec')],
+            body=[create_node.Pass()])
         string = '@dec\n#hello world\n@call_dec()\ndef test_fun():\n  pass\n'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
