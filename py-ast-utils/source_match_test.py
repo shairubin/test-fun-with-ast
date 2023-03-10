@@ -1762,18 +1762,14 @@ class WithMatcherTest(unittest.TestCase):
     self.assertEqual(string, matched_string)
 
   def testBasicWithAs(self):
-    node = create_node.With(
-        create_node.Name('a'), as_part=create_node.Name('b'))
+    node = create_node.With([create_node.withitem('a', optional_vars='b')], [create_node.Pass()])
     string = 'with a as b:\n  pass\n'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)
     self.assertEqual(string, matcher.GetSource())
 
   def testWithAsTuple(self):
-    node = create_node.With(
-        create_node.Name('a'),
-        as_part=create_node.Tuple(create_node.Name('b'),
-                                  create_node.Name('c')))
+    node = create_node.With([create_node.withitem('a', optional_vars=('b','c'))], [create_node.Pass()])
     string = 'with a as (b, c):\n  pass\n'
     matcher = source_match.GetMatcher(node)
     matcher.Match(string)

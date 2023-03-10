@@ -1771,7 +1771,6 @@ class WithItemSourceMatcher(SourceMatcher):
         source_list = [p.GetSource(self.node) for p in placeholder_list]
         return ''.join(source_list)
 
-        return self.context_expr.GetSource(self.node)
 
 
 # def get_withitem_expected_parts():
@@ -1826,8 +1825,8 @@ class WithSourceMatcher(SourceMatcher):
         placeholder_list = []
         if self.starting_with:
             placeholder_list.append(self.with_placeholder)
-        placeholder_list.append(self.context_expr)
-        placeholder_list.append(self.optional_vars)
+        placeholder_list.append(self.withitems_placeholder)
+#        placeholder_list.append(self.optional_vars)
         if (self.is_compound_with and
                 isinstance(self.node.body[0], _ast.With)):
             if not hasattr(self.node.body[0], 'matcher'):
