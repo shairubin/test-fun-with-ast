@@ -1251,8 +1251,8 @@ class IfExpMatcherTest(unittest.TestCase):
 class LambdaMatcherTest(unittest.TestCase):
 
     def testBasicMatch(self):
-        node = create_node.Lambda(create_node.Name('a'))
-        string = 'lambda: a'
+        node = create_node.Lambda(create_node.Pass(), args=['a'])
+        string = 'lambda a:\tpass\n'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
@@ -1260,7 +1260,7 @@ class LambdaMatcherTest(unittest.TestCase):
     def testMatchWithArgs(self):
         node = create_node.Lambda(
             create_node.Name('a'),
-            args=create_node.arguments(args=('b')))
+            args=['b'])
         string = 'lambda b: a'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
@@ -1269,7 +1269,7 @@ class LambdaMatcherTest(unittest.TestCase):
     def testMatchWithArgsOnNewLine(self):
         node = create_node.Lambda(
             create_node.Name('a'),
-            args=create_node.arguments(args=('b')))
+            args=['b'])
         string = '(lambda\nb: a)'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)

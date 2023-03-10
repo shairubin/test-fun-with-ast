@@ -678,7 +678,7 @@ def IsNot():
     return _ast.IsNot()
 
 
-def Lambda(body, args=None):
+def Lambda(body, args=[]):
     """Creates an _ast.Lambda object.
 
   Args:
@@ -691,11 +691,13 @@ def Lambda(body, args=None):
   Returns:
     {_ast.Lambda}
   """
-    if isinstance(args, (list, tuple)):
+    if isinstance(body, (list, tuple)):
         raise ValueError('Body should be a single element, not a list or tuple')
-    if not args:
-        args = arguments()
-    return _ast.Lambda(args=args, body=body)
+#    if not args:
+#        args = arguments()
+    lambda_args = arguments(args=args)
+    return _ast.Lambda(args=lambda_args, body=body)
+
 
 
 def List(*items, **kwargs):
