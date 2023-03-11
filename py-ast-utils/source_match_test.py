@@ -732,7 +732,7 @@ class CallMatcherTest(unittest.TestCase):
         self.assertEqual(string, matcher.GetSource())
 
     def testMatchWithStarargsBeforeKeyword(self):
-        node = create_node.Call('a', keys=('b',), values=('c',), starargs='args')
+        node = create_node.Call('a', keywords=[create_node.keyword('b','c')], starargs='args')
         string = 'a(*args, b=c)'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
@@ -1572,8 +1572,7 @@ class TryExceptMatcherTest(unittest.TestCase):
     def testBasicMatch(self):
         node = create_node.Try(
             [create_node.Pass()],
-            [create_node.ExceptHandler(None, None, [create_node.Pass()])],
-            finalybody=[])
+            [create_node.ExceptHandler(None, None, [create_node.Pass()])])
 
         string = """try:\n\tpass\nexcept:\n\tpass\n"""
         matcher = source_match.GetMatcher(node)
@@ -1615,11 +1614,12 @@ else:
     def testMatchWithEmptyLine(self):
         node = create_node.Try(
             [create_node.Expr(create_node.Name('a'))],
-            [create_node.ExceptHandler()])
+            [create_node.ExceptHandler('Exception1', 'e')])
         string = """try:
   a
 
-except:
+except Exception1 as e:
+
   pass
 """
         matcher = source_match.GetMatcher(node)
@@ -1652,28 +1652,28 @@ class TryFinallyMatcherTest(unittest.TestCase):
 except:
   pass
 finally:
+  
+  
   c
 """
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
 
-    def testBasicMatchWithBlankLines(self):
+    def testBasicMatchWithExceptAndAs(self):
         node = create_node.Try(
-            body=[create_node.Expr(create_node.Name('a'))],
-            except_handlers=create_node.ExceptHandler('OtherException', 'e', [create_node.Expr(create_node.Name('b'))]),
-            finalybody=[create_node.Expr(create_node.Name('c'))])
+                [create_node.Expr(create_node.Name('a'))],
+                [create_node.ExceptHandler('Exception2','e')],
+                [create_node.Expr(create_node.Name('c'))])
         string = """try:
+      a 
+    except Exception2 as e:
+      pass
+      
+    finally:
 
-  a
 
-except OtherException as e: 
-
-  b
-
-finally:
-
-  c
+      c 
 """
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)

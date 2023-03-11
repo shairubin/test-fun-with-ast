@@ -1655,7 +1655,10 @@ def get_TryExcept_expected_parts():
         ListFieldPlaceholder('handlers'),
         BodyPlaceholder(
             'orelse',
-            prefix_placeholder=TextPlaceholder(r'[ \t]*else:\n', 'else:\n'))
+            prefix_placeholder=TextPlaceholder(r'[ \t]*else:\n', 'else:\n')),
+        BodyPlaceholder(
+            'finalbody',
+            prefix_placeholder= TextPlaceholder(r'[ \t]*finally:[ \t]*\n', 'finally:\n'))
     ]
 
 
@@ -1700,9 +1703,8 @@ class TryFinallySourceMatcher(DefaultSourceMatcher):
 
     def Match(self, string):
         remaining_string = string
-        #    if not isinstance(self.node.body[0], _ast.TryExcept):
-        #      remaining_string = MatchPlaceholder(
-        #          remaining_string, None, self.optional_try)
+        if not isinstance(self.node.body[0], _ast.Try):
+            remaining_string = MatchPlaceholder(remaining_string, None, self.optional_try)
         return super(TryFinallySourceMatcher, self).Match(remaining_string)
 
     def GetSource(self):
@@ -1931,7 +1933,6 @@ _matchers = {
     #    _ast.TryExcept: get_TryExcept_expected_parts,
     #    _ast.Try: TryFinallySourceMatcher,
     _ast.Try: get_TryExcept_expected_parts,
-
     _ast.UAdd: get_UAdd_expected_parts,
     _ast.UnaryOp: get_UnaryOp_expected_parts,
     _ast.USub: get_USub_expected_parts,
