@@ -1687,7 +1687,6 @@ class ConstantSourceMatcher():
 
 
 class TryFinallySourceMatcher(DefaultSourceMatcher):
-    """Source matcher for _ast.Tuple nodes."""
 
     def __init__(self, node, starting_parens=None):
         expected_parts = [
@@ -1931,7 +1930,7 @@ _matchers = {
     _ast.Tuple: TupleSourceMatcher,
     #    _ast.TryExcept: get_TryExcept_expected_parts,
     #    _ast.Try: TryFinallySourceMatcher,
-    _ast.Try: TryFinallySourceMatcher,
+    _ast.Try: get_TryExcept_expected_parts,
 
     _ast.UAdd: get_UAdd_expected_parts,
     _ast.UnaryOp: get_UnaryOp_expected_parts,

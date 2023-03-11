@@ -1571,21 +1571,17 @@ class TryExceptMatcherTest(unittest.TestCase):
 
     def testBasicMatch(self):
         node = create_node.Try(
-            [create_node.Expr(create_node.Name('a'))],
-            [create_node.ExceptHandler()],
+            [create_node.Pass()],
+            [create_node.ExceptHandler(None, None, [create_node.Pass()])],
             finalybody=[])
 
-        string = """try:
-  a
-except:
-  pass
-"""
+        string = """try:\n\tpass\nexcept:\n\tpass\n"""
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
 
     def testMatchMultipleExceptHandlers(self):
-        node = create_node.TryExcept(
+        node = create_node.Try(
             [create_node.Expr(create_node.Name('a'))],
             [create_node.ExceptHandler('TestA'),
              create_node.ExceptHandler('TestB')])
