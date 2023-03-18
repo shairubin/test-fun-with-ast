@@ -341,6 +341,9 @@ class FieldPlaceholder(CompositePlaceholder):
         elements.append(NodePlaceholder(field_value))
         return elements
 
+    def Match(self, node, string):
+        return super(FieldPlaceholder, self).Match(node, string)
+
     def Validate(self, node):
         if isinstance(node, ast.Call) and self.field_name == 'kwargs':
             field_value = getattr(node, self.field_name, None)
@@ -439,9 +442,10 @@ class ListFieldPlaceholder(CompositePlaceholder):
 
 class SeparatedListFieldPlaceholder(ListFieldPlaceholder):
 
-    def __init__(self, field_name, separator_placeholder):
+    def __init__(self, field_name, before_separator_placeholder=[], after__separator_placeholder=[]):
         super(SeparatedListFieldPlaceholder, self).__init__(
-            field_name, before_placeholder=separator_placeholder,
+            field_name, before_placeholder=before_separator_placeholder,
+            after_placeholder=after__separator_placeholder,
             exclude_first_before=True)
 
 
@@ -582,10 +586,12 @@ class BodyPlaceholder(ListFieldPlaceholder):
                     remaining_string)
                 new_node.append(syntax_free_node)
             new_node.append(child)
-            indent_level = ' ' * (len(remaining_string) -
+            number_of_indents = (len(remaining_string) -
                                   len(remaining_string.lstrip()))
+            indent_level = ' ' * number_of_indents
+            value_at_index=self.GetValueAtIndex(field_value, index)
             remaining_string = MatchPlaceholderList(
-                remaining_string, node, self.GetValueAtIndex(field_value, index))
+                remaining_string, node, value_at_index)
 
         while (create_node.SyntaxFreeLine.MatchesStart(remaining_string) and
                (remaining_string.startswith(indent_level) or self.match_after)):
@@ -613,6 +619,9 @@ class BodyPlaceholder(ListFieldPlaceholder):
 def GetStartParenMatcher():
     return TextPlaceholder(r'\(\s*', '')
 
+def GetWhiteSpaceMatcher():
+    return TextPlaceholder(r'[ \t]*', '')
+
 
 def GetEndParenMatcher():
     return TextPlaceholder(r'\s*\)', '')
@@ -627,10 +636,12 @@ class SourceMatcher(object):
     def __init__(self, node, stripped_parens=None):
         self.node = node
         self.end_paren_matchers = []
+        self.start_whitespace_matchers = []
         self.paren_wrapped = False
         if not stripped_parens:
             stripped_parens = []
         self.start_paren_matchers = stripped_parens
+
 
     def Match(self, string):
         raise NotImplementedError
@@ -681,11 +692,34 @@ class SourceMatcher(object):
         self.start_paren_matchers = new_start_matchers[::-1]
         self.end_paren_matchers = new_end_matchers
 
+    def MatchStartLeadingWhiteSpaces(self, string):
+        """Matches the starting whitespaces  in a string."""
+        remaining_string = string
+        matched_parts = []
+        try:
+            start_ws_matcher = GetWhiteSpaceMatcher()
+            remaining_string = MatchPlaceholder(
+                    remaining_string, None, start_ws_matcher)
+            if remaining_string != string:
+                self.start_whitespace_matchers.append(start_ws_matcher)
+                matched_parts.append(start_ws_matcher.matched_text)
+        except BadlySpecifiedTemplateError:
+            pass
+        return remaining_string
+
+
     def GetStartParenText(self):
         if self.paren_wrapped:
             return ''.join(matcher.GetSource(None)
                            for matcher in self.start_paren_matchers)
         return ''
+
+    def GetLeadingWhiteSpaceText(self):
+        result = ''
+        if self.start_whitespace_matchers:
+            result = ''.join(matcher.GetSource(None)
+                           for matcher in self.start_whitespace_matchers)
+        return result
 
     def GetEndParenText(self):
         if self.paren_wrapped:
@@ -735,7 +769,8 @@ class DefaultSourceMatcher(SourceMatcher):
             expected_parts and the string.
           ValueError: If there is more than one TextPlaceholder in a rwo
         """
-        remaining_string = self.MatchStartParens(string)
+        remaining_string = self.MatchStartLeadingWhiteSpaces(string)
+        remaining_string = self.MatchStartParens(remaining_string)
 
         try:
             remaining_string = MatchPlaceholderList(
@@ -751,9 +786,12 @@ class DefaultSourceMatcher(SourceMatcher):
         matched_string = string
         if remaining_string:
             matched_string = string[:-len(remaining_string)]
-        return (self.GetStartParenText() +
-                matched_string +
-                self.GetEndParenText())
+        leading_ws = self.GetLeadingWhiteSpaceText()
+        start_parens = self.GetStartParenText()
+        end_parans = self.GetEndParenText()
+        result =  (leading_ws + start_parens + matched_string + end_parans)
+        return result
+
 
     def GetSource(self):
         source_list = []
@@ -765,6 +803,8 @@ class DefaultSourceMatcher(SourceMatcher):
                 self.GetStartParenText(),
                 source,
                 self.GetEndParenText())
+        if self.start_whitespace_matchers:
+            source = '{}{}'.format(self.GetLeadingWhiteSpaceText(),source)
         return source
 
     def __repr__(self):
@@ -772,6 +812,7 @@ class DefaultSourceMatcher(SourceMatcher):
                 .format(super(DefaultSourceMatcher, self).__repr__(),
                         self.node,
                         pprint.pformat(self.expected_parts)))
+
 
 
 def GetMatcher(node, starting_parens=None):
@@ -845,16 +886,21 @@ def get_Assert_expected_parts():
         TextPlaceholder(r' *\n', '\n'),
     ]
 
-
 def get_Assign_expected_parts():
     return [
-        TextPlaceholder(r'[ \t]*', ''),
-        SeparatedListFieldPlaceholder(
-            'targets', TextPlaceholder(r'\s*=\s*', ', ')),
-        TextPlaceholder(r'[ \t]*=[ \t]*', ' = '),
-        FieldPlaceholder('value'),
-        TextPlaceholder(r'\n', '\n')
+        SeparatedListFieldPlaceholder('targets',   TextPlaceholder(r'\s*=\s*', '=')),
+        FieldPlaceholder('value')
     ]
+
+# def get_Assign_expected_parts():
+#     return [
+#         TextPlaceholder(r'[ \t]*', ''),
+#         SeparatedListFieldPlaceholder(
+#             'targets', TextPlaceholder(r'\s*=\s*', ', ')),
+#         TextPlaceholder(r'[ \t]*=[ \t]*', ' = '),
+#         FieldPlaceholder('value'),
+#         TextPlaceholder(r'\n', '\n')
+#     ]
 
 
 def get_Attribute_expected_parts():
@@ -1329,6 +1375,8 @@ def get_Mult_expected_parts():
 
 
 def get_Name_expected_parts():
+#    return [TextPlaceholder(r'[ \t]*', ''),
+#            FieldPlaceholder('id')]
     return [FieldPlaceholder('id')]
 
 
@@ -1633,10 +1681,10 @@ class TupleSourceMatcher(DefaultSourceMatcher):
 
     def __init__(self, node, starting_parens=None):
         expected_parts = [
-            TextPlaceholder(r'\s*', '('),
+            TextPlaceholder(r'\s*\(', ''),
             SeparatedListFieldPlaceholder(
-                'elts', TextPlaceholder(r'\s*,\s*', ', ')),
-            TextPlaceholder(r'\s*,?\s*', ')')
+                'elts', before_separator_placeholder=TextPlaceholder(r',', ',')),
+            TextPlaceholder(r'\s*,?\s*\)', ')')
         ]
         super(TupleSourceMatcher, self).__init__(
             node, expected_parts, starting_parens)
@@ -1647,6 +1695,12 @@ class TupleSourceMatcher(DefaultSourceMatcher):
             matched_text = matched_text.rstrip()
             return super(TupleSourceMatcher, self).Match(matched_text)
 
+    def MatchStartParens(self, remaining_string):
+        if remaining_string.startswith('(('):
+           raise NotImplementedError('Currently not supported')
+        if remaining_string.startswith('('):
+           return remaining_string
+        raise ValueError('Tuple does not start with (')
 
 def get_TryExcept_expected_parts():
     return [

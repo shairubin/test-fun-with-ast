@@ -70,7 +70,11 @@ def _WrapWithArgs(to_wrap):
 def _WrapWithName(to_wrap, ctx_type=CtxEnum.LOAD):
     if isinstance(to_wrap, _ast.AST):
         return to_wrap
-    return Name(to_wrap, ctx_type=ctx_type)
+    if isinstance(to_wrap, int):
+        return Constant(to_wrap)
+    if isinstance(to_wrap, str):
+        return Name(to_wrap, ctx_type=ctx_type)
+    raise NotImplementedError
 
 def _WrapWithTuple(to_wrap, ctx_type=CtxEnum.LOAD):
     if not isinstance(to_wrap, list):
@@ -782,6 +786,17 @@ def Constant(value):
     return _ast.Constant(value=value)
 
 
+def validate_id(name_id):
+    if not isinstance(name_id, str):
+        raise ValueError(f'python id must be a string')
+    if name_id is None or name_id[0].isdigit():
+        raise ValueError(f'Invalid python id: {name_id}')
+    stripped_underscore =  name_id.replace('_', '')
+    isalnum = stripped_underscore.isalnum()
+    if not isalnum:
+        raise ValueError(f'Invalid python id: {name_id}')
+
+
 def Name(name_id, ctx_type=CtxEnum.LOAD):
     """Creates an _ast.Name node.
 
@@ -792,6 +807,7 @@ def Name(name_id, ctx_type=CtxEnum.LOAD):
   Returns:
     An _ast.Name node.
   """
+    validate_id(name_id)
     ctx = GetCtx(ctx_type)
     return _ast.Name(id=name_id,
                      ctx=ctx)
@@ -904,6 +920,8 @@ class SyntaxFreeLine(_ast.stmt):
 
     def __init__(self, comment=None, col_offset=0, comment_indent=1):
         super(SyntaxFreeLine, self).__init__()
+        if col_offset != 0:
+            raise ValueError('col offset must be zero')
         self.col_offset = col_offset
         self._fields = ['full_line']
         self.comment = comment
@@ -919,7 +937,8 @@ class SyntaxFreeLine(_ast.stmt):
 
     @classmethod
     def MatchesStart(cls, text):
-        return re.match('^([ \t]*)(?:|(#)([ \t]*)(.*))\n', text)
+        is_syntax_free_line = re.match('^([ \t]*)(?:|(#)([ \t]*)(.*))\n', text)
+        return is_syntax_free_line
 
     def SetFromSrcLine(self, line):
         match = self.MatchesStart(line)

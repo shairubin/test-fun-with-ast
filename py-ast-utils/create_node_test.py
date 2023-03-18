@@ -20,6 +20,8 @@ import _ast
 import ast
 import unittest
 
+import pytest
+
 import create_node
 
 
@@ -135,6 +137,12 @@ class CreateAssignTest(CreateNodeTestBase):
         expected_string = 'a = "b"'
         expected_node = GetNodeFromInput(expected_string)
         test_node = create_node.Assign('a', create_node.Str('b'))
+        self.assertNodesEqual(expected_node, test_node)
+
+    def testAssignListWithSimpleString(self):
+        expected_string = 'a=c="b"'
+        expected_node = GetNodeFromInput(expected_string)
+        test_node = create_node.Assign(['a', 'c'], create_node.Str('b'))
         self.assertNodesEqual(expected_node, test_node)
 
     def testAssignWithNode(self):
@@ -817,6 +825,21 @@ class CreateListComprehensionTest(CreateNodeTestBase):
 
 
 class CreateNameTest(CreateNodeTestBase):
+
+    def testBaseicName(self):
+        expected_string = '_b_'
+        expected_node = GetNodeFromInput(expected_string).value
+        test_node = create_node.Name('_b_')
+        self.assertNodesEqual(expected_node, test_node)
+
+    def testIlligalName(self):
+        with  pytest.raises(ValueError):
+            create_node.Name('b!')
+        with  pytest.raises(ValueError):
+            create_node.Name('b\n')
+        with  pytest.raises(ValueError):
+            create_node.Name('9b\n')
+
 
     def testNameWithLoad(self):
         expected_string = 'b = a'
