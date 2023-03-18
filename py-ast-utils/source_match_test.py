@@ -255,7 +255,7 @@ class SeparatedListFieldPlaceholderTest(unittest.TestCase):
     def testMatchSepertedListSingleElement(self):
         node = create_node.Assign('foo',1)
         placeholder = source_match.SeparatedListFieldPlaceholder('targets',
-                                                                 source_match.TextPlaceholder(r'[ \t]*=[ \t]*', '='))
+                                                                  after__separator_placeholder=source_match.TextPlaceholder(r'[ \t]*=[ \t]*', '='))
         matched_text = placeholder.Match(node, 'foo=1')
         self.assertEqual(matched_text, 'foo=')
         placeholder = source_match.FieldPlaceholder('value')
@@ -265,7 +265,7 @@ class SeparatedListFieldPlaceholderTest(unittest.TestCase):
     def testMatchSepertedListSingleElementWithWS(self):
         node = create_node.Assign('foo',1)
         placeholder = source_match.SeparatedListFieldPlaceholder('targets',
-                                                                 source_match.TextPlaceholder(r'[ \t]*=[ \t]*', '='))
+                                                                  after__separator_placeholder=source_match.TextPlaceholder(r'[ \t]*=[ \t]*', '='))
         matched_text = placeholder.Match(node, 'foo \t   =\t  1')
         self.assertEqual(matched_text, 'foo \t   =\t  ')
         placeholder = source_match.FieldPlaceholder('value')
@@ -275,7 +275,7 @@ class SeparatedListFieldPlaceholderTest(unittest.TestCase):
     def testMatchSepertedList(self):
         node = create_node.Assign(['foo','bar'],2)
         placeholder = source_match.SeparatedListFieldPlaceholder('targets',
-                                                                 source_match.TextPlaceholder(r'[ \t]*=[ \t]*', '='))
+                                                                  after__separator_placeholder=source_match.TextPlaceholder(r'[ \t]*=[ \t]*', '='))
         matched_text = placeholder.Match(node, 'foo=bar=2')
         self.assertEqual(matched_text, 'foo=bar=')
         placeholder = source_match.FieldPlaceholder('value')
@@ -465,7 +465,7 @@ class TupleTest(unittest.TestCase):
 
     def testBasicSingleTuple(self):
         node = create_node.Tuple(['a'])
-        string = '(\t   a \t)'
+        string = '(\t   a, \t)'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
@@ -637,7 +637,7 @@ class AugAssignMatcherTest(unittest.TestCase):
 
     @pytest.mark.xfail(strict=True)
     def testBasicMatchAssign(self):
-        node = create_node.Assign('a', create_node.Num(2))
+        node = create_node.Assign('a', create_node.Num(1))
         string = 'a=1'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
@@ -646,7 +646,7 @@ class AugAssignMatcherTest(unittest.TestCase):
 
     @pytest.mark.xfail(strict=True)
     def testBasicMatch(self):
-        node = create_node.AugAssign('a', create_node.Add(), create_node.Num(2))
+        node = create_node.AugAssign('a', create_node.Add(), create_node.Num(12))
         string = 'a += 1\n'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)

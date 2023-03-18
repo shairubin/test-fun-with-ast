@@ -1842,7 +1842,7 @@ class WithSourceMatcher(SourceMatcher):
     def __init__(self, node, starting_parens=None):
         super(WithSourceMatcher, self).__init__(node, starting_parens)
         self.with_placeholder = TextPlaceholder(r' *(with)? *', 'with ')
-        self.withitems_placeholder = SeparatedListFieldPlaceholder('items',separator_placeholder=TextPlaceholder(r', *', ', '))
+        self.withitems_placeholder = SeparatedListFieldPlaceholder('items', before_separator_placeholder=TextPlaceholder(r', *', ', '))
         #    self.context_expr = FieldPlaceholder('context_expr')
         #    self.optional_vars = FieldPlaceholder(
         #        'optional_vars',
