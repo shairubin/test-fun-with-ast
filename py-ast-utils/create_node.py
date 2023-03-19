@@ -920,8 +920,8 @@ class SyntaxFreeLine(_ast.stmt):
 
     def __init__(self, comment=None, col_offset=0, comment_indent=1):
         super(SyntaxFreeLine, self).__init__()
-        if col_offset != 0:
-            raise ValueError('col offset must be zero')
+#        if col_offset != 0:
+#            raise ValueError('col offset must be zero')
         self.col_offset = col_offset
         self._fields = ['full_line']
         self.comment = comment
