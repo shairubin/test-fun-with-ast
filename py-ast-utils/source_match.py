@@ -888,7 +888,7 @@ def get_Assert_expected_parts():
 
 def get_Assign_expected_parts():
     return [
-        SeparatedListFieldPlaceholder('targets',   TextPlaceholder(r'\s*=\s*', '=')),
+        SeparatedListFieldPlaceholder('targets',   after__separator_placeholder=TextPlaceholder(r'\s*=\s*', '=')),
         FieldPlaceholder('value')
     ]
 
@@ -1405,7 +1405,10 @@ class NumSourceMatcher(SourceMatcher):
         node_as_str = str(self.node.n)
         if isinstance(self.node.n, int):
             # Handle hex values
-            node_as_str = re.match(r'[+-]?(0x[0-9a-f]*|0[0-7]*|\d+)', string).group(0)
+            if '0x' in string:
+                raise NotImplementedError('not sporting hex value for ints')
+            node_as_str = re.match(r'[+-]?(0x[0-9a-f]*|0[0-7]*|\d+)', string)
+            node_as_str = node_as_str.group(0)
         elif isinstance(self.node.n, float):
             node_as_str = re.match(r'[-+]?\d*.\d*', string).group(0)
         self.matched_num = self.node.n

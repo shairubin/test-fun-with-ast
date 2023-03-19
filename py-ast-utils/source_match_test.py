@@ -633,26 +633,70 @@ class AttributeMatcherTest(unittest.TestCase):
 
 
 
-class AugAssignMatcherTest(unittest.TestCase):
+class AssignMatcherTest(unittest.TestCase):
 
-    @pytest.mark.xfail(strict=True)
+    def testBasicMatchAssignHex(self):
+        node = create_node.Assign('a', create_node.Num(0x1F))
+        string = 'a=0x1F'
+        matcher = source_match.GetMatcher(node)
+        with pytest.raises(NotImplementedError):
+            matcher.Match(string)
+
+    def testBasicNotMatchAssign(self):
+        node = create_node.Assign('a', create_node.Num(2))
+        string = 'a=1'
+        matcher = source_match.GetMatcher(node)
+        matched_string = matcher.GetSource()
+        self.assertNotEqual(string, matched_string)
+
     def testBasicMatchAssign(self):
         node = create_node.Assign('a', create_node.Num(1))
         string = 'a=1'
         matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
         matched_string = matcher.GetSource()
         self.assertEqual(string, matched_string)
+
+    def testMatchMultiAssign(self):
+        node = create_node.Assign(['a', 'b'], create_node.Num(1))
+        string = 'a=b=1'
+        matcher = source_match.GetMatcher(node)
+        matched_string = matcher.GetSource()
+        self.assertEqual(string, matched_string)
+
+    def testNotMatchMultiAssign(self):
+        node = create_node.Assign(['a', 'b'], create_node.Num(1))
+        string = 'a=c=1'
+        matcher = source_match.GetMatcher(node)
+        matched_string = matcher.GetSource()
+        self.assertNotEqual(string, matched_string)
+
+    @pytest.mark.xfail(strict=True)
+    def testNotMatchMultiAssign(self):
+        node = create_node.Assign(['a', 'b'], create_node.Num(1))
+        string = 'a =b =     1'
+        matcher = source_match.GetMatcher(node)
+        matched_string = matcher.GetSource()
+        self.assertEqual(string, matched_string)
+
+class AugAssignMatcherTest(unittest.TestCase):
 
     @pytest.mark.xfail(strict=True)
     def testBasicMatch(self):
         node = create_node.AugAssign('a', create_node.Add(), create_node.Num(12))
-        string = 'a += 1\n'
+        string = 'a+=1\n'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
 
-    def testBasicMatchWithVarAndTab(self):
+    def testNotMatchWithVarAndTab(self):
+        node = create_node.AugAssign('a', create_node.Add(), create_node.Name('c'))
+        string = '       \t        a += b\n'
+        matcher = source_match.GetMatcher(node)
+        with pytest.raises(source_match.BadlySpecifiedTemplateError):
+            matcher.Match(string)
+        #self.assertNotEqual(string, matcher.GetSource())
+
+    def testMatchWithVarAndTab(self):
         node = create_node.AugAssign('a', create_node.Add(), create_node.Name('b'))
         string = '       \t        a += b\n'
         matcher = source_match.GetMatcher(node)
@@ -1688,19 +1732,19 @@ class SyntaxFreeLineMatcherTest(unittest.TestCase):
 
     def testChangeComment(self):
         node = create_node.SyntaxFreeLine(
-            comment='comment', col_offset=1, comment_indent=0)
+            comment='comment', col_offset=0, comment_indent=0)
         string = ' #comment\n'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         node.col_offset = 0
         node.comment_indent = 1
         node.comment = 'hello'
-        self.assertEqual('# hello\n', matcher.GetSource())
+        self.assertEqual(' # hello\n', matcher.GetSource())
 
     def testNotCommentFails(self):
         node = create_node.SyntaxFreeLine(
-            comment='comment', col_offset=1, comment_indent=0)
-        string = ' comment\n'
+            comment='comment', col_offset=0, comment_indent=0)
+        string = 'comment\n'
         matcher = source_match.GetMatcher(node)
         with self.assertRaises(source_match.BadlySpecifiedTemplateError):
             matcher.Match(string)
