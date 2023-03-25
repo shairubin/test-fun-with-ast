@@ -76,6 +76,7 @@ def _WrapWithName(to_wrap, ctx_type=CtxEnum.LOAD):
         return Name(to_wrap, ctx_type=ctx_type)
     raise NotImplementedError
 
+
 def _WrapWithTuple(to_wrap, ctx_type=CtxEnum.LOAD):
     if not isinstance(to_wrap, list):
         raise NotImplementedError
@@ -355,7 +356,7 @@ def Call(caller, args=[], keywords=[], starargs=None, kwargs={}):
     return result
 
 
-def ClassDef(name, bases=[], body=[] , keywords=[], starargs=None, kwargs=None, decorator_list=[]):
+def ClassDef(name, bases=[], body=[], keywords=[], starargs=None, kwargs=None, decorator_list=[]):
     """Creates an _ast.ClassDef node.
 
   Args:
@@ -461,7 +462,7 @@ def Dict(keys=(), values=()):
     return _ast.Dict(keys, values)
 
 
-def DictComp(left_side_key, left_side_value, for_part, in_part,  *ifs, is_async=0):
+def DictComp(left_side_key, left_side_value, for_part, in_part, *ifs, is_async=0):
     """Creates _ast.DictComp nodes.
 
   'left_side', 'left_side_value' for 'for_part' in 'in_part' if 'ifs'
@@ -548,9 +549,9 @@ def FunctionDef(
     if args and not isinstance(args, ast.arguments):
         raise ValueError('args must be a list')
     if not args:
-       args = arguments()
+        args = arguments()
     else:
-        args=args
+        args = args
     body = FormatAndValidateBody(body)
     return _ast.FunctionDef(
         name=name,
@@ -582,6 +583,7 @@ def GeneratorExp(left_side, for_part, in_part, *ifs):
         elt=left_side,
         generators=[comprehension(for_part, in_part, 0, *ifs)])
     return result
+
 
 def Gt():
     return _ast.Gt()
@@ -697,11 +699,10 @@ def Lambda(body, args=[]):
   """
     if isinstance(body, (list, tuple)):
         raise ValueError('Body should be a single element, not a list or tuple')
-#    if not args:
-#        args = arguments()
+    #    if not args:
+    #        args = arguments()
     lambda_args = arguments(args=args)
     return _ast.Lambda(args=lambda_args, body=body)
-
 
 
 def List(*items, **kwargs):
@@ -791,7 +792,7 @@ def validate_id(name_id):
         raise ValueError(f'python id must be a string')
     if name_id is None or name_id[0].isdigit():
         raise ValueError(f'Invalid python id: {name_id}')
-    stripped_underscore =  name_id.replace('_', '')
+    stripped_underscore = name_id.replace('_', '')
     isalnum = stripped_underscore.isalnum()
     if not isalnum:
         raise ValueError(f'Invalid python id: {name_id}')
@@ -915,13 +916,26 @@ def Subscript(value, upper=None, lower=None, step=None, ctx=CtxEnum.LOAD):
         value=value, slice=Slice(upper, lower, step), ctx=GetCtx(ctx))
 
 
+class Comment(_ast.stmt):
+    def __init__(self, comment):
+        super(Comment ,self).__init__()
+        if not comment.startswith('#'):
+            raise ValueError('Comment must start with #')
+        self._fields = []
+        self.comment = comment[1:]
+
+    @property
+    def source_comment(self):
+        if self.comment is not None:
+            return f'#{self.comment}'
+
 class SyntaxFreeLine(_ast.stmt):
     """Class defining a new node that has no syntax (only optional comments)."""
 
     def __init__(self, comment=None, col_offset=0, comment_indent=1):
         super(SyntaxFreeLine, self).__init__()
-#        if col_offset != 0:
-#            raise ValueError('col offset must be zero')
+        #        if col_offset != 0:
+        #            raise ValueError('col offset must be zero')
         self.col_offset = col_offset
         self._fields = ['full_line']
         self.comment = comment
@@ -993,7 +1007,7 @@ def Tuple(items, **kwargs):
 # python 2.7
 # def TryExcept(body, except_handlers, orelse=None):
 #  return _ast.TryExcept(body=body, handlers=except_handlers, orelse=orelse)
-#def Try(body, except_handlers, orelse=None):
+# def Try(body, except_handlers, orelse=None):
 #    return _ast.Try(body=body, handlers=except_handlers, orelse=orelse)
 
 
@@ -1022,12 +1036,14 @@ def UnaryOp(operator, operand):
 def USub():
     return _ast.USub()
 
+
 def withitem(name, optional_vars=None):
     if isinstance(optional_vars, str):
         optional_vars = Name(optional_vars, ctx_type=CtxEnum.STORE)
-    elif optional_vars and not isinstance(optional_vars, (ast.Tuple, ast.List) )  :
+    elif optional_vars and not isinstance(optional_vars, (ast.Tuple, ast.List)):
         raise ValueError('withitem must be str, tuple, or list')
     return _ast.withitem(Name(name), optional_vars)
+
 
 def With(withitems, body):
     if not isinstance(body, list):
@@ -1037,8 +1053,8 @@ def With(withitems, body):
         raise ValueError('withitems must be a list')
 
     body = FormatAndValidateBody(body)
-#    if as_part:
-#        ChangeCtx(as_part, CtxEnum.STORE)
+    #    if as_part:
+    #        ChangeCtx(as_part, CtxEnum.STORE)
 
     return _ast.With(items=withitems,
                      body=body, type_comment=None)

@@ -926,6 +926,24 @@ class CreateStrTest(CreateNodeTestBase):
         test_node = create_node.Str('a')
         self.assertNodesEqual(expected_node, test_node)
 
+class CommentCreateTest(CreateNodeTestBase):
+    def testSimpleComment(self):
+        expected_string = '#Comment\n'
+        test_node = create_node.Comment('#Comment\n')
+        self.assertEqual(expected_string, test_node.source_comment)
+
+    def testSimpleCommentWithWS(self):
+        expected_string = '#Comment\t'
+        test_node = create_node.Comment('#Comment\t')
+        self.assertEqual(expected_string, test_node.source_comment)
+
+    def testErrorsComment(self):
+        with pytest.raises(ValueError):
+            create_node.Comment('Comment')
+        with pytest.raises(ValueError):
+            create_node.Comment(' #Comment')
+        with pytest.raises(ValueError):
+            create_node.Comment('')
 
 class CreateSyntaxFreeLineTest(CreateNodeTestBase):
 

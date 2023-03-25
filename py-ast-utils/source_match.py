@@ -637,6 +637,7 @@ class SourceMatcher(object):
         self.node = node
         self.end_paren_matchers = []
         self.start_whitespace_matchers = []
+        self.end_whitespace_matchers = []
         self.paren_wrapped = False
         if not stripped_parens:
             stripped_parens = []
@@ -692,20 +693,36 @@ class SourceMatcher(object):
         self.start_paren_matchers = new_start_matchers[::-1]
         self.end_paren_matchers = new_end_matchers
 
-    def MatchStartLeadingWhiteSpaces(self, string):
-        """Matches the starting whitespaces  in a string."""
+    def MatchWhiteSpaces(self, string, in_matcher):
+        """Matches the  whitespaces  in a string."""
         remaining_string = string
         matched_parts = []
         try:
-            start_ws_matcher = GetWhiteSpaceMatcher()
+            ws_matcher = GetWhiteSpaceMatcher()
             remaining_string = MatchPlaceholder(
-                    remaining_string, None, start_ws_matcher)
+                    remaining_string, None, ws_matcher)
             if remaining_string != string:
-                self.start_whitespace_matchers.append(start_ws_matcher)
-                matched_parts.append(start_ws_matcher.matched_text)
+                in_matcher.append(ws_matcher)
+                matched_parts.append(ws_matcher.matched_text)
         except BadlySpecifiedTemplateError:
             pass
         return remaining_string
+
+
+    # def MatchStartLeadingWhiteSpaces(self, string):
+    #     """Matches the starting whitespaces  in a string."""
+    #     remaining_string = string
+    #     matched_parts = []
+    #     try:
+    #         start_ws_matcher = GetWhiteSpaceMatcher()
+    #         remaining_string = MatchPlaceholder(
+    #                 remaining_string, None, start_ws_matcher)
+    #         if remaining_string != string:
+    #             self.start_whitespace_matchers.append(start_ws_matcher)
+    #             matched_parts.append(start_ws_matcher.matched_text)
+    #     except BadlySpecifiedTemplateError:
+    #         pass
+    #     return remaining_string
 
 
     def GetStartParenText(self):
@@ -714,11 +731,11 @@ class SourceMatcher(object):
                            for matcher in self.start_paren_matchers)
         return ''
 
-    def GetLeadingWhiteSpaceText(self):
+    def GetWhiteSpaceText(self, in_matcher):
         result = ''
-        if self.start_whitespace_matchers:
+        if in_matcher:
             result = ''.join(matcher.GetSource(None)
-                           for matcher in self.start_whitespace_matchers)
+                           for matcher in in_matcher)
         return result
 
     def GetEndParenText(self):
@@ -769,14 +786,15 @@ class DefaultSourceMatcher(SourceMatcher):
             expected_parts and the string.
           ValueError: If there is more than one TextPlaceholder in a rwo
         """
-        remaining_string = self.MatchStartLeadingWhiteSpaces(string)
-        remaining_string = self.MatchStartParens(remaining_string)
+#        remaining_string = self.MatchWhiteSpaces(string, self.start_whitespace_matchers)
+        remaining_string = self.MatchStartParens(string)
 
         try:
             remaining_string = MatchPlaceholderList(
                 remaining_string, self.node, self.expected_parts,
                 self.start_paren_matchers)
             self.MatchEndParen(remaining_string)
+#            remaining_string = self.MatchWhiteSpaces(remaining_string, self.end_whitespace_matchers)
 
         except BadlySpecifiedTemplateError as e:
             raise BadlySpecifiedTemplateError(
@@ -786,10 +804,11 @@ class DefaultSourceMatcher(SourceMatcher):
         matched_string = string
         if remaining_string:
             matched_string = string[:-len(remaining_string)]
-        leading_ws = self.GetLeadingWhiteSpaceText()
+        leading_ws = self.GetWhiteSpaceText(self.start_whitespace_matchers)
         start_parens = self.GetStartParenText()
         end_parans = self.GetEndParenText()
-        result =  (leading_ws + start_parens + matched_string + end_parans)
+        end_ws = self.GetWhiteSpaceText(self.end_whitespace_matchers)
+        result =  (leading_ws + start_parens + matched_string + end_parans + end_ws)
         return result
 
 
@@ -804,7 +823,9 @@ class DefaultSourceMatcher(SourceMatcher):
                 source,
                 self.GetEndParenText())
         if self.start_whitespace_matchers:
-            source = '{}{}'.format(self.GetLeadingWhiteSpaceText(),source)
+            source = '{}{}'.format(self.GetWhiteSpaceText(self.start_whitespace_matchers), source)
+        if self.end_whitespace_matchers:
+            source = '{}{}'.format(source, self.GetWhiteSpaceText(self.end_whitespace_matchers))
         return source
 
     def __repr__(self):
@@ -1302,7 +1323,7 @@ def get_Index_expected_parts():
 
 
 def get_Invert_expected_parts():
-    return [TextPlaceholder(r'~', '~')]
+    return [TextPlaceholder(r'[ \t]*~', '~')]
 
 
 def get_Is_expected_parts():
@@ -1375,9 +1396,10 @@ def get_Mult_expected_parts():
 
 
 def get_Name_expected_parts():
-#    return [TextPlaceholder(r'[ \t]*', ''),
-#            FieldPlaceholder('id')]
-    return [FieldPlaceholder('id')]
+    return [TextPlaceholder(r'[ \t]*', ''),
+            FieldPlaceholder('id'),
+            TextPlaceholder(r'[ \t]*(#\S*)*', '')]
+#    return [FieldPlaceholder('id')]
 
 
 def get_NotEq_expected_parts():
@@ -1402,22 +1424,22 @@ class NumSourceMatcher(SourceMatcher):
         self.suffix = None
 
     def Match(self, string):
-        node_as_str = str(self.node.n)
+        node_string_val = str(self.node.n)
         if isinstance(self.node.n, int):
             # Handle hex values
             if '0x' in string:
                 raise NotImplementedError('not sporting hex value for ints')
-            node_as_str = re.match(r'[+-]?(0x[0-9a-f]*|0[0-7]*|\d+)', string)
+            node_as_str = re.match(r'([+-]?)(\d+)([ \t]*)', string)
             node_as_str = node_as_str.group(0)
         elif isinstance(self.node.n, float):
             node_as_str = re.match(r'[-+]?\d*.\d*', string).group(0)
         self.matched_num = self.node.n
         self.matched_as_str = node_as_str
 
-        unused_before, after = string.split(node_as_str, 1)
-        if after and after[0] in ('l', 'L', 'j', 'J'):
-            self.suffix = after[0]
-            node_as_str += after[0]
+#        unused_before, after = string.split(node_as_str, 1)
+#        if after and after[0] in ('l', 'L', 'j', 'J'):
+#            self.suffix = after[0]
+#            node_as_str += after[0]
         return node_as_str
 
     def GetSource(self):
@@ -1434,7 +1456,7 @@ def get_Or_expected_parts():
 
 
 def get_Pass_expected_parts():
-    return [TextPlaceholder(r'[ \t]*pass\n', 'pass\n')]
+    return [TextPlaceholder(r'[ \t]*pass[ \t]*\n', 'pass\n')]
 
 
 def get_Pow_expected_parts():
@@ -1677,6 +1699,9 @@ def get_Subscript_expected_parts():
 def get_SyntaxFreeLine_expected_parts():
     return [FieldPlaceholder('full_line'),
             TextPlaceholder(r'\n', '\n')]
+
+def get_Comment_expected_parts():
+    return [TextPlaceholder(r'#.*', '#')]
 
 
 class TupleSourceMatcher(DefaultSourceMatcher):
@@ -1986,6 +2011,7 @@ _matchers = {
     #    _ast.Str: StrSourceMatcher,
     _ast.Constant: ConstantSourceMatcher,
     create_node.SyntaxFreeLine: get_SyntaxFreeLine_expected_parts,
+    create_node.Comment: get_Comment_expected_parts,
     _ast.Tuple: TupleSourceMatcher,
     #    _ast.TryExcept: get_TryExcept_expected_parts,
     #    _ast.Try: TryFinallySourceMatcher,

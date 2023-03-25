@@ -93,8 +93,8 @@ class TextPlaceholderTest(unittest.TestCase):
         self.assertEqual(test_output, whitespace_text)
 
     def testCommentInNewLine(self):
-        text = ' #  A comment\n'
-        placeholder = source_match.TextPlaceholder(' #  A comment\n')
+        text = '\n   #  A comment\n'
+        placeholder = source_match.TextPlaceholder('\n   #  A comment\n')
         matched_text = placeholder.Match(None, text)
         self.assertEqual(matched_text, text)
         test_output = placeholder.GetSource(None)
@@ -272,6 +272,16 @@ class SeparatedListFieldPlaceholderTest(unittest.TestCase):
         matched_text = placeholder.Match(node, '1')
         self.assertEqual(matched_text, '1')
 
+    def testMatchSepertedListSingleElementWithWSWithComment(self):
+        node = create_node.Assign('foo',1)
+        placeholder = source_match.SeparatedListFieldPlaceholder('targets',
+                                                                  after__separator_placeholder=source_match.TextPlaceholder(r'[ \t]*=[ \t]*', '='))
+        matched_text = placeholder.Match(node, 'foo \t   =\t  1 # comment')
+        self.assertEqual(matched_text, 'foo \t   =\t  ')
+        placeholder = source_match.FieldPlaceholder('value')
+        matched_text = placeholder.Match(node, '1')
+        self.assertEqual(matched_text, '1')
+
     def testMatchSepertedList(self):
         node = create_node.Assign(['foo','bar'],2)
         placeholder = source_match.SeparatedListFieldPlaceholder('targets',
@@ -331,6 +341,25 @@ c
         expected_match = """def a():
   foobar
 #blah
+  a
+"""
+        self.assertEqual(matched_text, expected_match)
+
+    def testDoesntMatchAfterEndOfBodyAndComments(self):
+        body_node_foobar = create_node.Expr(create_node.Name('foobar'))
+        body_node_a = create_node.Expr(create_node.Name('a'))
+        node = create_node.FunctionDef('a', body=[body_node_foobar, body_node_a])
+        matcher = source_match.GetMatcher(node)
+        text_to_match = """def a():
+  foobar #blah
+  a
+
+# end comment
+c
+"""
+        matched_text = matcher.Match(text_to_match)
+        expected_match = """def a():
+  foobar #blah
   a
 """
         self.assertEqual(matched_text, expected_match)
@@ -470,6 +499,38 @@ class TupleTest(unittest.TestCase):
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
 
+class NameTest(unittest.TestCase):
+
+    def testBasicMatch(self):
+        node = create_node.Name('a')
+        string = 'a'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        self.assertEqual(string, matcher.GetSource())
+
+    def testBasicMatchWithComment(self):
+        node = create_node.Name('a')
+        string = 'a '
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        self.assertEqual(string, matcher.GetSource())
+
+    def testLeadingSpaces(self):
+        node = create_node.Name('a')
+        string = '  a'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        matched_text = matcher.GetSource()
+        self.assertEqual(string, matched_text)
+        string = ' \t  a'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        matched_text = matcher.GetSource()
+        self.assertEqual(string, matched_text)
+        string = ' \t\n  a'
+        matcher = source_match.GetMatcher(node)
+        with self.assertRaises(source_match.BadlySpecifiedTemplateError):
+            matcher.Match(string)
 
 class ParenWrappedTest(unittest.TestCase):
 
@@ -642,22 +703,24 @@ class AssignMatcherTest(unittest.TestCase):
         with pytest.raises(NotImplementedError):
             matcher.Match(string)
 
-    def testBasicNotMatchAssign(self):
+    def testBasicNotMatchAssignTrailingWS(self):
+        node = create_node.Assign('a', create_node.Num(2))
+        string = 'a=1 '
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        matched_string = matcher.GetSource()
+        self.assertEqual(string, matched_string)
+
+    def testBasicMatchAssignTrailingTab(self):
         node = create_node.Assign('a', create_node.Num(2))
         string = 'a=1'
         matcher = source_match.GetMatcher(node)
-        matched_string = matcher.GetSource()
-        self.assertNotEqual(string, matched_string)
-
-    def testBasicMatchAssign(self):
-        node = create_node.Assign('a', create_node.Num(1))
-        string = 'a=1'
-        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
         matched_string = matcher.GetSource()
         self.assertEqual(string, matched_string)
 
     def testMatchMultiAssign(self):
-        node = create_node.Assign(['a', 'b'], create_node.Num(1))
+        node = create_node.Assign(['a', 'b'], create_node.Num(2))
         string = 'a=b=1'
         matcher = source_match.GetMatcher(node)
         matched_string = matcher.GetSource()
@@ -671,7 +734,7 @@ class AssignMatcherTest(unittest.TestCase):
         self.assertNotEqual(string, matched_string)
 
     @pytest.mark.xfail(strict=True)
-    def testNotMatchMultiAssign(self):
+    def testNotMatchMultiAssignWithWS(self):
         node = create_node.Assign(['a', 'b'], create_node.Num(1))
         string = 'a =b =     1'
         matcher = source_match.GetMatcher(node)
@@ -1306,6 +1369,17 @@ class FunctionDefMatcherTest(unittest.TestCase):
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
 
+    def testCommentAfterDecorator(self):
+        node = create_node.FunctionDef(
+            'test_fun',
+            decorator_list=[create_node.Name('dec')],
+            body=[create_node.Pass()])
+        string = '@dec\n #comment\ndef test_fun():\n  pass\n'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        matcher_result = matcher.GetSource()
+        self.assertEqual(string, matcher_result)
+
     def testBody(self):
         node = create_node.FunctionDef(
             'test_fun',
@@ -1487,6 +1561,13 @@ class ModuleMatcherTest(unittest.TestCase):
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
 
+    def testBasicMatchEndsWithComent(self):
+        node = create_node.Module(create_node.Expr(create_node.Name('a')))
+        string = 'a # \t comment # \n'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        self.assertEqual(string, matcher.GetSource())
+
     def testBasicMatchWithEmptyLines(self):
         node = create_node.Module(
             create_node.Expr(create_node.Name('a')),
@@ -1506,40 +1587,43 @@ class ModuleMatcherTest(unittest.TestCase):
         self.assertEqual(string, matcher.GetSource())
 
 
-class NameMatcherTest(unittest.TestCase):
-
-    def testBasicMatch(self):
-        node = create_node.Name('foobar')
-        string = 'foobar'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual('foobar', matcher.GetSource())
-
-    def testIdChange(self):
-        node = create_node.Name('foobar')
-        string = 'foobar'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        node.id = 'hello'
-        self.assertEqual('hello', matcher.GetSource())
-
-
 class NumMatcherTest(unittest.TestCase):
 
     def testBasicMatch(self):
-        #    node = create_node.Num('1')
         node = create_node.Num('1')
         string = '1'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
-        self.assertEqual('1', matcher.GetSource())
+        self.assertEqual(string, matcher.GetSource())
 
-    def testBasicMatchWithSuffix(self):
-        node = create_node.Num('1')
-        string = '1L'
+    def testBasicMatchWithSign(self):
+        node = create_node.Num('2')
+        string = '+1'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
-        self.assertEqual('1L', matcher.GetSource())
+        self.assertEqual(string, matcher.GetSource())
+
+    def testLargeNumberMatch(self):
+        node = create_node.Num('1234567890987654321')
+        string = '1234567890987654321'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        self.assertEqual(string, matcher.GetSource())
+
+    def testBasicNoMatch(self):
+        node = create_node.Num('2')
+        string = '1'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        self.assertNotEqual('1', matcher.GetSource())
+
+    # not supported in python 3
+    # def testBasicMatchWithSuffix(self):
+    #     node = create_node.Num('1')
+    #     string = '1L'
+    #     matcher = source_match.GetMatcher(node)
+    #     matcher.Match(string)
+    #     self.assertEqual('1L', matcher.GetSource())
 
 
 class SetMatcherTest(unittest.TestCase):
@@ -1664,7 +1748,6 @@ class StrMatcherTest(unittest.TestCase):
 
 
 class SubscriptMatcherTest(unittest.TestCase):
-    """Tests for the SyntaxFreeLine matcher."""
 
     def testBasicMatch(self):
         node = create_node.Subscript('a', 1)
@@ -1687,9 +1770,23 @@ class SubscriptMatcherTest(unittest.TestCase):
         matcher.Match(string)
         self.assertEqual('a [ 1 : 2 : 3 ]', matcher.GetSource())
 
+class CommentMatcherTest(unittest.TestCase):
+    def testBasicMatch(self):
+        node = create_node.Comment('#comment')
+        string = '#comment'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        self.assertEqual(string, matcher.GetSource())
+
+    def testBasicMatchSpecialChars(self):
+        string = '##\t#   c \to m \t  m e n t ? # $'
+        node = create_node.Comment(string)
+        matcher = source_match.GetMatcher(node)
+        matched_text = matcher.Match(string)
+        self.assertEqual(string, matched_text)
 
 class SyntaxFreeLineMatcherTest(unittest.TestCase):
-    """Tests for the SyntaxFreeLine matcher."""
+
 
     def testBasicMatch(self):
         node = create_node.SyntaxFreeLine()
@@ -1701,25 +1798,27 @@ class SyntaxFreeLineMatcherTest(unittest.TestCase):
     def testVeryShortMatch(self):
         node = create_node.SyntaxFreeLine(
             comment='', col_offset=0, comment_indent=0)
-        string = '#\n'
+        string = '    #  \n'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
-        self.assertEqual('#\n', matcher.GetSource())
+        self.assertEqual(string, matcher.GetSource())
 
     def testCommentMatch(self):
         node = create_node.SyntaxFreeLine(
-            comment='comment', col_offset=0, comment_indent=0)
-        string = '#comment\n'
+            comment='comment', comment_indent=3)
+        string = ' #   comment \n'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
-        self.assertEqual('#comment\n', matcher.GetSource())
+        matched_text = matcher.GetSource()
+        self.assertEqual(string, matched_text)
 
     def testIndentedCommentMatch(self):
         node = create_node.SyntaxFreeLine(
             comment='comment', comment_indent=2)
-        string = '#  comment\n'
+        string = ' #  comment \n'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
+
         self.assertEqual(string, matcher.GetSource())
 
     def testOffsetCommentMatch(self):
@@ -1748,66 +1847,6 @@ class SyntaxFreeLineMatcherTest(unittest.TestCase):
         matcher = source_match.GetMatcher(node)
         with self.assertRaises(source_match.BadlySpecifiedTemplateError):
             matcher.Match(string)
-
-
-class TryExceptMatcherTest(unittest.TestCase):
-
-    def testBasicMatch(self):
-        node = create_node.Try(
-            [create_node.Pass()],
-            [create_node.ExceptHandler(None, None, [create_node.Pass()])])
-
-        string = """try:\n\tpass\nexcept:\n\tpass\n"""
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testMatchMultipleExceptHandlers(self):
-        node = create_node.Try(
-            [create_node.Expr(create_node.Name('a'))],
-            [create_node.ExceptHandler('TestA'),
-             create_node.ExceptHandler('TestB')])
-        string = """try:
-  a
-except TestA:
-  pass
-except TestB:
-  pass
-"""
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testMatchExceptAndOrElse(self):
-        node = create_node.Try(
-            [create_node.Expr(create_node.Name('a'))],
-            [create_node.ExceptHandler()],
-            orelse=[create_node.Pass()])
-        string = """try:
-  a
-except:
-  pass
-else:
-  pass
-"""
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testMatchWithEmptyLine(self):
-        node = create_node.Try(
-            [create_node.Expr(create_node.Name('a'))],
-            [create_node.ExceptHandler('Exception1', 'e')])
-        string = """try:
-  a
-
-except Exception1 as e:
-
-  pass
-"""
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
 
 
 class TryFinallyMatcherTest(unittest.TestCase):
@@ -1858,63 +1897,6 @@ finally:
 
       c 
 """
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-
-class IfMatcherTest(unittest.TestCase):
-    def testSimpleIfElse(self):
-        node = create_node.If(conditional=True, body=[create_node.Pass()], orelse=[create_node.Pass()])
-        string = 'if       True:   \n pass    \nelse:\n pass \n'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        matcher_source = matcher.GetSource()
-        self.assertEqual(string, matcher_source)
-
-    def testSimpleIf(self):
-        node = create_node.If(conditional=True, body=[create_node.Pass()])
-        string = 'if       True:\n pass         \n'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        matcher_source = matcher.GetSource()
-        self.assertEqual(string, matcher_source)
-
-
-class UnaryOpMatcherTest(unittest.TestCase):
-
-    def testUAddUnaryOp(self):
-        node = create_node.UnaryOp(
-            create_node.UAdd(),
-            create_node.Name('a'))
-        string = '+a'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testUSubUnaryOp(self):
-        node = create_node.UnaryOp(
-            create_node.USub(),
-            create_node.Name('a'))
-        string = '-a'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testNotUnaryOp(self):
-        node = create_node.UnaryOp(
-            create_node.Not(),
-            create_node.Name('a'))
-        string = 'not a'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testInvertUnaryOp(self):
-        node = create_node.UnaryOp(
-            create_node.Invert(),
-            create_node.Name('a'))
-        string = '~a'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
