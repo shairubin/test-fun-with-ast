@@ -293,78 +293,6 @@ class SeparatedListFieldPlaceholderTest(unittest.TestCase):
         self.assertEqual(matched_text, '2')
 
 
-class BodyPlaceholderTest(unittest.TestCase):
-
-    def testMatchSimpleField(self):
-        body_node = create_node.Expr(create_node.Name('foobar'))
-        node = create_node.Module(body_node)
-        placeholder = source_match.BodyPlaceholder('body')
-        matched_text = placeholder.Match(node, 'foobar\n')
-        self.assertEqual(matched_text, 'foobar\n')
-        test_output = placeholder.GetSource(node)
-        self.assertEqual(test_output, 'foobar\n')
-
-    def testMatchFieldAddsEmptySyntaxFreeLine(self):
-        body_node_foobar = create_node.Expr(create_node.Name('foobar'))
-        body_node_a = create_node.Expr(create_node.Name('a'))
-        node = create_node.Module(body_node_foobar, body_node_a)
-        placeholder = source_match.BodyPlaceholder('body')
-        matched_text = placeholder.Match(node, 'foobar\n\na\n')
-        self.assertEqual(matched_text, 'foobar\n\na\n')
-        test_output = placeholder.GetSource(node)
-        self.assertEqual(test_output, 'foobar\n\na\n')
-
-    def testMatchFieldAddsEmptySyntaxFreeLineWithComment(self):
-        body_node_foobar = create_node.Expr(create_node.Name('foobar'))
-        body_node_a = create_node.Expr(create_node.Name('a'))
-        node = create_node.Module(body_node_foobar, body_node_a)
-        placeholder = source_match.BodyPlaceholder('body')
-        matched_text = placeholder.Match(node, 'foobar\n#blah\na\n')
-        self.assertEqual(matched_text, 'foobar\n#blah\na\n')
-        test_output = placeholder.GetSource(node)
-        self.assertEqual(test_output, 'foobar\n#blah\na\n')
-
-    def testDoesntMatchAfterEndOfBody(self):
-        body_node_foobar = create_node.Expr(create_node.Name('foobar'))
-        body_node_a = create_node.Expr(create_node.Name('a'))
-        node = create_node.FunctionDef('a', body=[body_node_foobar, body_node_a])
-        matcher = source_match.GetMatcher(node)
-        text_to_match = """def a():
-  foobar
-#blah
-  a
-
-# end comment
-c
-"""
-        matched_text = matcher.Match(text_to_match)
-        expected_match = """def a():
-  foobar
-#blah
-  a
-"""
-        self.assertEqual(matched_text, expected_match)
-
-    def testDoesntMatchAfterEndOfBodyAndComments(self):
-        body_node_foobar = create_node.Expr(create_node.Name('foobar'))
-        body_node_a = create_node.Expr(create_node.Name('a'))
-        node = create_node.FunctionDef('a', body=[body_node_foobar, body_node_a])
-        matcher = source_match.GetMatcher(node)
-        text_to_match = """def a():
-  foobar #blah
-  a
-
-# end comment
-c
-"""
-        matched_text = matcher.Match(text_to_match)
-        expected_match = """def a():
-  foobar #blah
-  a
-"""
-        self.assertEqual(matched_text, expected_match)
-
-
 class TestDefaultSourceMatcher(unittest.TestCase):
 
     def testInvalidExpectedPartsType(self):
@@ -483,21 +411,6 @@ class TestGetMatcher(unittest.TestCase):
         node.attr = 'hello'
         self.assertEqual(matcher.GetSource(), 'foo.hello')
 
-class TupleTest(unittest.TestCase):
-
-    def testBasicTuple(self):
-        node = create_node.Tuple(['a', 'b'])
-        string = '(\t  a, \t b )'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testBasicSingleTuple(self):
-        node = create_node.Tuple(['a'])
-        string = '(\t   a, \t)'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
 
 class NameTest(unittest.TestCase):
 

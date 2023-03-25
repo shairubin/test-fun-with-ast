@@ -243,6 +243,7 @@ class TextPlaceholder(Placeholder):
     def __init__(self, regex, default=None):
         super(TextPlaceholder, self).__init__()
         self.original_regex = regex
+#        self.regex = regex
         self.regex = self._TransformRegex(regex)
         if default is None:
             self.default = regex
@@ -1712,23 +1713,25 @@ class TupleSourceMatcher(DefaultSourceMatcher):
             TextPlaceholder(r'\s*\(', ''),
             SeparatedListFieldPlaceholder(
                 'elts', before_separator_placeholder=TextPlaceholder(r',', ',')),
-            TextPlaceholder(r'\s*,?\s*\)', ')')
+            TextPlaceholder(r'\s*,?\s*\)[ \t]*(#\S*)*', ')')
         ]
         super(TupleSourceMatcher, self).__init__(
             node, expected_parts, starting_parens)
 
     def Match(self, string):
         matched_text = super(TupleSourceMatcher, self).Match(string)
-        if not self.paren_wrapped:
-            matched_text = matched_text.rstrip()
-            return super(TupleSourceMatcher, self).Match(matched_text)
+        return matched_text
+#        if not self.paren_wrapped:
+#            matched_text = matched_text.rstrip()
+#            return super(TupleSourceMatcher, self).Match(matched_text)
 
     def MatchStartParens(self, remaining_string):
-        if remaining_string.startswith('(('):
-           raise NotImplementedError('Currently not supported')
-        if remaining_string.startswith('('):
-           return remaining_string
-        raise ValueError('Tuple does not start with (')
+        return remaining_string
+        # if remaining_string.startswith('(('):
+        #    raise NotImplementedError('Currently not supported')
+        # if remaining_string.startswith('('):
+        #    return remaining_string
+        # raise ValueError('Tuple does not start with (')
 
 def get_TryExcept_expected_parts():
     return [
