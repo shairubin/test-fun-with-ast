@@ -1,5 +1,7 @@
 import unittest
 
+import pytest
+
 import create_node
 import source_match
 
@@ -11,14 +13,32 @@ class NumMatcherTest(unittest.TestCase):
         string = '1'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
+        matched_string = matcher.GetSource()
+        self.assertEqual(string, matched_string)
 
-    def testBasicMatchWithSign(self):
-        node = create_node.Num('2')
+    def testBasicMatchWithPlusSign(self):
+        node = create_node.Num('1')
         string = '+1'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
+        matched_string = matcher.GetSource()
+        self.assertEqual(string, matched_string)
+
+    def testBasicMatchWithMinusSign(self):
+        node = create_node.Num('-1')
+        string = '-1'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        matched_string = matcher.GetSource()
+        self.assertEqual(string, matched_string)
+
+    def testBasicMatchWithMinusSignAndWS(self):
+        node = create_node.Num('-1')
+        string = '   -1   '
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        matched_string = matcher.GetSource()
+        self.assertEqual(string, matched_string)
 
     def testLargeNumberMatch(self):
         node = create_node.Num('1234567890987654321')
@@ -31,13 +51,5 @@ class NumMatcherTest(unittest.TestCase):
         node = create_node.Num('2')
         string = '1'
         matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertNotEqual('1', matcher.GetSource())
-
-    # not supported in python 3
-    # def testBasicMatchWithSuffix(self):
-    #     node = create_node.Num('1')
-    #     string = '1L'
-    #     matcher = source_match.GetMatcher(node)
-    #     matcher.Match(string)
-    #     self.assertEqual('1L', matcher.GetSource())
+        with pytest.raises(source_match.BadlySpecifiedTemplateError):
+            matcher.Match(string)

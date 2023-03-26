@@ -11,7 +11,7 @@ class BinOpMatcherTest(unittest.TestCase):
             create_node.Name('a'),
             create_node.Add(),
             create_node.Name('b'))
-        string = 'a + b'
+        string = 'a + c'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())

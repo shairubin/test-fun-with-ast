@@ -1430,18 +1430,22 @@ class NumSourceMatcher(SourceMatcher):
             # Handle hex values
             if '0x' in string:
                 raise NotImplementedError('not sporting hex value for ints')
-            node_as_str = re.match(r'([+-]?)(\d+)([ \t]*)', string)
-            node_as_str = node_as_str.group(0)
+            int_as_str = re.match(r'([+-]?)(\d+)([ \t]*)', string)
+            int_as_str = int_as_str.group(0)
         elif isinstance(self.node.n, float):
-            node_as_str = re.match(r'[-+]?\d*.\d*', string).group(0)
+            int_as_str = re.match(r'[-+]?\d*.\d*', string).group(0)
+        if int(int_as_str) != int(node_string_val):
+            raise BadlySpecifiedTemplateError(
+                'String "{}" should have started with string "{}"'
+                .format(int_as_str, node_string_val))
         self.matched_num = self.node.n
-        self.matched_as_str = node_as_str
+        self.matched_as_str = int_as_str
 
 #        unused_before, after = string.split(node_as_str, 1)
 #        if after and after[0] in ('l', 'L', 'j', 'J'):
 #            self.suffix = after[0]
 #            node_as_str += after[0]
-        return node_as_str
+        return int_as_str
 
     def GetSource(self):
         node_as_str = str(self.node.n)
