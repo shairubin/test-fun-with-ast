@@ -50,3 +50,36 @@ class NameMatcherTest(unittest.TestCase):
         matcher.Match(string)
         node.id = 'hello'
         self.assertEqual('hello', matcher.GetSource())
+
+
+    def testBasicMatch2(self):
+        node = create_node.Name('a')
+        string = 'a'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        self.assertEqual(string, matcher.GetSource())
+
+    def testMatchWithWS(self):
+        node = create_node.Name('a')
+        string = 'a '
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        self.assertEqual(string, matcher.GetSource())
+
+    def testLeadingSpaces(self):
+        node = create_node.Name('a')
+        string = '  a'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        matched_text = matcher.GetSource()
+        self.assertEqual(string, matched_text)
+        string = ' \t  a'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        matched_text = matcher.GetSource()
+        self.assertEqual(string, matched_text)
+        string = ' \t\n  a'
+        matcher = source_match.GetMatcher(node)
+        with self.assertRaises(source_match.BadlySpecifiedTemplateError):
+            matcher.Match(string)
+

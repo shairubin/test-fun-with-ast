@@ -412,38 +412,6 @@ class TestGetMatcher(unittest.TestCase):
         self.assertEqual(matcher.GetSource(), 'foo.hello')
 
 
-class NameTest(unittest.TestCase):
-
-    def testBasicMatch(self):
-        node = create_node.Name('a')
-        string = 'a'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testBasicMatchWithComment(self):
-        node = create_node.Name('a')
-        string = 'a '
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testLeadingSpaces(self):
-        node = create_node.Name('a')
-        string = '  a'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        matched_text = matcher.GetSource()
-        self.assertEqual(string, matched_text)
-        string = ' \t  a'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        matched_text = matcher.GetSource()
-        self.assertEqual(string, matched_text)
-        string = ' \t\n  a'
-        matcher = source_match.GetMatcher(node)
-        with self.assertRaises(source_match.BadlySpecifiedTemplateError):
-            matcher.Match(string)
 
 class ParenWrappedTest(unittest.TestCase):
 
@@ -505,71 +473,6 @@ class ParenWrappedTest(unittest.TestCase):
             matcher.Match(string)
 
 
-class ArgumentsMatcherTest(unittest.TestCase):
-
-    def testEmpty(self):
-        node = create_node.arguments()
-        string = ''
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testSingleArg(self):
-        node = create_node.arguments(args=['a'])
-        string = 'a'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testMultipleArgs(self):
-        node = create_node.arguments(args=['a', 'b'])
-        string = 'a, b'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testDefault(self):
-        node = create_node.arguments(args=['a'], defaults=['b'])
-        string = 'a=b'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testDefaults(self):
-        node = create_node.arguments(args=['a', 'c'], defaults=['b', 'd'])
-        string = 'a=b, c=d'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testArgsAndDefaults(self):
-        node = create_node.arguments(
-            args=['e', 'f', 'a', 'c'], defaults=['b', 'd'])
-        string = 'e, f, a=b, c=d'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        matched_source = matcher.GetSource()
-        self.assertEqual(string, matched_source)
-
-    def testArgsDefaultsVarargs(self):
-        node = create_node.arguments(
-            args=['e', 'f', 'a', 'c'], defaults=['b', 'd'],
-            vararg='args')
-        string = 'e, f, a=b, c=d, *args'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testArgsDefaultsVarargsKwargs(self):
-        node = create_node.arguments(
-            args=['e', 'f', 'a', 'c'], defaults=['b', 'd'],
-            vararg='args', kwarg='kwargs')
-        string = 'e, f, a=b, c=d, *args, **kwargs'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-
 class AssertMatcherTest(unittest.TestCase):
 
     def testBasicMatch(self):
@@ -605,55 +508,6 @@ class AttributeMatcherTest(unittest.TestCase):
         self.assertEqual(string, matcher.GetSource())
 
 
-
-
-class AssignMatcherTest(unittest.TestCase):
-
-    def testBasicMatchAssignHex(self):
-        node = create_node.Assign('a', create_node.Num(0x1F))
-        string = 'a=0x1F'
-        matcher = source_match.GetMatcher(node)
-        with pytest.raises(NotImplementedError):
-            matcher.Match(string)
-
-    def testBasicNotMatchAssignTrailingWS(self):
-        node = create_node.Assign('a', create_node.Num(2))
-        string = 'a=1 '
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        matched_string = matcher.GetSource()
-        self.assertEqual(string, matched_string)
-
-    def testBasicMatchAssignTrailingTab(self):
-        node = create_node.Assign('a', create_node.Num(2))
-        string = 'a=1'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        matched_string = matcher.GetSource()
-        self.assertEqual(string, matched_string)
-
-    def testMatchMultiAssign(self):
-        node = create_node.Assign(['a', 'b'], create_node.Num(2))
-        string = 'a=b=1'
-        matcher = source_match.GetMatcher(node)
-        matched_string = matcher.GetSource()
-        self.assertEqual(string, matched_string)
-
-    def testNotMatchMultiAssign(self):
-        node = create_node.Assign(['a', 'b'], create_node.Num(1))
-        string = 'a=c=1'
-        matcher = source_match.GetMatcher(node)
-        matched_string = matcher.GetSource()
-        self.assertNotEqual(string, matched_string)
-
-    @pytest.mark.xfail(strict=True)
-    def testNotMatchMultiAssignWithWS(self):
-        node = create_node.Assign(['a', 'b'], create_node.Num(1))
-        string = 'a =b =     1'
-        matcher = source_match.GetMatcher(node)
-        matched_string = matcher.GetSource()
-        self.assertEqual(string, matched_string)
-
 class AugAssignMatcherTest(unittest.TestCase):
 
     @pytest.mark.xfail(strict=True)
@@ -682,128 +536,6 @@ class AugAssignMatcherTest(unittest.TestCase):
     def testBasicMatchWithVarAndTab2(self):
         node = create_node.AugAssign('a', create_node.Add(), create_node.Name('b'))
         string = '               a +=\tb\n'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-class BinOpMatcherTest(unittest.TestCase):
-
-    def testAddBinOp(self):
-        node = create_node.BinOp(
-            create_node.Name('a'),
-            create_node.Add(),
-            create_node.Name('b'))
-        string = 'a + b'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testSubBinOp(self):
-        node = create_node.BinOp(
-            create_node.Name('a'),
-            create_node.Sub(),
-            create_node.Name('b'))
-        string = 'a - b'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testMultBinOp(self):
-        node = create_node.BinOp(
-            create_node.Name('a'),
-            create_node.Mult(),
-            create_node.Name('b'))
-        string = 'a * b'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testDivBinOp(self):
-        node = create_node.BinOp(
-            create_node.Name('a'),
-            create_node.Div(),
-            create_node.Name('b'))
-        string = 'a / b'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testFloorDivBinOp(self):
-        node = create_node.BinOp(
-            create_node.Name('a'),
-            create_node.FloorDiv(),
-            create_node.Name('b'))
-        string = 'a // b'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testModBinOp(self):
-        node = create_node.BinOp(
-            create_node.Name('a'),
-            create_node.Mod(),
-            create_node.Name('b'))
-        string = 'a % b'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testPowBinOp(self):
-        node = create_node.BinOp(
-            create_node.Name('a'),
-            create_node.Pow(),
-            create_node.Name('b'))
-        string = 'a ** b'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testLShiftBinOp(self):
-        node = create_node.BinOp(
-            create_node.Name('a'),
-            create_node.LShift(),
-            create_node.Name('b'))
-        string = 'a << b'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testRShiftBinOp(self):
-        node = create_node.BinOp(
-            create_node.Name('a'),
-            create_node.RShift(),
-            create_node.Name('b'))
-        string = 'a >> b'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testBitOrBinOp(self):
-        node = create_node.BinOp(
-            create_node.Name('a'),
-            create_node.BitOr(),
-            create_node.Name('b'))
-        string = 'a | b'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testBitXorBinOp(self):
-        node = create_node.BinOp(
-            create_node.Name('a'),
-            create_node.BitXor(),
-            create_node.Name('b'))
-        string = 'a ^ b'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testBitAndBinOp(self):
-        node = create_node.BinOp(
-            create_node.Name('a'),
-            create_node.BitAnd(),
-            create_node.Name('b'))
-        string = 'a & b'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
@@ -1303,81 +1035,6 @@ class FunctionDefMatcherTest(unittest.TestCase):
         self.assertEqual(string, matcher.GetSource())
 
 
-class IfMatcherTest(unittest.TestCase):
-
-    def testBasicIf(self):
-        node = create_node.If(
-            create_node.Name('True'))
-        string = """if True:\n  pass\n"""
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testBasicIfElse(self):
-        node = create_node.If(
-            create_node.Name('True'), orelse=[create_node.Pass()])
-        string = """if True:\n  pass\nelse:\n  pass\n"""
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testBasicIfElif(self):
-        node = create_node.If(
-            create_node.Name('True'),
-            orelse=[create_node.If(create_node.Name('False'))])
-        string = """if True:
-  pass
-elif False:
-  pass
-"""
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testIfElifWithSpace(self):
-        node = create_node.If(
-            create_node.Name('True'),
-            orelse=[create_node.If(create_node.Name('False'))])
-        string = """if True:
-  pass
-
-elif False:
-  pass
-"""
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testIfInElse(self):
-        node = create_node.If(
-            create_node.Name('True'),
-            orelse=[create_node.If(create_node.Name('False'))])
-        string = """if True:
-  pass
-else:
-  if False:
-    pass
-"""
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testIfAndOthersInElse(self):
-        node = create_node.If(
-            create_node.Name('True'),
-            orelse=[create_node.If(create_node.Name('False')),
-                    create_node.Expr(create_node.Name('True'))])
-        string = """if True:
-  pass
-else:
-  if False:
-    pass
-  True
-"""
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
 
 class IfExpMatcherTest(unittest.TestCase):
 
@@ -1401,34 +1058,6 @@ class IfExpMatcherTest(unittest.TestCase):
         self.assertEqual('c if False else d', matcher.GetSource())
 
 
-class LambdaMatcherTest(unittest.TestCase):
-
-    def testBasicMatch(self):
-        node = create_node.Lambda(create_node.Pass(), args=['a'])
-        string = 'lambda a:\tpass\n'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testMatchWithArgs(self):
-        node = create_node.Lambda(
-            create_node.Name('a'),
-            args=['b'])
-        string = 'lambda b: a'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testMatchWithArgsOnNewLine(self):
-        node = create_node.Lambda(
-            create_node.Name('a'),
-            args=['b'])
-        string = '(lambda\nb: a)'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-
 class ListComprehensionMatcherTest(unittest.TestCase):
 
     def testBasicMatch(self):
@@ -1443,107 +1072,6 @@ class ListComprehensionMatcherTest(unittest.TestCase):
             'c', 'a', 'b',
             create_node.Compare('c', '<', 'd'))
         string = '[c for a in b if c < d]'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-
-class ModuleMatcherTest(unittest.TestCase):
-    def testModuleBasicFailed(self):
-        node = create_node.Module(create_node.FunctionDef(name='myfunc', body=[
-            create_node.AugAssign('a', create_node.Add(), create_node.Name('c'))]))
-        string = 'def myfunc():\n \t a += c\n'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        matched_string = matcher.GetSource()
-        self.assertEqual(string, matched_string)
-
-    def testModuleBasic(self):
-        node = create_node.Module(create_node.FunctionDef(name='myfunc', body=[
-            create_node.AugAssign('a', create_node.Add(), create_node.Name('c'))]))
-        string = 'def myfunc():\n\ta += c\n'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        matched_string = matcher.GetSource()
-        self.assertEqual(string, matched_string)
-
-    def testBasicMatch(self):
-        node = create_node.Module(create_node.Expr(create_node.Name('a')))
-        string = 'a\n'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testBasicMatchEndsWithComent(self):
-        node = create_node.Module(create_node.Expr(create_node.Name('a')))
-        string = 'a # \t comment # \n'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testBasicMatchWithEmptyLines(self):
-        node = create_node.Module(
-            create_node.Expr(create_node.Name('a')),
-            create_node.Expr(create_node.Name('b')))
-        string = 'a\n\nb\n'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testBasicMatchWithCommentLines(self):
-        node = create_node.Module(
-            create_node.Expr(create_node.Name('a')),
-            create_node.Expr(create_node.Name('b')))
-        string = 'a\n#blah\nb\n'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-
-class NumMatcherTest(unittest.TestCase):
-
-    def testBasicMatch(self):
-        node = create_node.Num('1')
-        string = '1'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testBasicMatchWithSign(self):
-        node = create_node.Num('2')
-        string = '+1'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testLargeNumberMatch(self):
-        node = create_node.Num('1234567890987654321')
-        string = '1234567890987654321'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testBasicNoMatch(self):
-        node = create_node.Num('2')
-        string = '1'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertNotEqual('1', matcher.GetSource())
-
-    # not supported in python 3
-    # def testBasicMatchWithSuffix(self):
-    #     node = create_node.Num('1')
-    #     string = '1L'
-    #     matcher = source_match.GetMatcher(node)
-    #     matcher.Match(string)
-    #     self.assertEqual('1L', matcher.GetSource())
-
-
-class SetMatcherTest(unittest.TestCase):
-
-    def testBasicMatch(self):
-        node = create_node.Set('c', 'a', 'b')
-        string = '{c, a, b}'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
@@ -1660,29 +1188,6 @@ class StrMatcherTest(unittest.TestCase):
         self.assertEqual("'''foobar'''", matched_source)
 
 
-class SubscriptMatcherTest(unittest.TestCase):
-
-    def testBasicMatch(self):
-        node = create_node.Subscript('a', 1)
-        string = 'a[1]'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual('a[1]', matcher.GetSource())
-
-    def testAllPartsMatch(self):
-        node = create_node.Subscript('a', 1, 2, 3)
-        string = 'a[1:2:3]'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual('a[1:2:3]', matcher.GetSource())
-
-    def testSeparatedWithStrings(self):
-        node = create_node.Subscript('a', 1, 2, 3)
-        string = 'a [ 1 : 2 : 3 ]'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual('a [ 1 : 2 : 3 ]', matcher.GetSource())
-
 class CommentMatcherTest(unittest.TestCase):
     def testBasicMatch(self):
         node = create_node.Comment('#comment')
@@ -1697,69 +1202,6 @@ class CommentMatcherTest(unittest.TestCase):
         matcher = source_match.GetMatcher(node)
         matched_text = matcher.Match(string)
         self.assertEqual(string, matched_text)
-
-class SyntaxFreeLineMatcherTest(unittest.TestCase):
-
-
-    def testBasicMatch(self):
-        node = create_node.SyntaxFreeLine()
-        string = '\n'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual('\n', matcher.GetSource())
-
-    def testVeryShortMatch(self):
-        node = create_node.SyntaxFreeLine(
-            comment='', col_offset=0, comment_indent=0)
-        string = '    #  \n'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testCommentMatch(self):
-        node = create_node.SyntaxFreeLine(
-            comment='comment', comment_indent=3)
-        string = ' #   comment \n'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        matched_text = matcher.GetSource()
-        self.assertEqual(string, matched_text)
-
-    def testIndentedCommentMatch(self):
-        node = create_node.SyntaxFreeLine(
-            comment='comment', comment_indent=2)
-        string = ' #  comment \n'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-
-        self.assertEqual(string, matcher.GetSource())
-
-    def testOffsetCommentMatch(self):
-        node = create_node.SyntaxFreeLine(
-            comment='comment', comment_indent=1)
-        string = '  # comment\n'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testChangeComment(self):
-        node = create_node.SyntaxFreeLine(
-            comment='comment', col_offset=0, comment_indent=0)
-        string = ' #comment\n'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        node.col_offset = 0
-        node.comment_indent = 1
-        node.comment = 'hello'
-        self.assertEqual(' # hello\n', matcher.GetSource())
-
-    def testNotCommentFails(self):
-        node = create_node.SyntaxFreeLine(
-            comment='comment', col_offset=0, comment_indent=0)
-        string = 'comment\n'
-        matcher = source_match.GetMatcher(node)
-        with self.assertRaises(source_match.BadlySpecifiedTemplateError):
-            matcher.Match(string)
 
 
 class TryFinallyMatcherTest(unittest.TestCase):
