@@ -1430,8 +1430,11 @@ class NumSourceMatcher(SourceMatcher):
             # Handle hex values
             if '0x' in string:
                 raise NotImplementedError('not sporting hex value for ints')
-            int_as_str = re.match(r'([+-]?)(\d+)([ \t]*)', string)
-            int_as_str = int_as_str.group(0)
+            num_as_str = re.match(r'(([ \t]*[+-]?\d+[ \t]*)(#*\S*))', string)
+            print(num_as_str.groups())
+            int_as_str = num_as_str.group(2)
+            comment_as_str = num_as_str.group(3)
+
         elif isinstance(self.node.n, float):
             int_as_str = re.match(r'[-+]?\d*.\d*', string).group(0)
         if int(int_as_str) != int(node_string_val):
@@ -1439,7 +1442,7 @@ class NumSourceMatcher(SourceMatcher):
                 'String "{}" should have started with string "{}"'
                 .format(int_as_str, node_string_val))
         self.matched_num = self.node.n
-        self.matched_as_str = int_as_str
+        self.matched_as_str = int_as_str + comment_as_str
 
 #        unused_before, after = string.split(node_as_str, 1)
 #        if after and after[0] in ('l', 'L', 'j', 'J'):

@@ -1,5 +1,7 @@
 import unittest
 
+import pytest
+
 import create_node
 import source_match
 
@@ -11,20 +13,40 @@ class BinOpMatcherTest(unittest.TestCase):
             create_node.Name('a'),
             create_node.Add(),
             create_node.Name('b'))
-        string = 'a + c'
+        string = 'a + b'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
+
+    def testAddBinOpNegativeTest(self):
+        node = create_node.BinOp(
+            create_node.Name('a'),
+            create_node.Add(),
+            create_node.Name('b'))
+        string = 'b + a'
+        matcher = source_match.GetMatcher(node)
+        with pytest.raises(source_match.BadlySpecifiedTemplateError):
+            matcher.Match(string)
 
     def testSubBinOp(self):
         node = create_node.BinOp(
             create_node.Name('a'),
             create_node.Sub(),
-            create_node.Name('b'))
-        string = 'a - b'
+            create_node.Num('1'))
+        string = '\ta - 1  \t'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
+
+    def testSubBinOpNegativeTest(self):
+        node = create_node.BinOp(
+            create_node.Name('a'),
+            create_node.Sub(),
+            create_node.Num('2'))
+        string = '\t  a - 1'
+        matcher = source_match.GetMatcher(node)
+        with pytest.raises(source_match.BadlySpecifiedTemplateError):
+            matcher.Match(string)
 
     def testMultBinOp(self):
         node = create_node.BinOp(
@@ -41,7 +63,7 @@ class BinOpMatcherTest(unittest.TestCase):
             create_node.Name('a'),
             create_node.Div(),
             create_node.Name('b'))
-        string = 'a / b'
+        string = ' a    /        b '
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
@@ -51,7 +73,17 @@ class BinOpMatcherTest(unittest.TestCase):
             create_node.Name('a'),
             create_node.FloorDiv(),
             create_node.Name('b'))
-        string = 'a // b'
+        string = '  \t a // \t b  \t'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        self.assertEqual(string, matcher.GetSource())
+
+    def testFloorDivBinOpWithComment(self):
+        node = create_node.BinOp(
+            create_node.Name('a'),
+            create_node.FloorDiv(),
+            create_node.Num('1'))
+        string = '  \t a // \t 1  \t #comment'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
@@ -61,7 +93,7 @@ class BinOpMatcherTest(unittest.TestCase):
             create_node.Name('a'),
             create_node.Mod(),
             create_node.Name('b'))
-        string = 'a % b'
+        string = 'a % b    '
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
