@@ -1217,9 +1217,9 @@ class IfSourceMatcher(SourceMatcher):
         super(IfSourceMatcher, self).__init__(node, starting_parens)
         self.if_placeholder = TextPlaceholder(r' *if\s*', 'if ')
         self.test_placeholder = FieldPlaceholder('test')
-        self.if_colon_placeholder = TextPlaceholder(r':\n?', ':\n')
+        self.if_colon_placeholder = TextPlaceholder(r'[ \t]*:[ \t]*', ':\n')
         self.body_placeholder = BodyPlaceholder('body')
-        self.else_placeholder = TextPlaceholder(r' *else:\n', 'else:\n')
+        self.else_placeholder = TextPlaceholder(r' *else:\s*', 'else:\n')
         self.orelse_placeholder = BodyPlaceholder('orelse')
         self.is_elif = False
         self.if_indent = 0

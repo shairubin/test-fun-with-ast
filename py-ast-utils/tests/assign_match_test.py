@@ -55,6 +55,22 @@ class AssignMatcherTest(unittest.TestCase):
         matched_string = matcher.GetSource()
         self.assertEqual(string, matched_string)
 
+    def testMatchMultiAssignWithWSAndComment(self):
+        node = create_node.Assign(['a', 'b'], create_node.Num(1))
+        string = 'a\t=\t     b \t  =1 \t #comment'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        matched_string = matcher.GetSource()
+        self.assertEqual(string, matched_string)
+
+    def testMatchMultiAssignNameWithWSAndComment(self):
+        node = create_node.Assign(['a', 'b'], create_node.Name('c'))
+        string = 'a\t=\t     b \t  =c \t #comment'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        matched_string = matcher.GetSource()
+        self.assertEqual(string, matched_string)
+
     def testNotMatchMultiAssignWithWS(self):
         node = create_node.Assign(['a', 'b'], create_node.Num(1))
         string = 'a\t=\t     bb \t  =1 \t'
