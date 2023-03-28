@@ -32,7 +32,7 @@ class ModuleMatcherTest(unittest.TestCase):
 
     def testBasicMatchEndsWithComent(self):
         node = create_node.Module(create_node.Expr(create_node.Name('a')))
-        string = 'a # \t comment # \n'
+        string = '   a  \t  \n'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())

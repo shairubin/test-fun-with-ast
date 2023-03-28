@@ -36,7 +36,7 @@ class TupleTest(unittest.TestCase):
 
     def testTupleWithCommentAndWSAndConst(self):
         node = create_node.Tuple(['a', 1])
-        string = ' (\t   a, 1 \t)#comment'
+        string = ' (\t   a\t, 1 \t) \t #comment'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())

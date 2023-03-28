@@ -1719,7 +1719,7 @@ class TupleSourceMatcher(DefaultSourceMatcher):
         expected_parts = [
             TextPlaceholder(r'\s*\(', ''),
             SeparatedListFieldPlaceholder(
-                'elts', before_separator_placeholder=TextPlaceholder(r',', ',')),
+                'elts', before_separator_placeholder=TextPlaceholder(r'[ \t]*,[ \t]*', ',')),
             TextPlaceholder(r'\s*,?\s*\)[ \t]*(#\S*)*', ')')
         ]
         super(TupleSourceMatcher, self).__init__(
