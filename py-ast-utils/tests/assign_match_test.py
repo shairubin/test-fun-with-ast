@@ -46,10 +46,19 @@ class AssignMatcherTest(unittest.TestCase):
         matched_string = matcher.GetSource()
         self.assertNotEqual(string, matched_string)
 
-    #@pytest.mark.xfail(strict=True)
-    def testNotMatchMultiAssignWithWS(self):
+
+    def testMatchMultiAssignWithWS(self):
         node = create_node.Assign(['a', 'b'], create_node.Num(1))
-        string = 'a =b =     1'
+        string = 'a\t=\t     b \t  =1 \t'
         matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
         matched_string = matcher.GetSource()
         self.assertEqual(string, matched_string)
+
+    def testNotMatchMultiAssignWithWS(self):
+        node = create_node.Assign(['a', 'b'], create_node.Num(1))
+        string = 'a\t=\t     bb \t  =1 \t'
+        matcher = source_match.GetMatcher(node)
+        with pytest.raises(source_match.BadlySpecifiedTemplateError):
+            matcher.Match(string)
+
