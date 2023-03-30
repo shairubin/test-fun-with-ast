@@ -1425,15 +1425,21 @@ class NumSourceMatcher(SourceMatcher):
         self.suffix = None
 
     def Match(self, string):
+        remaining_string = self.MatchStartParens(string)
         node_string_val = str(self.node.n)
         if isinstance(self.node.n, int):
             # Handle hex values
             if '0x' in string:
                 raise NotImplementedError('not sporting hex value for ints')
-            num_as_str = re.match(r'(([ \t]*[+-]?\d+[ \t]*)(#*\S*))', string)
+#            num_as_str = re.match(r'(([ \t]*[+-]?\d+[ \t]*)((#*\S*)))', string)
+            num_as_str = re.match(r'(([ \t]*[+-]?\d+[ \t]*)(\)*)((#*\S*)|^$))', remaining_string)
+            if not num_as_str:
+                raise BadlySpecifiedTemplateError(
+                    'String "{}" does not match Num pattern')
             print(num_as_str.groups())
             int_as_str = num_as_str.group(2)
-            comment_as_str = num_as_str.group(3)
+            comment_as_str = num_as_str.group(4)
+            end_parans = num_as_str.group(3)
 
         elif isinstance(self.node.n, float):
             int_as_str = re.match(r'[-+]?\d*.\d*', string).group(0)
@@ -1441,8 +1447,10 @@ class NumSourceMatcher(SourceMatcher):
             raise BadlySpecifiedTemplateError(
                 'String "{}" should have started with string "{}"'
                 .format(int_as_str, node_string_val))
+        remaining_string = self.MatchEndParen(end_parans)
+
         self.matched_num = self.node.n
-        self.matched_as_str = int_as_str + comment_as_str
+        self.matched_as_str = self.GetStartParenText() +  int_as_str + self.GetEndParenText()  + comment_as_str
 
 #        unused_before, after = string.split(node_as_str, 1)
 #        if after and after[0] in ('l', 'L', 'j', 'J'):

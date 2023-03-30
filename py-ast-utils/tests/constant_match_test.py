@@ -40,9 +40,17 @@ class NumMatcherTest(unittest.TestCase):
         matched_string = matcher.GetSource()
         self.assertEqual(string, matched_string)
 
-    def testBasicMatchWithMinusSignAndWSWithComment(self):
+    def testMatchWSWithComment(self):
         node = create_node.Num('1')
         string = '   1   #comment'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        matched_string = matcher.GetSource()
+        self.assertEqual(string, matched_string)
+
+    def testWithParans(self):
+        node = create_node.Num('1')
+        string = '(1)'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         matched_string = matcher.GetSource()
