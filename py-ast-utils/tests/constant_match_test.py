@@ -26,13 +26,13 @@ class NumMatcherTest(unittest.TestCase):
 
     def testBasicMatchWithMinusSign(self):
         node = create_node.Num('-1')
-        string = '-1'
+        string = '  -1   \t'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         matched_string = matcher.GetSource()
         self.assertEqual(string, matched_string)
 
-    def testBasicMatchWithMinusSignAndWS(self):
+    def testBasicMatchWithdWS(self):
         node = create_node.Num('1')
         string = '   1   '
         matcher = source_match.GetMatcher(node)
@@ -55,6 +55,28 @@ class NumMatcherTest(unittest.TestCase):
         matcher.Match(string)
         matched_string = matcher.GetSource()
         self.assertEqual(string, matched_string)
+
+    def testWithParansAndWS(self):
+        node = create_node.Num('1')
+        string = '(   1   )     '
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        matched_string = matcher.GetSource()
+        self.assertEqual(string, matched_string)
+
+    def testWithMultiParansAndWS(self):
+        node = create_node.Num('1')
+        string = '((   1   )    ) '
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        self.assertEqual(string, matcher.GetSource())
+
+    def testNoMatchMultiParansAndWS(self):
+        node = create_node.Num('1')
+        string = '((   1   )     '
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        self.assertNotEqual(string, matcher.GetSource())
 
     def testLargeNumberMatch(self):
         node = create_node.Num('1234567890987654321')

@@ -27,6 +27,18 @@ class FunctionDefMatcherTest(unittest.TestCase):
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
 
+    def testDefaultName(self):
+        #        node = create_node.FunctionDef('test_fun', keys=('a'), values=('b'))
+        node = create_node.FunctionDef(
+            'test_fun', create_node.arguments(args=['a'], defaults=['b']),
+            body=[create_node.Pass()])
+
+        string = "def test_fun(a=b):\npass\n"
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        matched_source = matcher.GetSource()
+        self.assertEqual(string, matched_source)
+
     def testDefaultConstant(self):
         #        node = create_node.FunctionDef('test_fun', keys=('a'), values=('b'))
         node = create_node.FunctionDef(

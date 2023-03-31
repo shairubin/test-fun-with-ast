@@ -625,7 +625,7 @@ def GetWhiteSpaceMatcher():
 
 
 def GetEndParenMatcher():
-    return TextPlaceholder(r'\s*\)', '')
+    return TextPlaceholder(r'\s*\)[ \t]*', '')
 
 
 class SourceMatcher(object):
@@ -694,20 +694,26 @@ class SourceMatcher(object):
         self.start_paren_matchers = new_start_matchers[::-1]
         self.end_paren_matchers = new_end_matchers
 
-    def MatchWhiteSpaces(self, string, in_matcher):
-        """Matches the  whitespaces  in a string."""
-        remaining_string = string
-        matched_parts = []
-        try:
-            ws_matcher = GetWhiteSpaceMatcher()
-            remaining_string = MatchPlaceholder(
-                    remaining_string, None, ws_matcher)
-            if remaining_string != string:
-                in_matcher.append(ws_matcher)
-                matched_parts.append(ws_matcher.matched_text)
-        except BadlySpecifiedTemplateError:
-            pass
-        return remaining_string
+    def MatchCommentEOL(self, string):
+        comment = ''
+        full_line  = re.match(r'(.*)(#.*)', string)
+        if full_line:
+            comment = full_line.group(2)
+        return comment
+    # def MatchWhiteSpaces(self, string, in_matcher):
+    #     """Matches the  whitespaces  in a string."""
+    #     remaining_string = string
+    #     matched_parts = []
+    #     try:
+    #         ws_matcher = GetWhiteSpaceMatcher()
+    #         remaining_string = MatchPlaceholder(
+    #                 remaining_string, None, ws_matcher)
+    #         if remaining_string != string:
+    #             in_matcher.append(ws_matcher)
+    #             matched_parts.append(ws_matcher.matched_text)
+    #     except BadlySpecifiedTemplateError:
+    #         pass
+    #     return remaining_string
 
 
     # def MatchStartLeadingWhiteSpaces(self, string):
@@ -727,10 +733,11 @@ class SourceMatcher(object):
 
 
     def GetStartParenText(self):
+        result = ''
         if self.paren_wrapped:
-            return ''.join(matcher.GetSource(None)
-                           for matcher in self.start_paren_matchers)
-        return ''
+            for matcher in self.start_paren_matchers:
+                result += matcher.GetSource(None)
+        return result
 
     def GetWhiteSpaceText(self, in_matcher):
         result = ''
@@ -1426,20 +1433,20 @@ class NumSourceMatcher(SourceMatcher):
 
     def Match(self, string):
         remaining_string = self.MatchStartParens(string)
+        comment_as_str = self.MatchCommentEOL(string)
+
         node_string_val = str(self.node.n)
         if isinstance(self.node.n, int):
             # Handle hex values
             if '0x' in string:
                 raise NotImplementedError('not sporting hex value for ints')
 #            num_as_str = re.match(r'(([ \t]*[+-]?\d+[ \t]*)((#*\S*)))', string)
-            num_as_str = re.match(r'(([ \t]*[+-]?\d+[ \t]*)(\)*)((#*\S*)|^$))', remaining_string)
+            num_as_str = re.match(r'([ \t]*[+-]?\d+[ \t]*)((\)[ \t]*)*)', remaining_string)
             if not num_as_str:
                 raise BadlySpecifiedTemplateError(
                     'String "{}" does not match Num pattern')
-            print(num_as_str.groups())
-            int_as_str = num_as_str.group(2)
-            comment_as_str = num_as_str.group(4)
-            end_parans = num_as_str.group(3)
+            int_as_str = num_as_str.group(1)
+            end_parans = num_as_str.group(2)
 
         elif isinstance(self.node.n, float):
             int_as_str = re.match(r'[-+]?\d*.\d*', string).group(0)
@@ -1450,7 +1457,9 @@ class NumSourceMatcher(SourceMatcher):
         remaining_string = self.MatchEndParen(end_parans)
 
         self.matched_num = self.node.n
-        self.matched_as_str = self.GetStartParenText() +  int_as_str + self.GetEndParenText()  + comment_as_str
+        start_parans_text = self.GetStartParenText()
+        end_parans_text = self.GetEndParenText()
+        self.matched_as_str = start_parans_text +  int_as_str + end_parans_text  + comment_as_str
 
 #        unused_before, after = string.split(node_as_str, 1)
 #        if after and after[0] in ('l', 'L', 'j', 'J'):
