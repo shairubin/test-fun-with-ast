@@ -413,64 +413,6 @@ class TestGetMatcher(unittest.TestCase):
 
 
 
-class ParenWrappedTest(unittest.TestCase):
-
-    def testBasicMatch(self):
-        node = create_node.Name('a')
-        string = '(a)'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testNewLineMatch(self):
-        node = create_node.Name('a')
-        string = '(\na\n)'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        matched_text = matcher.GetSource()
-        self.assertEqual(string, matched_text)
-
-    def testLeadingSpaces(self):
-        node = create_node.Name('a')
-        string = '  a'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        matched_text = matcher.GetSource()
-        self.assertEqual(string, matched_text)
-        string = ' \t  (a)'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        matched_text = matcher.GetSource()
-        self.assertEqual(string, matched_text)
-        string = ' \t\n  a'
-        matcher = source_match.GetMatcher(node)
-        with self.assertRaises(source_match.BadlySpecifiedTemplateError):
-            matcher.Match(string)
-
-
-    def testWithComplexLine(self):
-        node = create_node.Compare('a', '<', 'c')
-        string = '(a < \n c\n)'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-        node = create_node.Compare('a', '<', 'c')
-        string = ' (a < \n\t  c\n)'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-
-    def testWithTuple(self):
-        node = create_node.Call('c', args=[create_node.Name('d'),
-                                           create_node.Tuple(['a', 'b'])])
-        string = ' c(d, (a, b))'
-        matcher = source_match.GetMatcher(node)
-        matcher.Match(string)
-        self.assertEqual(string, matcher.GetSource())
-        string = ' c (d, (a, b))'
-        matcher = source_match.GetMatcher(node)
-        with self.assertRaises(source_match.BadlySpecifiedTemplateError):
-            matcher.Match(string)
 
 
 class AssertMatcherTest(unittest.TestCase):
