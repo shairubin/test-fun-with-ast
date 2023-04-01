@@ -55,12 +55,15 @@ class ParenWrappedTest(unittest.TestCase):
             matcher.Match(string)
 
 
-    def testWithComplexLine(self):
+    def testWithOperatorAndLineBreaks(self):
         node = create_node.Compare('a', '<', 'c')
         string = '(a < \n c\n)'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
+
+    def testWithOperatorAndLineBreaksAndTabs(self):
+        node = create_node.Compare('a', '<', 'c')
         node = create_node.Compare('a', '<', 'c')
         string = ' (a < \n\t  c\n)'
         matcher = source_match.GetMatcher(node)
