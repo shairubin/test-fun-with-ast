@@ -280,6 +280,7 @@ class TextPlaceholder(Placeholder):
             match_attempt = re.match(self.regex, string, re.DOTALL)
         else:
             match_attempt = re.match(self.regex, string)
+            all = re.findall(self.regex, string)
         if not match_attempt:
             raise BadlySpecifiedTemplateError(
                 'string "{}" does not match regex "{}" (technically, "{}")'
@@ -1420,7 +1421,7 @@ def get_Name_expected_parts():
     return [TextPlaceholder(r'[ \t]*', ''),
             FieldPlaceholder('id'),
             TextPlaceholder(r'([ \t]*)', '')]
-#            TextPlaceholder(r'[ \t]*#*.*\n*', '')]
+#            TextPlaceholder(r'[ \t]+|[ \t]*#.*', '')]
 #    return [FieldPlaceholder('id')]
 
 
