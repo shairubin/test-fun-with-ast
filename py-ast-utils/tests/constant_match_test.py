@@ -91,3 +91,17 @@ class NumMatcherTest(unittest.TestCase):
         matcher = source_match.GetMatcher(node)
         with pytest.raises(source_match.BadlySpecifiedTemplateError):
             matcher.Match(string)
+
+    def testMatchBool(self):
+        node = create_node.Bool(False)
+        string = 'False'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        self.assertEqual(string, matcher.GetSource())
+
+    def testMatchBoolParans(self):
+        node = create_node.Bool(False)
+        string = '(False)'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        self.assertEqual(string, matcher.GetSource())

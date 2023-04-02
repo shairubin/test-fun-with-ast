@@ -61,6 +61,14 @@ class ArgumentsMatcherTest(unittest.TestCase):
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
 
+    def testMatchArgsDefaultsBool(self):
+        node = create_node.arguments(
+            args=['a'], defaults=[False])
+        string = 'a = False'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        self.assertEqual(string, matcher.GetSource())
+
     def testMatchArgsDefaultsConst(self):
         node = create_node.arguments(
             args=['a'], defaults=[1])

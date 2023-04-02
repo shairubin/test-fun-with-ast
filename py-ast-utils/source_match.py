@@ -1490,6 +1490,41 @@ class NumSourceMatcher(SourceMatcher):
             node_as_str += self.suffix
         return node_as_str
 
+class BoolSourceMatcher(NumSourceMatcher):
+    """Class to generate the source for an _ast.Num node."""
+
+    def __init__(self, node, starting_parens=None):
+        super(BoolSourceMatcher, self).__init__(node, starting_parens)
+        self.matched_as_str = None
+
+    def GetSource(self):
+        node_as_str = str(self.node.n)
+        if self.matched_bool is not None and self.matched_bool == self.node.n:
+            node_as_str = self.matched_as_str
+        if self.suffix:
+            node_as_str += self.suffix
+        return node_as_str
+
+    def Match(self, string):
+        remaining_string = self.MatchStartParens(string)
+#        comment_as_str, remaining_string = self.MatchCommentEOL(remaining_string, True)
+
+        node_string_val = str(self.node.n)
+        if not isinstance(self.node.n, bool):
+            raise BadlySpecifiedTemplateError('Node is not a bool')
+        bool_match = re.match(r'(True|False)((\)[ \t]*)*)', remaining_string)
+        if not bool_match:
+            raise BadlySpecifiedTemplateError(
+                'String "{}" does not match Bool pattern')
+        bool_as_str = bool_match.group(1)
+        end_parans = bool_match.group(2)
+        self.MatchEndParen(end_parans)
+
+        self.matched_bool = eval(bool_as_str)
+        start_parans_text = self.GetStartParenText()
+        end_parans_text = self.GetEndParenText()
+        self.matched_as_str = start_parans_text +  bool_as_str + end_parans_text
+        return bool_as_str
 
 def get_Or_expected_parts():
     return [TextPlaceholder(r'or')]
@@ -1795,16 +1830,20 @@ class ConstantSourceMatcher():
         self.constant_node = node
         self.str_matcher = StrSourceMatcher(node, starting_parens)
         self.num_matcher = NumSourceMatcher(node, starting_parens)
+        self.bool_matcher = BoolSourceMatcher(node, starting_parens)
 
     def Match(self, string):
+        if isinstance(self.constant_node.n, bool):
+            return self.bool_matcher.Match(string)
         if isinstance(self.constant_node.n, int) and isinstance(self.constant_node.s, int):
             return self.num_matcher.Match(string)
-
         if isinstance(self.constant_node.n, str) and isinstance(self.constant_node.s, str):
             return self.str_matcher.Match(string)
         raise NotImplementedError
 
     def GetSource(self):
+        if isinstance(self.constant_node.n, bool) and isinstance(self.constant_node.s, int):
+            return self.bool_matcher.GetSource()
         if isinstance(self.constant_node.n, int) and isinstance(self.constant_node.s, int):
             return self.num_matcher.GetSource()
         if isinstance(self.constant_node.n, str) and isinstance(self.constant_node.s, str):

@@ -831,9 +831,12 @@ def NotIn():
 
 
 def Num(number):
-    """Creates an _ast.Num node."""
+    """Creates an _ast.Constant node."""
     return _ast.Constant(int(number))
 
+def Bool(boolean):
+    """Creates an _ast.Constant node."""
+    return _ast.Constant(bool(boolean))
 
 def Or():
     return _ast.Or()

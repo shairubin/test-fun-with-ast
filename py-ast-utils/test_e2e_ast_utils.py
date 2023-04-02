@@ -12,7 +12,8 @@ from test_utils import TestUtils
                 params=['./../test_programs/simple_module.py',
                         './../test_programs/simple_module2.py', \
                         './../test_programs/simple_module3.py', \
-                        './../test_programs/simple_module_assignment.py' ])
+                        './../test_programs/simple_module_assignment.py', \
+                        './../test_programs/match_comment_eol.py'])
 def test_program(request):
     yield request.param
 

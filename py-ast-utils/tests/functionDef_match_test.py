@@ -27,6 +27,18 @@ class FunctionDefMatcherTest(unittest.TestCase):
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
 
+    def testDefaultBool(self):
+        node = create_node.FunctionDef(
+            'MatchCommentEOL', create_node.arguments(args=['self', 'string', 'remove_comment'], defaults=[False]),
+            body=[create_node.Pass()])
+        string = """def MatchCommentEOL(self, string, remove_comment=False):
+    pass
+"""
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        matched_source = matcher.GetSource()
+        self.assertEqual(string, matched_source)
+
     def testDefaultName(self):
         #        node = create_node.FunctionDef('test_fun', keys=('a'), values=('b'))
         node = create_node.FunctionDef(
