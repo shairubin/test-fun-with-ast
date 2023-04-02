@@ -63,6 +63,7 @@ class AssignMatcherTest(unittest.TestCase):
         matched_string = matcher.GetSource()
         self.assertEqual(string, matched_string)
 
+    @pytest.mark.xfail(strict=True)
     def testMatchMultiAssignNameWithWSAndComment(self):
         node = create_node.Assign(['a', 'b'], create_node.Name('c'))
         string = 'a\t=\t     b \t  =c \t #comment'

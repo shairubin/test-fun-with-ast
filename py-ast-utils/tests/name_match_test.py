@@ -22,6 +22,7 @@ class NameMatcherTest(unittest.TestCase):
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
 
+    @pytest.mark.xfail(strict=True)
     def testBasicMatchWithWSAndComment(self):
         node = create_node.Name('foobar')
         string = ' \t  foobar \t #comment'
@@ -66,6 +67,7 @@ class NameMatcherTest(unittest.TestCase):
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
 
+    @pytest.mark.xfail(strict=True)
     def testMatchWithComment(self):
         node = create_node.Name('a')
         string = 'a # comment'

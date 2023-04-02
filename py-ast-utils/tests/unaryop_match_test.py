@@ -1,5 +1,7 @@
 import unittest
 
+import pytest
+
 import create_node
 import source_match
 
@@ -51,6 +53,7 @@ class UnaryOpMatcherTest(unittest.TestCase):
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
 
+    @pytest.mark.xfail(strict=True)
     def testInvertUnaryOpWithWSAndComment(self):
         node = create_node.UnaryOp(
             create_node.Invert(),

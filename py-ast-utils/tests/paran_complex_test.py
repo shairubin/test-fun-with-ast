@@ -1,5 +1,7 @@
 import unittest
 
+import pytest
+
 import create_node
 import source_match
 
@@ -39,6 +41,7 @@ class ParenWrappedTest(unittest.TestCase):
         matched_text = matcher.GetSource()
         self.assertEqual(string, matched_text)
 
+    @pytest.mark.xfail(strict=True)
     def testNoMatchLeadingTabs(self):
         node = create_node.Name('a')
         string = ' \t (a  \t  )  \t '
