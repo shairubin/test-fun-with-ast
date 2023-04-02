@@ -23,7 +23,7 @@ class IfMatcherTest(unittest.TestCase):
 
     def testSimpleIf(self):
         node = create_node.If(conditional=True, body=[create_node.Pass()])
-        string = 'if       True:\n pass         \n'
+        string = 'if       True:\n pass         '
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         matcher_source = matcher.GetSource()
@@ -33,7 +33,7 @@ class IfMatcherTest(unittest.TestCase):
         node = create_node.If(
             create_node.Name('True'),
                             body=[create_node.Pass()])
-        string = """if True:\n  pass\n"""
+        string = """if True:\n  pass"""
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
@@ -41,7 +41,7 @@ class IfMatcherTest(unittest.TestCase):
     def testBasicIfElse2(self):
         node = create_node.If(
             create_node.Name('True'), body=[create_node.Pass()], orelse=[create_node.Pass()])
-        string = """if True:\n  pass\nelse: \t\n  pass\n"""
+        string = """if True:\n  pass\nelse: \t\n  pass"""
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())

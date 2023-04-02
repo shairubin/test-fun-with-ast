@@ -66,6 +66,14 @@ class NameMatcherTest(unittest.TestCase):
         matcher.Match(string)
         self.assertEqual(string, matcher.GetSource())
 
+    def testMatchWithComment(self):
+        node = create_node.Name('a')
+        string = 'a # comment'
+        matcher = source_match.GetMatcher(node)
+        matcher.Match(string)
+        matched_string = matcher.GetSource()
+        self.assertEqual(string, matched_string)
+
     def testLeadingSpaces(self):
         node = create_node.Name('a')
         string = '  a'

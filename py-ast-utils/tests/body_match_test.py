@@ -35,6 +35,14 @@ class BodyPlaceholderTest(unittest.TestCase):
         test_output = placeholder.GetSource(node)
         self.assertEqual(test_output, 'foobar\n#blah\na\n')
 
+
+    def testMatchPass(self):
+        body_node_pass = create_node.Pass()
+        node = create_node.Module(body_node_pass)
+        placeholder = source_match.BodyPlaceholder('body')
+        matched_text = placeholder.Match(node, 'pass')
+        self.assertEqual(matched_text, 'pass')
+
     def testDoesntMatchAfterEndOfBody(self):
         body_node_foobar = create_node.Expr(create_node.Name('foobar'))
         body_node_a = create_node.Expr(create_node.Name('a'))

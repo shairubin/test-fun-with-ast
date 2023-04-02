@@ -254,8 +254,10 @@ class TextPlaceholder(Placeholder):
     def _TransformRegex(self, regex):
         non_whitespace_parts = regex.split(r'\s*')
         regex = r'\s*(\\\s*|#.*\s*)*'.join(non_whitespace_parts)
+#        regex = r'\s*(\\\s*)*'.join(non_whitespace_parts)
         non_linebreak_parts = regex.split(r'\n')
         regex = r'( *#.*\n| *;| *\n)'.join(non_linebreak_parts)
+#        regex = r'( *;| *\n)'.join(non_linebreak_parts)
         return regex
 
     def Match(self, unused_node, string, dotall=False):
@@ -618,7 +620,7 @@ class BodyPlaceholder(ListFieldPlaceholder):
 
 
 def GetStartParenMatcher():
-    return TextPlaceholder(r'\(\s*', '')
+    return TextPlaceholder(r'[ \t]*\(\s*', '')
 
 def GetWhiteSpaceMatcher():
     return TextPlaceholder(r'[ \t]*', '')
@@ -640,6 +642,7 @@ class SourceMatcher(object):
         self.start_whitespace_matchers = []
         self.end_whitespace_matchers = []
         self.paren_wrapped = False
+        self.end_of_line_comment = ''
         if not stripped_parens:
             stripped_parens = []
         self.start_paren_matchers = stripped_parens
@@ -694,12 +697,19 @@ class SourceMatcher(object):
         self.start_paren_matchers = new_start_matchers[::-1]
         self.end_paren_matchers = new_end_matchers
 
-    def MatchCommentEOL(self, string):
+    # nice example for creating unit test
+    def MatchCommentEOL(self, string, remove_comment=False):
+        remaining_string = string
         comment = ''
         full_line  = re.match(r'(.*)(#.*)', string)
         if full_line:
             comment = full_line.group(2)
-        return comment
+        if comment:
+            self.end_of_line_comment = comment
+        if remove_comment and full_line:
+            remaining_string = full_line.group(1)
+        return comment, remaining_string
+
     # def MatchWhiteSpaces(self, string, in_matcher):
     #     """Matches the  whitespaces  in a string."""
     #     remaining_string = string
@@ -794,7 +804,7 @@ class DefaultSourceMatcher(SourceMatcher):
             expected_parts and the string.
           ValueError: If there is more than one TextPlaceholder in a rwo
         """
-#        remaining_string = self.MatchWhiteSpaces(string, self.start_whitespace_matchers)
+#        _ , remaining_string = self.MatchCommentEOL(string, True)
         remaining_string = self.MatchStartParens(string)
 
         try:
@@ -816,7 +826,7 @@ class DefaultSourceMatcher(SourceMatcher):
         start_parens = self.GetStartParenText()
         end_parans = self.GetEndParenText()
         end_ws = self.GetWhiteSpaceText(self.end_whitespace_matchers)
-        result =  (leading_ws + start_parens + matched_string + end_parans + end_ws)
+        result =  (leading_ws + start_parens + matched_string + end_parans + end_ws + self.end_of_line_comment)
         return result
 
 
@@ -834,6 +844,8 @@ class DefaultSourceMatcher(SourceMatcher):
             source = '{}{}'.format(self.GetWhiteSpaceText(self.start_whitespace_matchers), source)
         if self.end_whitespace_matchers:
             source = '{}{}'.format(source, self.GetWhiteSpaceText(self.end_whitespace_matchers))
+        if self.end_of_line_comment:
+            source = '{}{}'.format(source, self.end_of_line_comment)
         return source
 
     def __repr__(self):
@@ -960,6 +972,7 @@ def get_BinOp_expected_parts():
         FieldPlaceholder('op'),
         TextPlaceholder(r'\s*', ' '),
         FieldPlaceholder('right'),
+
     ]
 
 
@@ -1406,7 +1419,8 @@ def get_Mult_expected_parts():
 def get_Name_expected_parts():
     return [TextPlaceholder(r'[ \t]*', ''),
             FieldPlaceholder('id'),
-            TextPlaceholder(r'[ \t]*(#\S*)*', '')]
+            TextPlaceholder(r'([ \t]*)', '')]
+#            TextPlaceholder(r'[ \t]*#*.*\n*', '')]
 #    return [FieldPlaceholder('id')]
 
 
@@ -1433,7 +1447,7 @@ class NumSourceMatcher(SourceMatcher):
 
     def Match(self, string):
         remaining_string = self.MatchStartParens(string)
-        comment_as_str = self.MatchCommentEOL(string)
+        comment_as_str, remaining_string = self.MatchCommentEOL(remaining_string, True)
 
         node_string_val = str(self.node.n)
         if isinstance(self.node.n, int):
@@ -1481,7 +1495,7 @@ def get_Or_expected_parts():
 
 
 def get_Pass_expected_parts():
-    return [TextPlaceholder(r'[ \t]*pass[ \t]*\n', 'pass\n')]
+    return [TextPlaceholder(r'[ \t]*pass[ \t]*#*.*\n*', 'pass')]
 
 
 def get_Pow_expected_parts():

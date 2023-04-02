@@ -64,7 +64,6 @@ class ParenWrappedTest(unittest.TestCase):
 
     def testWithOperatorAndLineBreaksAndTabs(self):
         node = create_node.Compare('a', '<', 'c')
-        node = create_node.Compare('a', '<', 'c')
         string = ' (a < \n\t  c\n)'
         matcher = source_match.GetMatcher(node)
         matcher.Match(string)
