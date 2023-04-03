@@ -1566,7 +1566,7 @@ def get_Return_expected_parts():
     return [
         TextPlaceholder(r'[ \t]*return[ \t]*', 'return '),
         FieldPlaceholder('value'),
-        TextPlaceholder(r'\n', '\n'),
+#        TextPlaceholder(r'\n', '\n'),
     ]
 
 

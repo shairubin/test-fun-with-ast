@@ -852,8 +852,15 @@ def Pow():
 
 
 def Return(value):
-    return _ast.Return(value=value)
-
+    if isinstance(value, int):
+        value_node = Num(value)
+    elif isinstance(value, str):
+        value_node = Str(value)
+    elif isinstance(value, _ast.AST):
+        return _ast.Return(value)
+    else:
+        raise ValueError('Invalid return value')
+    return _ast.Return(value=value_node)
 
 def RShift():
     return _ast.RShift()
