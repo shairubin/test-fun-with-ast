@@ -1,6 +1,3 @@
-import contextlib
-import os
-import subprocess
 
 import pytest
 
@@ -29,5 +26,3 @@ class TestE2EASTUtils:
         source_match.GetSource(module_node, python_code)
         FunWithAst_code = module_node.matcher.GetSource()
         assert python_code == FunWithAst_code
-        print('source from matcher')
-        print(module_node.matcher.GetSource())

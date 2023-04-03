@@ -8,5 +8,5 @@ def MatchCommentEOL(self, string, remove_comment=False):
         self.end_of_line_comment = comment
     if remove_comment and full_line:
         remaining_string = full_line.group(1)
-    return remaining_string
+    return (remaining_string, comment)
 

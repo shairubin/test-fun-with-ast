@@ -1,6 +1,10 @@
 import ast
 from ast import NodeTransformer
 
+import source_match
+from create_node_test import GetNodeFromInput
+from source_match import GetMatcher
+
 
 class RewriteImports(NodeTransformer):
 
@@ -9,7 +13,9 @@ class RewriteImports(NodeTransformer):
             self.__add_logging_import(node)
         return node
     def __add_logging_import(self, node):
-        raise NotImplementedError
+        import_logging = GetNodeFromInput("import logging")
+        source_match.GetSource(import_logging, 'import logging\n')
+        node.body.insert(0, import_logging)
 
     def __is_logging_missing(self, node):
         for node in node.body:

@@ -84,7 +84,8 @@ def GetSource(field, text=None, starting_parens=None, assume_no_indent=False):
                         .format(field))
             FixSourceIndentation(field.module_node, field)
 
-        return field.matcher.GetSource()
+        source_code = field.matcher.GetSource()
+        return source_code
 
 
 def FixSourceIndentation(
