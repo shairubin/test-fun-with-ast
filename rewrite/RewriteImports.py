@@ -2,8 +2,7 @@ import ast
 from ast import NodeTransformer
 
 import source_match
-from create_node_test import GetNodeFromInput
-from source_match import GetMatcher
+from tests.create_node_test import GetNodeFromInput
 
 
 class RewriteImports(NodeTransformer):
