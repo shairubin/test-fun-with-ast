@@ -1,8 +1,6 @@
-import pytest
-
 from rewrite.RewriteImports import RewriteImports
 import ast
-import source_match
+import fun_with_ast
 
 
 class TestImportRewrite:
