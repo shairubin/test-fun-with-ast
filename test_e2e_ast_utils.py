@@ -7,11 +7,11 @@ from test_utils import TestUtils
 @pytest.fixture(scope="module",
 #                params=['./../test_programs/find_largest_number.py', './../test_programs/simple_print.py'])
                 params=[
-                        #'./../test_programs/simple_module.py',
-                        #'./../test_programs/simple_module2.py', \
-                        #'./../test_programs/simple_module3.py', \
-                        #'./../test_programs/simple_module_assignment.py', \
-                        #'./../test_programs/match_comment_eol.py'
+                        './test_programs/simple_module.py',
+                        './test_programs/simple_module2.py', \
+                        './test_programs/simple_module3.py', \
+                        './test_programs/simple_module_assignment.py', \
+                        './test_programs/match_comment_eol.py', \
                         './test_programs/simple_module.py'
                         ])
 def test_program(request):
