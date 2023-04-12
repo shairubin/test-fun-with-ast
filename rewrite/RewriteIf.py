@@ -1,17 +1,29 @@
 import ast
 from ast import NodeTransformer
 import logging
+
+from fun_with_ast import source_match
+from fun_with_ast.create_node import GetNodeFromInput
+
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO)
+from enum import auto, Flag
 
+
+class IfRewrtiteAction(Flag):
+    LOG_IF_BODY = auto()
 
 class RewriteIf(NodeTransformer):
+    def __init__(self, if_action):
+        super(NodeTransformer, self).__init__()
+        self._if_action = if_action
+
     def visit_If(self, node):
-        unparsted_if_node = ast.unparse(node.test)
-        logging.info("visited if node. Test is: "+ unparsted_if_node)
+#        unparsted_if_node = ast.unparse(node.test)
+#        logging.info("visited if node. Test is: "+ unparsted_if_node)
         self._add_logs_to_if_node(node)
         result = self.generic_visit(node)
-        logging.info("finish if node. Test is: "+ unparsted_if_node)
+#        logging.info("finish if node. Test is: "+ unparsted_if_node)
         return result
 
     def _add_logs_to_if_node(self, if_node):
@@ -28,15 +40,19 @@ class RewriteIf(NodeTransformer):
 
 
     def __generate_log_node(self, if_node):
-        log_func = ast.Attribute(value=ast.Name(id='logging', ctx=ast.Load()),
-                                 attr='info',
-                                 ctx=ast.Load())
-        formatted_string  = self.__get_log_formated_string(if_node.test)
+        formated_string  = self.__get_log_formated_string(if_node.test)
+        join_Str_string = 'f\" ' + formated_string + ' \"'
+        log_node = GetNodeFromInput(f'logger.info({join_Str_string})')
+        source_match.GetSource(log_node, f'logger.info({join_Str_string})')
+
+#        log_func = ast.Attribute(value=ast.Name(id='logging', ctx=ast.Load()),
+#                                 attr='info',
+#                                 ctx=ast.Load())
         JoinedStr_node = self.__get_JoinedStr_node(formatted_string)
-        args = JoinedStr_node
-        call = ast.Call(func=log_func, args=args, keywords=[])
-        result = ast.Expr(value=call)
-        return result
+#        args = JoinedStr_node
+#        call = ast.Call(func=log_func, args=args, keywords=[])
+#        result = ast.Expr(value=call)
+        return log_node
 
     def __get_log_formated_string(self, if_condition):
         if isinstance(if_condition, ast.Compare):
