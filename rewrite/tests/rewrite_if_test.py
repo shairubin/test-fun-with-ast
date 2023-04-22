@@ -9,9 +9,10 @@ class TestImportRewrite:
     def test_simple_if_rewrite(self):
         python_code = "if True:\n    a = 1"
         module_node = self.__rewrite_if(python_code, IfRewrtiteAction.LOG_IF_BODY)
-        l2_source=module_node.body[0].body[2].matcher.GetSource()
-        l1_source=module_node.body[0].body[1].matcher.GetSource()
-        l0_source=module_node.body[0].body[0].matcher.GetSource()
+        testif_souurce = module_node.body[0].matcher.GetSource()
+        l1_source=module_node.body[0].body[0].matcher.GetSource()
+        l2_source=module_node.body[0].body[1].matcher.GetSource()
+        l3_source=module_node.body[0].body[2].matcher.GetSource()
         FunWithAst_code = module_node.body[0].matcher.GetSource()
 
         #        FunWithAst_code = module_node.matcher.GetSource()
