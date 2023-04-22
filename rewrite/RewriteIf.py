@@ -4,6 +4,7 @@ import logging
 
 from fun_with_ast import source_match
 from fun_with_ast.create_node import GetNodeFromInput
+from fun_with_ast.dynamic_matcher import GetDynamicMatcher
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO)
@@ -42,13 +43,15 @@ class RewriteIf(NodeTransformer):
     def __generate_log_node(self, if_node):
         formated_string  = self.__get_log_formated_string(if_node.test)
         join_Str_string = 'f\" ' + formated_string + ' \"'
-        log_node = GetNodeFromInput(f'logger.info({join_Str_string})')
-        source_match.GetSource(log_node, f'logger.info({join_Str_string})')
+        log_node = GetNodeFromInput('logger.info(\'test string\')\n')
+        #matcher = GetDynamicMatcher(log_node)
+        #matcher.Match('logger.info(\'test string\')')
+        source = source_match.GetSource(log_node, 'logger.info(\'test string\')\n')
 
 #        log_func = ast.Attribute(value=ast.Name(id='logging', ctx=ast.Load()),
 #                                 attr='info',
 #                                 ctx=ast.Load())
-        JoinedStr_node = self.__get_JoinedStr_node(formatted_string)
+        #JoinedStr_node = self.__get_JoinedStr_node(formatted_string)
 #        args = JoinedStr_node
 #        call = ast.Call(func=log_func, args=args, keywords=[])
 #        result = ast.Expr(value=call)
