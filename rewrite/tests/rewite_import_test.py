@@ -1,6 +1,7 @@
+from fun_with_ast.get_source import GetSource
+
 from rewrite.RewriteImports import RewriteImports
 import ast
-from fun_with_ast import source_match
 
 
 class TestImportRewrite:
@@ -45,7 +46,7 @@ class TestImportRewrite:
 
     def __rewrite_imports(self, python_code, list_of_imports):
         module_node = ast.parse(python_code)
-        source_match.GetSource(module_node, python_code)
+        GetSource(module_node, python_code)
         rewrite_imports = RewriteImports(list_of_imports)
         rewrite_imports.visit(module_node)
         ast.fix_missing_locations(module_node)

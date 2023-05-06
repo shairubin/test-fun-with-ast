@@ -1,6 +1,8 @@
 import difflib
 from pprint import pprint
 
+from fun_with_ast.get_source import GetSource
+
 from rewrite.RewriteIf import RewriteIf, IfRewrtiteConfig
 from rewrite.RewriteImports import RewriteImports
 import ast
@@ -11,7 +13,17 @@ class TestImportRewrite:
 
     def test_simple_if_rewrite(self):
         python_code = "if True:\n    a = 1"
-        module_node = self.__rewrite_if(python_code, IfRewrtiteConfig('test string'))
+        module_node = self.__rewrite_if(python_code, IfRewrtiteConfig())
+        FunWithAst_code = module_node.body[0].matcher.GetSource()
+        lines_original_python = set(python_code.splitlines())
+        lines_fun_with_ast = set(FunWithAst_code.splitlines())
+        diff_lines = lines_fun_with_ast - lines_original_python
+        assert(len(diff_lines)) ==1
+        assert diff_lines.pop() == '    logger.info(\'Log for If body\')'
+
+    def test_simple_if_else_rewrite(self):
+        python_code = "if True:\n    a = 1\nelse:\n    a = 2"
+        module_node = self.__rewrite_if(python_code, IfRewrtiteConfig(_body_log='body string', _else_log='else string'))
         FunWithAst_code = module_node.body[0].matcher.GetSource()
         lines_original_python = set(python_code.splitlines())
         lines_fun_with_ast = set(FunWithAst_code.splitlines())
@@ -21,7 +33,7 @@ class TestImportRewrite:
 
     def __rewrite_if(self, python_code, config):
         module_node = ast.parse(python_code)
-        source_match.GetSource(module_node, python_code)
+        GetSource(module_node, python_code)
         rewrite_if = RewriteIf(config)
         rewrite_if.visit(module_node)
         return module_node

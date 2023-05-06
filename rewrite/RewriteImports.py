@@ -3,6 +3,7 @@ from ast import NodeTransformer
 
 from fun_with_ast import source_match
 from fun_with_ast.create_node import GetNodeFromInput
+from fun_with_ast.get_source import GetSource
 
 
 class RewriteImports(NodeTransformer):
@@ -18,7 +19,7 @@ class RewriteImports(NodeTransformer):
         return node
     def __add_import(self, node, _import):
         import_node = GetNodeFromInput(f'import {_import}')
-        source_match.GetSource(import_node, f'import {_import}\n')
+        GetSource(import_node, f'import {_import}\n')
         node.body.insert(0, import_node)
 
     def __get_existing_imports(self, node):

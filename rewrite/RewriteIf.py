@@ -5,17 +5,21 @@ from dataclasses import dataclass
 
 from fun_with_ast import source_match
 from fun_with_ast.create_node import GetNodeFromInput
+from fun_with_ast.get_source import GetSource
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO)
 
 @dataclass(init=True, repr=True, eq=True, order=False, unsafe_hash=False, frozen=False)
 class IfRewrtiteConfig():
-    _body_log: str = None
+    _body_fix_log: str = 'Log for If body'
+    _else_fix_log: str = 'Log for If else'
+    _body_condition_log: bool = False
+    _else_condition_log: bool = False
 
     @property
     def body_log(self):
-        return self._body_log
+        return self._body_fix_log
 
 class RewriteIf(NodeTransformer):
     def __init__(self, if_config):
@@ -48,7 +52,7 @@ class RewriteIf(NodeTransformer):
         ident = ' '*self.__get_ident(if_node)
         log_line = f'logger.info(\'{self.body_log}\')\n'
         log_node = GetNodeFromInput(log_line)
-        source = source_match.GetSource(log_node, ident+log_line)
+        GetSource(log_node, ident+log_line)
         return log_node
 
     # def __get_log_formated_string(self, if_condition):
@@ -112,13 +116,16 @@ class RewriteIf(NodeTransformer):
         if if_node.__getattribute__('orelse'):
             raise NotImplementedError
         body = if_node.body
+        ident = self.__find_ident(body)
+        return ident
+
+    def __find_ident(self, body):
         ident = 0
         for stmt in body:
             stmt_ident = stmt.col_offset
-            if stmt_ident > ident and ident==0:
+            if stmt_ident > ident and ident == 0:
                 ident = stmt_ident
-            elif stmt_ident > ident and ident!=0:
-                raise NotImplementedError
-
+            elif stmt_ident > ident and ident != 0:
+                raise ValueError('illegal ident')
         return ident
 
