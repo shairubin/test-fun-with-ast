@@ -2,7 +2,7 @@ import ast
 from ast import NodeTransformer
 
 from fun_with_ast import source_match
-from fun_with_ast.create_node import GetNodeFromInput
+from fun_with_ast.manipulate_node.create_node import GetNodeFromInput
 from fun_with_ast.get_source import GetSource
 
 
