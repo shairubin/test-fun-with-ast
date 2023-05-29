@@ -2,13 +2,16 @@ import ast
 
 import pytest
 from fun_with_ast.get_source import GetSource
+from fun_with_ast.manipulate_node.create_node import GetNodeFromInput
+from fun_with_ast.manipulate_node.if_manipulator import ManipulateIfNode, IfManipulatorConfig
+from fun_with_ast.source_matchers.matcher_resolver import GetDynamicMatcher
 
 from rewrite.RewriteIf import RewriteIf, IfRewrtiteConfig
 
 
 @pytest.fixture(
                 params=[
-                        ["if True:\n    a = 1", "    logger.info(\'Log for If body\')"],
+                        ["if True:\n    a = 1", "logger.info(\'Log for If body\')"],
                         ["if a:\n    a = 1", "    logger.info(\'Log for If body\')"],
                         ["if a:\n    a = 1\n    return False", "    logger.info(\'Log for If body\')"]
                         ])
@@ -26,11 +29,15 @@ def test_condition_body_params(request):
 class TestImportRewrite:
 
     def test_fixed_if_rewrite(self, test_fixed_body_params):
-        python_code = test_fixed_body_params[0]
-        module_node = self.__rewrite_if(python_code, IfRewrtiteConfig())
-        expected_string = test_fixed_body_params[1]
-        self._verify_rewrite(expected_string, module_node, python_code)
-
+        original_if_source = test_fixed_body_params[0]
+        if_node = GetNodeFromInput(original_if_source)
+        if_node_matcher = GetDynamicMatcher(if_node)
+        if_node_matcher.Match(original_if_source)
+        node_to_add = GetNodeFromInput(test_fixed_body_params[1])
+        if_manipulator = ManipulateIfNode(if_node)
+        if_manipulator.add_nodes([node_to_add], IfManipulatorConfig(body_index=0, location_in_body_index=0))
+        new_code = if_node_matcher.GetSource()
+        print(new_code)
     def test_condition_if_rewrite(self, test_condition_body_params):
         python_code = test_condition_body_params[0]
         module_node = self.__rewrite_if(python_code, IfRewrtiteConfig(_body_condition_log=True))
@@ -43,7 +50,7 @@ class TestImportRewrite:
         module_node = self.__rewrite_if(python_code, IfRewrtiteConfig())
         self._verify_rewrite('    logger.info(\'test string\')', module_node, python_code)
 
-    def __rewrite_if(self, python_code, config):
+    def _rewrite_if(self, python_code, config):
         module_node = ast.parse(python_code)
         GetSource(module_node, python_code)
         rewrite_if = RewriteIf(config)

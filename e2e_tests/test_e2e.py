@@ -8,7 +8,7 @@ import pytest
 from test_utils import TestUtils
 
 logging.basicConfig(level=logging.INFO)
-from my_main import simple_parse_example, simple_rewrtie_if_example, simple_unparse_example, \
+from rewrite_if_examples import simple_parse_example, simple_rewrtie_if_example, simple_unparse_example, \
     simple_rewrite_import_example
 
 
