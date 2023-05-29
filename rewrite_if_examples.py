@@ -34,7 +34,7 @@ if __name__ == "__main__":
               #("if True: # comment  \n     a = 1\n#another comment", "logger.info(\'Log for If body\')", 0, 1)
               ("if True:\n     a = 1\nelse:\n    a=2", "logger.info(\'Log for If else\')", 1, 1),
               ("if True:\n     a = 1\nelse:\n    a=2", "logger.info(\'Log for If else 2\')", 1, 0),
-              #("if a and (not c and not b):\n     a = 1\nelse:\n    a=2", "logger.info(\'Log for If else 2\')", 1, 0)
+              ("if a and ((not c) and (not b)):\n    a = 1\nelse:\n    a=2", "logger.info(\'Log for If else 2\')", 1, 0)
               ]
     for index, input in enumerate(inputs):
         if_body_rewrite(index, input[0], input[1], input[2], input[3])
