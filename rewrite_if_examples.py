@@ -1,3 +1,5 @@
+import ast
+
 from fun_with_ast.manipulate_node.create_node import GetNodeFromInput
 from fun_with_ast.manipulate_node.if_manipulator import ManipulateIfNode, IfManipulatorConfig
 from fun_with_ast.source_matchers.matcher_resolver import GetDynamicMatcher
@@ -16,22 +18,24 @@ class bcolors:
 
 
 def if_body_rewrite(example_number, original_if_source, source_to_add, body_index, location_in_body_index):
-    print(bcolors.UNDERLINE + bcolors.FAIL+'\n' + "Example number " + str(example_number)  + bcolors.ENDC)
-    print(bcolors.OKBLUE  + "Original Code:\n" + original_if_source  + bcolors.ENDC)
+    print(bcolors.UNDERLINE + bcolors.FAIL+'\n' + "Example Number " + str(example_number)  + bcolors.ENDC)
+    print(bcolors.OKBLUE  + "Developer Code:\n" + original_if_source  + bcolors.ENDC)
     if_node = GetNodeFromInput(original_if_source)
+    unparsed_code = ast.unparse(ast.parse(original_if_source))
+    print(bcolors.OKGREEN + "\nAST Unparse Code:\n" + unparsed_code + bcolors.ENDC)
     if_node_matcher = GetDynamicMatcher(if_node)
-    if_node_matcher.Match(original_if_source)
+    if_node_matcher.do_match(original_if_source)
     node_to_add = GetNodeFromInput(source_to_add)
-    if_manipulator = ManipulateIfNode(if_node)
-    if_manipulator.add_nodes([node_to_add], IfManipulatorConfig(body_index, location_in_body_index))
+    if_manipulator = ManipulateIfNode(if_node, IfManipulatorConfig(body_index, location_in_body_index))
+    if_manipulator.add_nodes([node_to_add])
     new_code = if_node_matcher.GetSource()
-    print(bcolors.OKCYAN + '\n' + "Modified Code:\n" + new_code + bcolors.ENDC)
+    print(bcolors.OKCYAN + "\nFun With AST Code:\n" + new_code + bcolors.ENDC)
 
 if __name__ == "__main__":
     inputs = [("if True:\n    a = 1", "logger.info(\'Log for If body\')", 0, 0),
               ("if True:\n    a = 1", "logger.info(\'Log for If body\')", 0, 1),
               ("if True: # comment  \n     a = 1", "logger.info(\'Log for If body\')", 0, 1),
-              #("if True: # comment  \n     a = 1\n#another comment", "logger.info(\'Log for If body\')", 0, 1)
+              ("if True: # comment  \n     a = 1\n#another comment", "logger.info(\'Log for If body\')", 0, 1),
               ("if True:\n     a = 1\nelse:\n    a=2", "logger.info(\'Log for If else\')", 1, 1),
               ("if True:\n     a = 1\nelse:\n    a=2", "logger.info(\'Log for If else 2\')", 1, 0),
               ("if a and ((not c) and (not b)):\n    a = 1\nelse:\n    a=2", "logger.info(\'Log for If else 2\')", 1, 0)
