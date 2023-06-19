@@ -28,7 +28,7 @@ def if_body_rewrite(example_title, example_input):
     if_node_matcher = GetDynamicMatcher(if_node)
     if_node_matcher.do_match(original_if_source)
     node_to_add = GetNodeFromInput(source_to_add)
-    if_manipulator = ManipulateIfNode(if_node, IfManipulatorConfig(body_index, location_in_body_index))
+    if_manipulator = ManipulateIfNode(if_node, IfManipulatorConfig(body_index=body_index, location_in_body_index=location_in_body_index))
     if_manipulator.add_nodes([node_to_add])
     new_code = if_node_matcher.GetSource()
     print(bcolors.OKCYAN + "\nFun With AST Code:\n" + new_code + bcolors.ENDC)
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     if not cwd.endswith('examples'):
         raise ValueError("Please run this script from examples directory")
 
-    with open('examples.json') as json_file:
+    with open('if_rewrite.json') as json_file:
         examples = json.load(json_file)
     for index, input in enumerate(examples):
-        if_body_rewrite(f"Example number {index}: {input['example name']}", input)
+        if_body_rewrite(f"Example number {index+1}: {input['example name']}", input)
