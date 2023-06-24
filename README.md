@@ -1,4 +1,5 @@
 # test-fun-with-ast
+The repository contains examples of using the [fun-with-ast](https://github.com/shairubin/fun_with_ast) library.
 ## Install (tested on Ubuntu 20.04)
 We assume you use python > 3.6 
 1. Create an empty directory: e.g., ```mkdir ~/example_fun_with_ast```
