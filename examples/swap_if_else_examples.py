@@ -24,10 +24,7 @@ class bcolors:
 def if_body_rewrite(example_title, example_input):
     body_index, location_in_body_index, original_if_source = _extract_example_data(example_input)
     _print_example_parameters(example_title, original_if_source)
-    if_node = GetNodeFromInput(original_if_source)
-    if_node_matcher = GetDynamicMatcher(if_node)
-    if_node_matcher.do_match(original_if_source)
-    if_node.matcher = if_node_matcher
+    if_node, if_node_matcher = _get_if_source(original_if_source)
     config = IfManipulatorConfig(body_index, location_in_body_index)
     manipulator = ManipulateIfNode(if_node, config)
     original_body_source = manipulator.get_body_orelse_source()
@@ -44,9 +41,18 @@ def if_body_rewrite(example_title, example_input):
     new_else_source = manipulator.get_body_orelse_source()
     print(bcolors.OKGREEN + "\nNew Else source (old body):\n" + new_else_source + bcolors.ENDC)
     new_if = if_node_matcher.GetSource()
-    print(bcolors.OKCYAN + "\nIf code after swap :\n" + new_if + bcolors.ENDC)
+    print(bcolors.OKCYAN + "\nFun Wtih AST code after swap :\n" + new_if + bcolors.ENDC)
     unparsed_code = ast.unparse(if_node)
     print(bcolors.WARNING + "\nAST Unparse Code after swap:\n" + unparsed_code + bcolors.ENDC)
+
+
+def _get_if_source(original_if_source):
+    if_node = GetNodeFromInput(original_if_source)
+    if_node_matcher = GetDynamicMatcher(if_node)
+    if_node_matcher.do_match(original_if_source)
+    if_node.matcher = if_node_matcher
+    return if_node, if_node_matcher
+
 
 def _print_example_parameters(example_title, original_if_source):
     print(bcolors.UNDERLINE + bcolors.FAIL + '\n'  + str(example_title) + bcolors.ENDC)
