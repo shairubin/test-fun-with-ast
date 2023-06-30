@@ -6,18 +6,7 @@ from fun_with_ast.manipulate_node.create_node import GetNodeFromInput
 from fun_with_ast.manipulate_node.if_manipulator import ManipulateIfNode, IfManipulatorConfig
 from fun_with_ast.source_matchers.matcher_resolver import GetDynamicMatcher
 
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
-
+from common_utils import bcolors
 
 
 #def if_body_rewrite(example_number, original_if_source, source_to_add, body_index, location_in_body_index):
