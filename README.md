@@ -20,5 +20,5 @@ We assume you use python > 3.6
 2. Optional: delete the directory: ```rm -rf ~/example_fun_with_ast```
 
 ## Contributors are Welcomed 
-1. See open issues - or open as new one.
+1. See open issues - or open a new one.
 2. Have fun.
