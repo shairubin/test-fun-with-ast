@@ -15,6 +15,6 @@ We assume you use python > 3.6
     1. ```PYTHONPATH=../ python swap_if_else_examples.py``` 
 1. Run the example source match programs 
    1. ```cd ../preserve_source_examples```
-   1. ```python source_code_preserve_tests.py``` 
+   1. ```PYTHONPATH=../ python source_code_preserve_tests.py``` 
 1. Deactivate the virtual environment: `deactivate`
 2. Optional: delete the directory: ```rm -rf ~/example_fun_with_ast```
