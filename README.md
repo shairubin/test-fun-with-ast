@@ -1,6 +1,6 @@
 # test-fun-with-ast
 The repository contains examples of using the [fun-with-ast](https://github.com/shairubin/fun_with_ast) library.
-## Install (tested on Ubuntu 20.04)
+### Install and Run Test Programs(tested on Ubuntu 20.04)
 We assume you use python > 3.6 
 1. Create an empty directory: e.g., ```mkdir ~/example_fun_with_ast```
 1. Change directory into the new directory: ```cd ~/example_fun_with_ast```
@@ -18,3 +18,7 @@ We assume you use python > 3.6
    1. ```PYTHONPATH=../ python source_code_preserve_tests.py``` 
 1. Deactivate the virtual environment: `deactivate`
 2. Optional: delete the directory: ```rm -rf ~/example_fun_with_ast```
+
+## Contributors are Welcomed 
+1. See open issues - or open as new one.
+2. Have fun.
