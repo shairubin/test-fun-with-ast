@@ -58,8 +58,8 @@ def _extract_example_data(example_input):
 if __name__ == "__main__":
 
     cwd = os.getcwd()
-    if not cwd.endswith('if_manipulation_examples'):
-        raise ValueError("Please run this script from if_manipulation_examples directory")
+    if not cwd.endswith('source_manipulation_examples'):
+        raise ValueError("Please run this script from source_manipulation_examples directory")
 
     with open('if_else_swap.json') as json_file:
         examples = json.load(json_file)
