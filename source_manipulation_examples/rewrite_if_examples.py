@@ -48,6 +48,5 @@ if __name__ == "__main__":
 
     with open('if_rewrite.json') as json_file:
         examples = json.load(json_file)
-    for index, example in enumerate(examples):
-        example_title = f"Example number {index+1}: {input['example name']}"
-        if_body_rewrite (example_title, example['example values'])
+    for index, input in enumerate(examples):
+        if_body_rewrite(f"Example number {index+1}: {input['example name']}", input)
