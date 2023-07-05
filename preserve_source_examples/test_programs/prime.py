@@ -6,8 +6,7 @@ def isPrime(x):
     if (x < 2):
         return True
     else:
-        for i in range(2, x): # if you add a space before 2 fun-with-ast breaks
-            pass
+        for i in range( 2, x): # if you add a space before 2 fun-with-ast breaks
             if (x % i == 0):
                 return False
     return True
