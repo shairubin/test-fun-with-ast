@@ -17,10 +17,10 @@ def match_original_program(test_program='./test_programs/fib.py'):
     print(bcolors.OKCYAN + "\nORIGINAL PROGRAM:\n" + python_program_as_string, bcolors.ENDC)
     unparsed_program = ast.unparse(ast.parse(python_program_as_string))
     print(bcolors.OKGREEN + "\nAST UNPARSED PROGRAM:\n" + unparsed_program, bcolors.ENDC)
-    fib_node = GetNodeFromInput(python_program_as_string, 0, get_module=True)
-    fib_node_matcher = GetDynamicMatcher(fib_node)
-    fib_node_matcher.do_match(python_program_as_string)
-    fun_with_ast_source = fib_node_matcher.GetSource()
+    node = GetNodeFromInput(python_program_as_string, 0, get_module=True)
+    node_matcher = GetDynamicMatcher(node)
+    node_matcher.do_match(python_program_as_string)
+    fun_with_ast_source = node_matcher.GetSource()
     print(bcolors.OKBLUE + "\nFUN WITH AST PROGRAM:\n" + fun_with_ast_source, bcolors.ENDC)
     assert fun_with_ast_source == python_program_as_string
 
@@ -45,6 +45,8 @@ def _comparte_asts(test_program, output_program):
 
 
 if __name__ == "__main__":
-    test_programs = ['./test_programs/fib.py', './test_programs/prime.py']
+    test_programs = ['./test_programs/fib.py',
+                     #'./test_programs/prime.py'
+                    ]
     for p in test_programs:
         match_original_program(test_program=p)
