@@ -45,8 +45,8 @@ def _comparte_asts(test_program, output_program):
 
 
 if __name__ == "__main__":
-    test_programs = ['./test_programs/fib.py',
-                     #'./test_programs/prime.py'
+    test_programs = [#'./test_programs/fib.py',
+                     './test_programs/prime.py'
                      ]
     for p in test_programs:
         match_original_program(test_program=p)
