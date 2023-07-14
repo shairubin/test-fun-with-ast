@@ -1,33 +1,19 @@
 # A utility function that returns true if x is a prime
 
-
 def isPrime(x):
-    pass
-    if (x < 2):
+    if (x<2):                      # <-- note the changes in unparse here
         return True
     else:
-        for i in range( 2, x): # if you add a space before 2 fun-with-ast breaks
-            if (x % i == 0):
+        for i in range( 2 ,  x ):  # <-- note the changes in unparse here
+            if (x %i ==0):         # <-- note the changes in unparse here
                 return False
     return True
 
 
 # checker that was used in fib.py
 print('fun with ast')
-for i in range(1, 15):
+for (i) in range( 1, 15 ):         # <-- note the changes in unparse here
     if isPrime(i):
         print(i, 'is a Prime Number')
     else:
         print(i, 'is a not Prime Number')
-
-
-
-
-
-
-
-
-
-
-
-
