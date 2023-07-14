@@ -14,14 +14,14 @@ def match_original_program(test_program='./test_programs/fib.py'):
     # read whole file to a string
     utils = CommonUtils()
     python_program_as_string = utils.read_file_as_string(test_program)
-    print(bcolors.OKCYAN + "\nORIGINAL PROGRAM:\n" + python_program_as_string, bcolors.ENDC)
+    print(bcolors.WARNING + f"AST test for {test_program}\nORIGINAL PROGRAM:\n" + python_program_as_string, bcolors.ENDC)
     unparsed_program = ast.unparse(ast.parse(python_program_as_string))
-    print(bcolors.OKGREEN + "\nAST UNPARSED PROGRAM:\n" + unparsed_program, bcolors.ENDC)
+    print(bcolors.FAIL + f"\nAST test for {test_program}\nAST UNPARSED PROGRAM:\n" + unparsed_program, bcolors.ENDC)
     fib_node = GetNodeFromInput(python_program_as_string, 0, get_module=True)
     fib_node_matcher = GetDynamicMatcher(fib_node)
     fib_node_matcher.do_match(python_program_as_string)
     fun_with_ast_source = fib_node_matcher.GetSource()
-    print(bcolors.OKBLUE + "\nFUN WITH AST PROGRAM:\n" + fun_with_ast_source, bcolors.ENDC)
+    print(bcolors.OKBLUE + f"\nAST test for {test_program}\nFUN WITH AST PROGRAM:\n" + fun_with_ast_source, bcolors.ENDC)
     assert fun_with_ast_source == python_program_as_string
 
 
@@ -45,8 +45,13 @@ def _comparte_asts(test_program, output_program):
 
 
 if __name__ == "__main__":
-    test_programs = [#'./test_programs/fib.py',
+    test_programs = ['./test_programs/fib.py',
                      './test_programs/prime.py'
                      ]
+    wip_programs = ['./work_in_progress/modified_fib.py',
+                    './work_in_progress/prime_wip.py',
+                    ]
     for p in test_programs:
         match_original_program(test_program=p)
+    #for p in wip_programs:
+    #    match_original_program(test_program=p)
