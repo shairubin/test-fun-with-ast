@@ -48,10 +48,10 @@ if __name__ == "__main__":
     test_programs = ['./test_programs/fib.py',
                      './test_programs/prime.py'
                      ]
-    wip_programs = ['./work_in_progress/modified_fib.py',
-                    './work_in_progress/prime_wip.py',
+    wip_programs = [#'../work_in_progress/modified_fib2.py',
+                    #'./work_in_progress/prime_wip.py',
                     ]
-    for p in test_programs:
-        match_original_program(test_program=p)
-    #for p in wip_programs:
+    #for p in test_programs:
     #    match_original_program(test_program=p)
+    for p in wip_programs:
+        match_original_program(test_program=p)
