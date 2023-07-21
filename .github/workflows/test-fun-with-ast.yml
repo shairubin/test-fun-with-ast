@@ -31,7 +31,6 @@ jobs:
     - name: Test preserve_source_examples
       shell: bash
       run: |
-        echo ${{ github.workspace }}
         python --version
         echo "python path   ${PYTHONPATH}"
         which python
