@@ -31,4 +31,4 @@ jobs:
     - name: Test preserve_source_examples
       run: |
         echo $pwd
-        python preserve_source_examples.py
+        python ${{GITHUB_WORKSPACE}}/preserve_source_examples.py
