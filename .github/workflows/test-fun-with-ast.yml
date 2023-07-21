@@ -32,6 +32,6 @@ jobs:
       run: |
         echo ${{ github.workspace }}
         python --version
-        echo ${{PYTHONPATH}}
+        echo $PYTHONPATH
         ls -alt
         python ${{ github.workspace }}/preserve_source_examples/source_code_preserve_tests.py
