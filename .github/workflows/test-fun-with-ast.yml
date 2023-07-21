@@ -30,4 +30,5 @@ jobs:
         python -m pip install fun-with-ast
     - name: Test preserve_source_examples
       run: |
+        echo $pwd
         python preserve_source_examples.py
