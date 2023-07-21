@@ -27,7 +27,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install fun-with-ast
+        python -m pip install --index-url https://test.pypi.org/simple/ fun-with-ast
     - name: Test preserve_source_examples
       run: |
         python --version
