@@ -31,5 +31,6 @@ jobs:
     - name: Test preserve_source_examples
       run: |
         echo ${{ github.workspace }}
-        python --version       
+        python --version
+        ls -alt
         python ${{ github.workspace }}/preserve_source_examples.py
