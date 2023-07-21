@@ -36,10 +36,9 @@ def _perform_sanity(test_program):
     assert out2.stdout == out1.stdout
     return out2
 
+#issue #7 for implemeting the below method
 def _comparte_asts(test_program, output_program):
     utils = CommonUtils()
-    rewrite_string = subprocess.run(["grep", "-v", "info", output_program], stdout=subprocess.PIPE)
-    original_string = utils.read_file_as_string(test_program)
     original_ast = 'TBD'
     rewrite_ast = 'TBD'
     assert utils.compare_ast(original_ast, rewrite_ast)
