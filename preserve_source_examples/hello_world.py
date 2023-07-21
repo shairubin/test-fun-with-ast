@@ -6,10 +6,5 @@ from fun_with_ast.source_matchers.matcher_resolver import GetDynamicMatcher
 
 from common_utils import CommonUtils, bcolors
 
-
-
-
-
-
 if __name__ == "__main__":
     print("hello world")
