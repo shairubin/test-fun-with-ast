@@ -29,8 +29,10 @@ def match_original_program(test_program='./test_programs/fib.py'):
 def _perform_sanity(test_program):
     out1 = subprocess.run(["python", test_program],
                           stdout=subprocess.PIPE)
+    assert out1.returncode == 0
     out2 = subprocess.run(["python", test_program],
                           stdout=subprocess.PIPE)
+    assert out2.returncode == 0
     assert out2.stdout == out1.stdout
     return out2
 
@@ -46,12 +48,18 @@ def _comparte_asts(test_program, output_program):
 
 if __name__ == "__main__":
     test_programs = ['./test_programs/fib.py',
-                     './test_programs/prime.py'
+                     './test_programs/prime.py',
+                     './test_programs/modified_fib.py',
                      ]
-    wip_programs = [#'../work_in_progress/modified_fib2.py',
+    wip_programs = [
                     #'./work_in_progress/prime_wip.py',
                     ]
-    for p in test_programs:
+    for index, p in enumerate(test_programs):
+        print('====================')
+        print('TEST NUMBER: '+ str(index+1) + ' START')
+        print('====================')
         match_original_program(test_program=p)
-    #for p in wip_programs:
-    #    match_original_program(test_program=p)
+        print('TEST NUMBER: '+ str(index+1) + ' END')
+
+    for p in wip_programs:
+        match_original_program(test_program=p)

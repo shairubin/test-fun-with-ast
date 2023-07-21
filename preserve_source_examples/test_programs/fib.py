@@ -12,8 +12,8 @@ def isFibonacci(n):
     # n is Fibonacci if one of 5*n*n + 4 or 5*n*n - 4 or both
     # is a perfect square
     pass
-    A = isPerfectSquare(5 * n * n +4)          # <-- note the changes in unparse here
-    B = isPerfectSquare(5 * n*n-4)             # <-- note the changes in unparse here
+    A = isPerfectSquare(5 * n * n +4 )         # <-- note the changes in unparse here
+    B = isPerfectSquare(5 * n*n - 4)             # <-- note the changes in unparse here
     return A or B
 #
 #
