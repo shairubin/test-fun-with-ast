@@ -10,6 +10,7 @@ from common_utils import CommonUtils, bcolors
 
 
 def match_original_program(test_program='./test_programs/fib.py', run_program=True):
+    print('RUNNING TEST ON ORIGINAL PROGRAM: '+test_program)
     if run_program:
         _perform_sanity(test_program)
     # read whole file to a string
