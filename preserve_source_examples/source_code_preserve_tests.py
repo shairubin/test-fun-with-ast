@@ -9,8 +9,9 @@ from common_utils import CommonUtils, bcolors
 
 
 
-def match_original_program(test_program='./test_programs/fib.py'):
-    _perform_sanity(test_program)
+def match_original_program(test_program='./test_programs/fib.py', run_program=True):
+    if run_program:
+        _perform_sanity(test_program)
     # read whole file to a string
     utils = CommonUtils()
     python_program_as_string = utils.read_file_as_string(test_program)
@@ -36,7 +37,7 @@ def _perform_sanity(test_program):
     assert out2.stdout == out1.stdout
     return out2
 
-#issue #7 for implemeting the below method
+# TODO: issue #7 for implementing the below method
 def _comparte_asts(test_program, output_program):
     utils = CommonUtils()
     original_ast = 'TBD'
@@ -46,19 +47,20 @@ def _comparte_asts(test_program, output_program):
 
 
 if __name__ == "__main__":
-    test_programs = ['./test_programs/fib.py',
-                     './test_programs/prime.py',
-                     './test_programs/modified_fib.py',
+    test_programs = [('./test_programs/fib.py', True),
+                     ('./test_programs/prime.py', True),
+                     ('(./test_programs/modified_fib.py',True),
                      ]
     wip_programs = [
-                    #'./work_in_progress/prime_wip.py',
+                    #('/home/shai/auto-logging/work_in_progress/portfolio.py', False),
+                    #('./work_in_progress/prime_wip.py', True)
                     ]
     for index, p in enumerate(test_programs):
         print('====================')
         print('TEST NUMBER: '+ str(index+1) + ' START')
         print('====================')
-        match_original_program(test_program=p)
+        match_original_program(test_program=p[0], run_program=p[1])
         print('TEST NUMBER: '+ str(index+1) + ' END')
 
     for p in wip_programs:
-        match_original_program(test_program=p)
+        match_original_program(p[0], p[1])
