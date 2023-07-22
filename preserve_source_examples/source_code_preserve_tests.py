@@ -10,12 +10,12 @@ from common_utils import CommonUtils, bcolors
 
 
 def match_original_program(test_program='./test_programs/fib.py', run_program=True):
+    utils = CommonUtils()
+    python_program_as_string = utils.read_file_as_string(test_program)
     print('RUNNING TEST ON ORIGINAL PROGRAM: '+test_program)
     if run_program:
         _perform_sanity(test_program)
     # read whole file to a string
-    utils = CommonUtils()
-    python_program_as_string = utils.read_file_as_string(test_program)
     print(bcolors.WARNING + f"AST test for {test_program}\nORIGINAL PROGRAM:\n" + python_program_as_string, bcolors.ENDC)
     unparsed_program = ast.unparse(ast.parse(python_program_as_string))
     print(bcolors.FAIL + f"\nAST test for {test_program}\nAST UNPARSED PROGRAM:\n" + unparsed_program, bcolors.ENDC)
@@ -50,18 +50,18 @@ def _comparte_asts(test_program, output_program):
 if __name__ == "__main__":
     test_programs = [('./test_programs/fib.py', True),
                      ('./test_programs/prime.py', True),
-                     ('(./test_programs/modified_fib.py',True),
+                     ('./test_programs/modified_fib.py', True),
                      ]
     wip_programs = [
                     #('/home/shai/auto-logging/work_in_progress/portfolio.py', False),
                     #('./work_in_progress/prime_wip.py', True)
                     ]
     for index, p in enumerate(test_programs):
-        print('====================')
-        print('TEST NUMBER: '+ str(index+1) + ' START')
-        print('====================')
+        print('================================================')
+        print('TEST NUMBER: '+ str(index+1) + ' START FOR: ' + p[0])
+        print('================================================')
         match_original_program(test_program=p[0], run_program=p[1])
-        print('TEST NUMBER: '+ str(index+1) + ' END')
+        print('TEST NUMBER: '+ str(index+1) + ' END FOR: ' + p[0])
 
     for p in wip_programs:
         match_original_program(p[0], p[1])
