@@ -12,10 +12,10 @@ class Portfolio:
     def from_csv(cls, lines, **opts):
         self = cls()
         portdicts = fileparse.parse_csv(lines,
-                                        select=['name', 'shares', 'price'],
+                                        select=['name', 'shares', 'price'], # <-- See this line of AST unparse results
                                         types=[str, int, float],
                                         **opts)
-
+                                        # <-- See this line is missing in of AST unparse results
         for d in portdicts:
             self.append(stock.Stock(**d))
 
