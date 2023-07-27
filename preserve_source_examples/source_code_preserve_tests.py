@@ -48,12 +48,12 @@ def _comparte_asts(test_program, output_program):
 
 
 if __name__ == "__main__":
-    test_programs = [('./test_programs/fib.py', True),
-                     ('./test_programs/prime.py', True),
-                     ('./test_programs/modified_fib.py', True),
+    test_programs = [#('./test_programs/fib.py', True),
+                     #('./test_programs/prime.py', True),
+                     #('./test_programs/modified_fib.py', True),
                      ]
     wip_programs = [
-                    #('/home/shai/auto-logging/work_in_progress/portfolio.py', False),
+                    ('/home/shai/auto-logging/work_in_progress/portfolio.py', False),
                     #('./work_in_progress/prime_wip.py', True)
                     ]
     for index, p in enumerate(test_programs):
