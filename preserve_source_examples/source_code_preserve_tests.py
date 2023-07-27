@@ -53,7 +53,7 @@ if __name__ == "__main__":
                      #('./test_programs/modified_fib.py', True),
                      ]
     wip_programs = [
-                    ('/home/shai/auto-logging/work_in_progress/portfolio.py', False),
+                    ('./work_in_progress/portfolio.py', False),
                     #('./work_in_progress/prime_wip.py', True)
                     ]
     for index, p in enumerate(test_programs):
