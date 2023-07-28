@@ -33,4 +33,4 @@ jobs:
       run: |
 
         cd source_manipulation_examples
-        python source_manipulation_tests.py        
+        python rewrite_if_examples.py        
