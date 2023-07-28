@@ -29,6 +29,8 @@ jobs:
         export PYTHONPATH="${PYTHONPATH}:/home/runner/work/test-fun-with-ast/test-fun-with-ast/:/home/runner/work/test-fun-with-ast/test-fun-with-ast/preserve_source_examples/"
         cd preserve_source_examples
         python source_code_preserve_tests.py
+    - name: Test rewrite_if_examples
+      run: |
         cd ..
         cd source_manipulation_examples
-        
+        python source_manipulation_tests.py        
