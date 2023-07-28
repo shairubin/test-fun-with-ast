@@ -31,6 +31,6 @@ jobs:
         python source_code_preserve_tests.py
     - name: Test rewrite_if_examples
       run: |
-        cd ..
+
         cd source_manipulation_examples
         python source_manipulation_tests.py        
