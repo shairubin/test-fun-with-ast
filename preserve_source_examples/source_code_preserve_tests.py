@@ -48,13 +48,13 @@ def _comparte_asts(test_program, output_program):
 
 
 if __name__ == "__main__":
-    test_programs = [('./test_programs/fib.py', True),
-                     ('./test_programs/prime.py', True),
-                     ('./test_programs/modified_fib.py', True),
-                     ('./test_programs/portfolio.py', False),
+    test_programs = [#('./test_programs/fib.py', True),
+                     #('./test_programs/prime.py', True),
+                     #('./test_programs/modified_fib.py', True),
+                     #('./test_programs/portfolio.py', False),
                      ]
     wip_programs = [
-                    #('/home/shai/test_fun_with_ast/work_in_progress/vqgan_arch_modified.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/vqgan_arch_modified.py', False),
                     ]
     for index, p in enumerate(test_programs):
         print('================================================')
