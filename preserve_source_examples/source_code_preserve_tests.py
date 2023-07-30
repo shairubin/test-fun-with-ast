@@ -54,8 +54,7 @@ if __name__ == "__main__":
                      ('./test_programs/portfolio.py', False),
                      ]
     wip_programs = [
-                    #('/home/shai/test_fun_with_ast/work_in_progress/portfolio.py', False),
-                    #('./work_in_progress/prime_wip.py', True)
+                    #('/home/shai/test_fun_with_ast/work_in_progress/vqgan_arch_modified.py', False),
                     ]
     for index, p in enumerate(test_programs):
         print('================================================')
