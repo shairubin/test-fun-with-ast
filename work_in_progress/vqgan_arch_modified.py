@@ -1,11 +1,11 @@
-# this file is copied from CodeFormer repository. Please see comment in modules/codeformer_model.py
-# source: modules/codeformer/vqgan_arch.py,
-# repository: https://github.com/AUTOMATIC1111/stable-diffusion-webui/blob/master/modules/codeformer/vqgan_arch.py
-#'''
-#VQGAN code, adapted from the original created by the Unleashing Transformers authors:
-#https://github.com/samb-t/unleashing-transformers/blob/master/models/vqgan.py
-#
-#'''
+# # this file is copied from CodeFormer repository. Please see comment in modules/codeformer_model.py
+# # source: modules/codeformer/vqgan_arch.py,
+# # repository: https://github.com/AUTOMATIC1111/stable-diffusion-webui/blob/master/modules/codeformer/vqgan_arch.py
+# # '''
+# #V QGAN code, adapted from the original created by the Unleashing Transformers authors:
+# # https://github.com/samb-t/unleashing-transformers/blob/master/models/vqgan.py
+# #
+# # '''
 # import torch
 # import torch.nn as nn
 # import torch.nn.functional as F
@@ -20,72 +20,72 @@
 # def swish(x):
 #     return x*torch.sigmoid(x)
 #
-
-#  Define VQVAE classes
-class VectorQuantizer(nn.Module):
-    # def __init__(self, codebook_size, emb_dim, beta):
-    #     super(VectorQuantizer, self).__init__()
-    #     self.codebook_size = codebook_size  # number of embeddings
-    #     self.emb_dim = emb_dim  # dimension of embedding
-    #     self.beta = beta  # commitment cost used in loss term, beta * ||z_e(x)-sg[e]||^2
-    #     self.embedding = nn.Embedding(self.codebook_size, self.emb_dim)
-    #     self.embedding.weight.data.uniform_(-1.0 / self.codebook_size, 1.0 / self.codebook_size)
-    #
-    # def forward(self, z):
-    #     # reshape z -> (batch, height, width, channel) and flatten
-    #     z = z.permute(0, 2, 3, 1).contiguous()
-    #     z_flattened = z.view(-1, self.emb_dim)
-    #
-    #     # distances from z to embeddings e_j (z - e)^2 = z^2 + e^2 - 2 e * z
-    #     d = (z_flattened ** 2).sum(dim=1, keepdim=True) + (self.embedding.weight**2).sum(1) - \
-    #         2 * torch.matmul(z_flattened, self.embedding.weight.t())
-    #
-    #     mean_distance = torch.mean(d)
-    #     # find closest encodings
-    #     # min_encoding_indices = torch.argmin(d, dim=1).unsqueeze(1)
-    #     min_encoding_scores, min_encoding_indices = torch.topk(d, 1, dim=1, largest=False)
-    #     # [0-1], higher score, higher confidence
-    #     min_encoding_scores = torch.exp(-min_encoding_scores/10)
-    #
-    #     min_encodings = torch.zeros(min_encoding_indices.shape[0], self.codebook_size).to(z)
-    #     min_encodings.scatter_(1, min_encoding_indices, 1)
-    #
-    #     # get quantized latent vectors
-    #     z_q = torch.matmul(min_encodings, self.embedding.weight).view(z.shape)
-    #     # compute loss for embedding
-    #     loss = torch.mean((z_q.detach()-z)**2) + self.beta * torch.mean((z_q - z.detach()) ** 2)
-    #     # preserve gradients
-    #     z_q = z + (z_q - z).detach()
-    #
-    #     # perplexity
-    #     e_mean = torch.mean(min_encodings, dim=0)
-    #     perplexity = torch.exp(-torch.sum(e_mean * torch.log(e_mean + 1e-10)))
-    #     # reshape back to match original input shape
-    #     z_q = z_q.permute(0, 3, 1, 2).contiguous()
-    #
-    #     return z_q, loss, {
-    #         "perplexity": perplexity,
-    #         "min_encodings": min_encodings,
-    #         "min_encoding_indices": min_encoding_indices,
-    #         "min_encoding_scores": min_encoding_scores,
-    #         "mean_distance": mean_distance
-    #         }
-
-    def get_codebook_feat(self, indices, shape):
-        # input indices: batch*token_num -> (batch*token_num)*1
-        # shape: batch, height, width, channel
-        indices = indices.view(-1,1)
-        min_encodings = torch.zeros(indices.shape[0], self.codebook_size).to(indices)
-        min_encodings.scatter_(1, indices, 1)
-        # get quantized latent vectors
-        z_q = torch.matmul(min_encodings.float(), self.embedding.weight)
-
-        if shape is not None:  # reshape back to match original input shape
-            z_q = z_q.view(shape).permute(0, 3, 1, 2).contiguous()
-
-        return z_q
-
-
+#
+# #  Define VQVAE classes
+# class VectorQuantizer(nn.Module):
+#     def __init__(self, codebook_size, emb_dim, beta):
+#         super(VectorQuantizer, self).__init__()
+#         self.codebook_size = codebook_size  # number of embeddings
+#         self.emb_dim = emb_dim  # dimension of embedding
+#         self.beta = beta  # commitment cost used in loss term, beta * ||z_e(x)-sg[e]||^2
+#         self.embedding = nn.Embedding(self.codebook_size, self.emb_dim)
+#         self.embedding.weight.data.uniform_(-1.0 / self.codebook_size, 1.0 / self.codebook_size)
+#
+#     def forward(self, z):
+#         # reshape z -> (batch, height, width, channel) and flatten
+#         z = z.permute(0, 2, 3, 1).contiguous()
+#         z_flattened = z.view(-1, self.emb_dim)
+#
+#         # distances from z to embeddings e_j (z - e)^2 = z^2 + e^2 - 2 e * z
+#         d = (z_flattened ** 2).sum(dim=1, keepdim=True) + (self.embedding.weight**2).sum(1) - \
+#             2 * torch.matmul(z_flattened, self.embedding.weight.t())
+#
+#         mean_distance = torch.mean(d)
+#         # find closest encodings
+#         # min_encoding_indices = torch.argmin(d, dim=1).unsqueeze(1)
+#         min_encoding_scores, min_encoding_indices = torch.topk(d, 1, dim=1, largest=False)
+#         # [0-1], higher score, higher confidence
+#         min_encoding_scores = torch.exp(-min_encoding_scores/10)
+#
+#         min_encodings = torch.zeros(min_encoding_indices.shape[0], self.codebook_size).to(z)
+#         min_encodings.scatter_(1, min_encoding_indices, 1)
+#
+#         # get quantized latent vectors
+#         z_q = torch.matmul(min_encodings, self.embedding.weight).view(z.shape)
+#         # compute loss for embedding
+#         loss = torch.mean((z_q.detach()-z)**2) + self.beta * torch.mean((z_q - z.detach()) ** 2)
+#         # preserve gradients
+#         z_q = z + (z_q - z).detach()
+#
+#         # perplexity
+#         e_mean = torch.mean(min_encodings, dim=0)
+#         perplexity = torch.exp(-torch.sum(e_mean * torch.log(e_mean + 1e-10)))
+#         # reshape back to match original input shape
+#         z_q = z_q.permute(0, 3, 1, 2).contiguous()
+#
+#         return z_q, loss, {
+#             "perplexity": perplexity,
+#             "min_encodings": min_encodings,
+#             "min_encoding_indices": min_encoding_indices,
+#             "min_encoding_scores": min_encoding_scores,
+#             "mean_distance": mean_distance
+#             }
+#
+#     def get_codebook_feat(self, indices, shape):
+#         # input indices: batch*token_num -> (batch*token_num)*1
+#         # shape: batch, height, width, channel
+#         indices = indices.view(-1,1)
+#         min_encodings = torch.zeros(indices.shape[0], self.codebook_size).to(indices)
+#         min_encodings.scatter_(1, indices, 1)
+#         # get quantized latent vectors
+#         z_q = torch.matmul(min_encodings.float(), self.embedding.weight)
+#
+#         if shape is not None:  # reshape back to match original input shape
+#             z_q = z_q.view(shape).permute(0, 3, 1, 2).contiguous()
+#
+#         return z_q
+#
+#
 # class GumbelQuantizer(nn.Module):
 #     def __init__(self, codebook_size, emb_dim, num_hiddens, straight_through=False, kl_weight=5e-4, temp_init=1.0):
 #         super().__init__()
@@ -324,7 +324,7 @@ class VectorQuantizer(nn.Module):
 #
 #         return x
 #
-#
+
 # @ARCH_REGISTRY.register()
 # class VQAutoEncoder(nn.Module):
 #     def __init__(self, img_size, nf, ch_mult, quantizer="nearest", res_blocks=2, attn_resolutions=None, codebook_size=1024, emb_dim=256,
@@ -332,7 +332,6 @@ class VectorQuantizer(nn.Module):
 #         super().__init__()
 #         logger = get_root_logger()
 #         self.in_channels = 3
-#         self.main = nn.Sequential(*layers)
 #         self.nf = nf
 #         self.n_blocks = res_blocks
 #         self.codebook_size = codebook_size
@@ -392,45 +391,46 @@ class VectorQuantizer(nn.Module):
 #         return x, codebook_loss, quant_stats
 #
 #
-#
-# # patch based discriminator
-# @ARCH_REGISTRY.register()
-# class VQGANDiscriminator(nn.Module):
-#     def __init__(self, nc=3, ndf=64, n_layers=4, model_path=None):
-#         super().__init__()
-#
-#         layers = [nn.Conv2d(nc, ndf, kernel_size=4, stride=2, padding=1), nn.LeakyReLU(0.2, True)]
-#         ndf_mult = 1
-#         ndf_mult_prev = 1
-#         for n in range(1, n_layers):  # gradually increase the number of filters
-#             ndf_mult_prev = ndf_mult
-#             ndf_mult = min(2 ** n, 8)
-#             layers += [
-#                 nn.Conv2d(ndf * ndf_mult_prev, ndf * ndf_mult, kernel_size=4, stride=2, padding=1, bias=False),
-#                 nn.BatchNorm2d(ndf * ndf_mult),
-#                 nn.LeakyReLU(0.2, True)
-#             ]
-#
-#         ndf_mult_prev = ndf_mult
-#         ndf_mult = min(2 ** n_layers, 8)
-#
-#         layers += [
-#             nn.Conv2d(ndf * ndf_mult_prev, ndf * ndf_mult, kernel_size=4, stride=1, padding=1, bias=False),
-#             nn.BatchNorm2d(ndf * ndf_mult),
-#             nn.LeakyReLU(0.2, True)
-#         ]
-#
-#         layers += [
-#             nn.Conv2d(ndf * ndf_mult, 1, kernel_size=4, stride=1, padding=1)]  # output 1 channel prediction map
-#
-#         if model_path is not None:
-#             chkpt = torch.load(model_path, map_location='cpu')
-#             if 'params_d' in chkpt:
-#                 self.load_state_dict(torch.load(model_path, map_location='cpu')['params_d'])
-#             elif 'params' in chkpt:
-#                 self.load_state_dict(torch.load(model_path, map_location='cpu')['params'])
-#             else:
-#                 raise ValueError('Wrong params!')
-#
-#     def forward(self, x):
-#         return self.main(x)
+
+# patch based discriminator
+@ARCH_REGISTRY.register()
+class VQGANDiscriminator(nn.Module):
+    def __init__(self, nc=3, ndf=64, n_layers=4, model_path=None):
+        super().__init__()
+        #
+        # layers = [nn.Conv2d(nc, ndf, kernel_size=4, stride=2, padding=1), nn.LeakyReLU(0.2, True)]
+        # ndf_mult = 1
+        # ndf_mult_prev = 1
+        # for n in range(1, n_layers):  # gradually increase the number of filters
+        #     ndf_mult_prev = ndf_mult
+        #     ndf_mult = min(2 ** n, 8)
+        #     layers += [
+        #         nn.Conv2d(ndf * ndf_mult_prev, ndf * ndf_mult, kernel_size=4, stride=2, padding=1, bias=False),
+        #         nn.BatchNorm2d(ndf * ndf_mult),
+        #         nn.LeakyReLU(0.2, True)
+        #     ]
+        #
+        # ndf_mult_prev = ndf_mult
+        # ndf_mult = min(2 ** n_layers, 8)
+        #
+        # layers += [
+        #     nn.Conv2d(ndf * ndf_mult_prev, ndf * ndf_mult, kernel_size=4, stride=1, padding=1, bias=False),
+        #     nn.BatchNorm2d(ndf * ndf_mult),
+        #     nn.LeakyReLU(0.2, True)
+        # ]
+        #
+        # layers += [
+        #     nn.Conv2d(ndf * ndf_mult, 1, kernel_size=4, stride=1, padding=1)]  # output 1 channel prediction map
+        # self.main = nn.Sequential(*layers)
+        #
+        #if model_path is not None:
+        chkpt = torch.load(model_path, map_location='cpu')
+            #if 'params_d' in chkpt:
+            #    self.load_state_dict(torch.load(model_path, map_location='cpu')['params_d'])
+            # elif 'params' in chkpt:
+            #     self.load_state_dict(torch.load(model_path, map_location='cpu')['params'])
+            # else:
+            #     raise ValueError('Wrong params!')
+
+    def forward(self, x):
+        return self.main(x)

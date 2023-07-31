@@ -1,11 +1,11 @@
 # this file is copied from CodeFormer repository. Please see comment in modules/codeformer_model.py
 # source: modules/codeformer/vqgan_arch.py,
 # repository: https://github.com/AUTOMATIC1111/stable-diffusion-webui/blob/master/modules/codeformer/vqgan_arch.py
-#'''
-#VQGAN code, adapted from the original created by the Unleashing Transformers authors:
-#https://github.com/samb-t/unleashing-transformers/blob/master/models/vqgan.py
+# '''
+#V QGAN code, adapted from the original created by the Unleashing Transformers authors:
+# https://github.com/samb-t/unleashing-transformers/blob/master/models/vqgan.py
 #
-#'''
+# '''
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

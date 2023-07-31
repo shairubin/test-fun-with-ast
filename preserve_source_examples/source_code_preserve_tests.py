@@ -1,5 +1,6 @@
 import ast
 import subprocess
+from difflib import Differ
 
 from fun_with_ast.manipulate_node.get_node_from_input import GetNodeFromInput
 from fun_with_ast.source_matchers.matcher_resolver import GetDynamicMatcher
@@ -16,15 +17,37 @@ def match_original_program(test_program='./test_programs/fib.py', run_program=Tr
     if run_program:
         _perform_sanity(test_program)
     # read whole file to a string
-    print(bcolors.WARNING + f"AST test for {test_program}\nORIGINAL PROGRAM:\n" + python_program_as_string, bcolors.ENDC)
+    #print(bcolors.WARNING + f"AST test for {test_program}\nORIGINAL PROGRAM:\n" + python_program_as_string, bcolors.ENDC)
     unparsed_program = ast.unparse(ast.parse(python_program_as_string))
-    print(bcolors.FAIL + f"\nAST test for {test_program}\nAST UNPARSED PROGRAM:\n" + unparsed_program, bcolors.ENDC)
+    #print(bcolors.FAIL + f"\nAST test for {test_program}\nAST UNPARSED PROGRAM:\n" + unparsed_program, bcolors.ENDC)
     fib_node = GetNodeFromInput(python_program_as_string, 0, get_module=True)
     fib_node_matcher = GetDynamicMatcher(fib_node)
-    fib_node_matcher.do_match(python_program_as_string)
+    try:
+        fib_node_matcher.do_match(python_program_as_string)
+    except Exception as e:
+        raise e
     fun_with_ast_source = fib_node_matcher.GetSource()
     print(bcolors.OKBLUE + f"\nAST test for {test_program}\nFUN WITH AST PROGRAM:\n" + fun_with_ast_source, bcolors.ENDC)
-    assert fun_with_ast_source == python_program_as_string
+    if not fun_with_ast_source == python_program_as_string:
+        _assert_diff(python_program_as_string, fun_with_ast_source)
+
+def _assert_diff(original_if_source, new_code):
+    differ = Differ()
+    lines1 = original_if_source.split('\n')
+    lines2 = new_code.split('\n')
+    diff_lines = []
+    for line in differ.compare(lines1, lines2):
+        if line.startswith('+'):
+            print(bcolors.FAIL + line, bcolors.ENDC)
+            raise ValueError('diff lines: line added')
+        elif line.startswith('-'):
+            print(bcolors.OKBLUE + line, bcolors.ENDC)
+            raise ValueError('diff lines: line removed')
+        elif line.startswith(' '):
+            pass
+        else:
+            raise ValueError('diff lines')
+
 
 
 
