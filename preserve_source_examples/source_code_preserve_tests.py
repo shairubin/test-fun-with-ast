@@ -17,9 +17,9 @@ def match_original_program(test_program='./test_programs/fib.py', run_program=Tr
     if run_program:
         _perform_sanity(test_program)
     # read whole file to a string
-    #print(bcolors.WARNING + f"AST test for {test_program}\nORIGINAL PROGRAM:\n" + python_program_as_string, bcolors.ENDC)
+    print(bcolors.WARNING + f"AST test for {test_program}\nORIGINAL PROGRAM:\n" + python_program_as_string, bcolors.ENDC)
     unparsed_program = ast.unparse(ast.parse(python_program_as_string))
-    #print(bcolors.FAIL + f"\nAST test for {test_program}\nAST UNPARSED PROGRAM:\n" + unparsed_program, bcolors.ENDC)
+    print(bcolors.FAIL + f"\nAST test for {test_program}\nAST UNPARSED PROGRAM:\n" + unparsed_program, bcolors.ENDC)
     fib_node = GetNodeFromInput(python_program_as_string, 0, get_module=True)
     fib_node_matcher = GetDynamicMatcher(fib_node)
     try:
@@ -71,13 +71,14 @@ def _comparte_asts(test_program, output_program):
 
 
 if __name__ == "__main__":
-    test_programs = [#('./test_programs/fib.py', True),
-                     #('./test_programs/prime.py', True),
-                     #('./test_programs/modified_fib.py', True),
-                     #('./test_programs/portfolio.py', False),
+    test_programs = [('./test_programs/fib.py', True),
+                     ('./test_programs/prime.py', True),
+                     ('./test_programs/modified_fib.py', True),
+                     ('./test_programs/portfolio.py', False),
+                     ('./test_programs/vqgan_arch_modified.py', False),
                      ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/vqgan_arch_modified.py', False),
+                    #('/home/shai/test_fun_with_ast/work_in_progress/vqgan_arch_modified.py', False),
                     ]
     for index, p in enumerate(test_programs):
         print('================================================')
