@@ -36,5 +36,5 @@ jobs:
         cd source_manipulation_examples
         echo "REWRITE EXAMPLES"
         python rewrite_if_examples.py   
-        echo "SWAP EXAMPLES:
+        echo "SWAP EXAMPLES"
         python swap_if_else_examples.py
