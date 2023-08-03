@@ -23,6 +23,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install --index-url https://test.pypi.org/simple/ fun-with-ast
+        pip show fun-with-ast
     - name: Test preserve_source_examples
       run: |
         python --version
@@ -33,4 +34,7 @@ jobs:
       run: |
         export PYTHONPATH="${PYTHONPATH}:/home/runner/work/test-fun-with-ast/test-fun-with-ast/:/home/runner/work/test-fun-with-ast/test-fun-with-ast/preserve_source_examples/"
         cd source_manipulation_examples
-        python rewrite_if_examples.py        
+        echo "REWRITE EXAMPLES"
+        python rewrite_if_examples.py   
+        echo "SWAP EXAMPLES"
+        python swap_if_else_examples.py
