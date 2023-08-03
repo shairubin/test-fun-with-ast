@@ -33,4 +33,5 @@ jobs:
       run: |
         export PYTHONPATH="${PYTHONPATH}:/home/runner/work/test-fun-with-ast/test-fun-with-ast/:/home/runner/work/test-fun-with-ast/test-fun-with-ast/preserve_source_examples/"
         cd source_manipulation_examples
-        python rewrite_if_examples.py        
+        python rewrite_if_examples.py   
+        python swap_if_else_examples.py
