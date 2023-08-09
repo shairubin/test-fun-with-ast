@@ -69,7 +69,6 @@ def _comparte_asts(test_program, output_program):
     assert utils.compare_ast(original_ast, rewrite_ast)
 
 
-
 if __name__ == "__main__":
     test_programs = [('./test_programs/fib.py', True),
                      ('./test_programs/prime.py', True),
