@@ -78,7 +78,7 @@ if __name__ == "__main__":
                      ]
     wip_programs = [
                     #('/home/shai/test_fun_with_ast/work_in_progress/vqgan_arch_modified.py', False),
-                    ('/home/shai/test_fun_with_ast/work_in_progress/exceptions.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/exceptions2.py', False),
                     ]
     for index, p in enumerate(test_programs):
         print('================================================')

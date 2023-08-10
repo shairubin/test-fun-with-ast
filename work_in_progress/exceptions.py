@@ -12,8 +12,7 @@ from django.core.exceptions import ( # issue #54 in fun-with-ast
     RequestDataTooBig,
     SuspiciousOperation,
     TooManyFieldsSent,
-    TooManyFilesSent,
-)
+    TooManyFilesSent)
 from django.http import Http404
 from django.http.multipartparser import MultiPartParserError
 from django.urls import get_resolver, get_urlconf
