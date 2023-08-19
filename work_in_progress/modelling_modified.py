@@ -119,13 +119,13 @@ class RMSNorm(nn.Module):
     Adapted from flax.linen.LayerNorm
     """
 
-    epsilon: float = 1e-6
+    epsilon: float = 1e-06
     dtype: Any = jnp.float32
     param_dtype: Any = jnp.float32
     use_scale: bool = True
     scale_init: Any = jax.nn.initializers.ones
 
-    @nn.compact
+    @nn.compact # pending issue 83 in fun-with-ast
     def __call__(self, x):
         reduction_axes = (-1,)
         feature_axes = (-1,)
