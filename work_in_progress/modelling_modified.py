@@ -69,8 +69,7 @@ def smelu(beta: Any = 1.0):
         lambda g, ans, x: lax.select(
             x == -beta,
             lax.full_like(g, 0),
-            lax.select(x == beta, lax.full_like(g, 1), g),
-        )
+            lax.select(x == beta, lax.full_like(g, 1), g))
     )
     return _smelu
 
@@ -343,8 +342,7 @@ class FlaxBartAttention(FlaxBartAttention):
             self.rel_bias = nn.Embed(
                 self.q_length,
                 self.k_length * self.num_heads,
-                embedding_init=jax.nn.initializers.normal(self.config.init_std),
-            )
+                embedding_init=jax.nn.initializers.normal(self.config.init_std))
 
         if self.causal:
             # used only in decoder
