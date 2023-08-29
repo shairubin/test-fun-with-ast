@@ -74,7 +74,7 @@ if __name__ == "__main__":
                      ('./test_programs/prime.py', True),
                      ('./test_programs/modified_fib.py', True),
                      ('./test_programs/portfolio.py', False),
-                     #('./test_programs/vqgan_arch_modified.py', False),
+                     ('./test_programs/vqgan_arch_modified.py', False),
                      ('./test_programs/exceptions3.py', False),
                      ('./test_programs/modelling_modified2.py', False),
                      ]
