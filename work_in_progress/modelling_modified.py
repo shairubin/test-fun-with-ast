@@ -142,7 +142,7 @@ class RMSNorm(nn.Module):
             self.param_dtype,
             self.epsilon,
             self.use_scale,
-            self.scale_init,
+            self.scale_init
         )
 
     def _compute_rms_sq(self, x, axes):
@@ -161,7 +161,7 @@ class RMSNorm(nn.Module):
         param_dtype,
         epsilon,
         use_scale,
-        scale_init,
+        scale_init
     ):
         reduction_axes = nn.normalization._canonicalize_axes(x.ndim, reduction_axes)
         feature_axes = nn.normalization._canonicalize_axes(x.ndim, feature_axes)
@@ -207,7 +207,7 @@ def dot_product_attention_weights(
     precision: PrecisionLike = None,
     sinkhorn_iters: int = 1,
     is_encoder: bool = False,
-    tau=None,
+    tau=None
 ):
     """
     Computes dot-product attention weights given query and key.
@@ -295,7 +295,7 @@ class FlaxBartAttention(FlaxBartAttention):
             nn.Dense,
             self.embed_dim,
             use_bias=self.bias,
-            dtype=self.dtype,
+            dtype=self.dtype
         )
 
         if self.config.use_deepnet_scaling:
@@ -468,7 +468,7 @@ class FlaxBartAttention(FlaxBartAttention):
             precision=None,
             sinkhorn_iters=self.config.sinkhorn_iters,
             is_encoder=self.is_encoder,
-            tau=tau,
+            tau=tau
         )
 
         attn_output = jnp.einsum("...hqk,...khd->...qhd", attn_weights, value_states)
@@ -761,23 +761,6 @@ class FlaxBartDecoderLayer(nn.Module):
                 epsilon=1e-05,
                 use_scale=self.config.force_ln_scale,
             )(hidden_states)
-        hidden_states, attn_weights = FlaxBartAttention(
-            config=self.config,
-            embed_dim=embed_dim,
-            num_heads=self.config.decoder_attention_heads,
-            dropout=self.config.attention_dropout,
-            causal=True,
-            bias=self.config.use_bias,
-            dtype=self.dtype,
-            is_encoder=False,
-            is_cross_attention=False,
-            q_length=self.config.image_length,
-            k_length=self.config.image_length,
-        )(
-            hidden_states=hidden_states,
-            attention_mask=attention_mask,
-            init_cache=init_cache,
-        )
 
         if self.config.ln_positions in ["normformer", "swinv2", "cogview"]:
             hidden_states = norm(self.config.ln_type, dtype=self.dtype, epsilon=1e-05)(
@@ -831,6 +814,23 @@ class FlaxBartDecoderLayer(nn.Module):
                 hidden_states = norm(
                     self.config.ln_type, dtype=self.dtype, epsilon=1e-05
                 )(hidden_states)
+                hidden_states, attn_weights = FlaxBartAttention(
+                    config=self.config,
+                    embed_dim=embed_dim,
+                    num_heads=self.config.decoder_attention_heads,
+                    dropout=self.config.attention_dropout,
+                    causal=True,
+                    bias=self.config.use_bias,
+                    dtype=self.dtype,
+                    is_encoder=False,
+                    is_cross_attention=False,
+                    q_length=self.config.image_length,
+                    k_length=self.config.image_length,
+                )(
+                    hidden_states=hidden_states,
+                    attention_mask=attention_mask,
+                    init_cache=init_cache,
+                )
 
         # Feed forward
         residual = hidden_states
