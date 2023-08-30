@@ -87,10 +87,11 @@ if __name__ == "__main__":
                      ('./test_programs/portfolio.py', False),
                      ('./test_programs/vqgan_arch_modified.py', False),
                      ('./test_programs/exceptions3.py', False),
+                     ('./test_programs/exceptions.py', False),
                      ('./test_programs/modelling_modified2.py', False),
                      ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/exceptions3.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/modelling.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
         _run_on_example_programs(test_programs)
