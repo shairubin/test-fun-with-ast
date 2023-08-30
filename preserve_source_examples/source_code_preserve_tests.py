@@ -7,6 +7,8 @@ from fun_with_ast.source_matchers.matcher_resolver import GetDynamicMatcher
 
 from common_utils import CommonUtils, bcolors
 
+RUN_TEST_PROGRAMS = True
+RUN_WIP_PROGRAMS = False
 
 
 
@@ -69,6 +71,15 @@ def _comparte_asts(test_program, output_program):
     assert utils.compare_ast(original_ast, rewrite_ast)
 
 
+def _run_on_example_programs(test_programs):
+    for index, p in enumerate(test_programs):
+        print('================================================')
+        print('TEST NUMBER: ' + str(index + 1) + ' START FOR: ' + p[0])
+        print('================================================')
+        match_original_program(test_program=p[0], run_program=p[1])
+        print('TEST NUMBER: ' + str(index + 1) + ' END FOR: ' + p[0])
+
+
 if __name__ == "__main__":
     test_programs = [('./test_programs/fib.py', True),
                      ('./test_programs/prime.py', True),
@@ -79,14 +90,9 @@ if __name__ == "__main__":
                      ('./test_programs/modelling_modified2.py', False),
                      ]
     wip_programs = [
-                    #('/home/shai/test_fun_with_ast/work_in_progress/exceptions3.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/exceptions3.py', False),
                     ]
-    for index, p in enumerate(test_programs):
-        print('================================================')
-        print('TEST NUMBER: '+ str(index+1) + ' START FOR: ' + p[0])
-        print('================================================')
-        match_original_program(test_program=p[0], run_program=p[1])
-        print('TEST NUMBER: '+ str(index+1) + ' END FOR: ' + p[0])
-
-    for p in wip_programs:
-        match_original_program(p[0], p[1])
+    if RUN_TEST_PROGRAMS:
+        _run_on_example_programs(test_programs)
+    if RUN_WIP_PROGRAMS:
+        _run_on_example_programs(wip_programs)
