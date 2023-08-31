@@ -120,7 +120,7 @@ class RMSNorm(nn.Module):
     Adapted from flax.linen.LayerNorm
     """
 
-    epsilon: float = 1e-6
+    epsilon: float = 1e-06
     dtype: Any = jnp.float32
     param_dtype: Any = jnp.float32
     use_scale: bool = True
@@ -733,14 +733,14 @@ class FlaxBartDecoderLayer(nn.Module):
 
     @nn.compact
     def __call__(
-        self,
-        hidden_states: jnp.ndarray,
-        attention_mask: jnp.ndarray,
-        encoder_hidden_states: Optional[jnp.ndarray] = None,
-        encoder_attention_mask: Optional[jnp.ndarray] = None,
-        init_cache: bool = False,
-        output_attentions: bool = True,
-        deterministic: bool = True,
+            self,
+            hidden_states: jnp.ndarray,
+            attention_mask: jnp.ndarray,
+            encoder_hidden_states: Optional[jnp.ndarray] = None,
+            encoder_attention_mask: Optional[jnp.ndarray] = None,
+            init_cache: bool = False,
+            output_attentions: bool = True,
+            deterministic: bool = True,
     ) -> Tuple[jnp.ndarray]:
 
         if self.config.use_scan:
@@ -873,6 +873,26 @@ class FlaxBartDecoderLayer(nn.Module):
             outputs = (outputs, None)
 
         return outputs
+    # apply top_k, top_k, temperature
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class FlaxBartEncoderLayerCollection(nn.Module):
@@ -1467,19 +1487,19 @@ class DalleBart(PretrainedFromWandbMixin, FlaxBartForConditionalGeneration):
         return params
 
     def decode(
-        self,
-        decoder_input_ids,
-        encoder_outputs,
-        encoder_attention_mask: Optional[jnp.ndarray] = None,
-        decoder_attention_mask: Optional[jnp.ndarray] = None,
-        decoder_position_ids: Optional[jnp.ndarray] = None,
-        past_key_values: dict = None,
-        output_attentions: Optional[bool] = None,
-        output_hidden_states: Optional[bool] = None,
-        return_dict: Optional[bool] = None,
-        train: bool = False,
-        params: dict = None,
-        dropout_rng: PRNGKey = None,
+            self,
+            decoder_input_ids,
+            encoder_outputs,
+            encoder_attention_mask: Optional[jnp.ndarray] = None,
+            decoder_attention_mask: Optional[jnp.ndarray] = None,
+            decoder_position_ids: Optional[jnp.ndarray] = None,
+            past_key_values: dict = None,
+            output_attentions: Optional[bool] = None,
+            output_hidden_states: Optional[bool] = None,
+            return_dict: Optional[bool] = None,
+            train: bool = False,
+            params: dict = None,
+            dropout_rng: PRNGKey = None,
     ):
         output_attentions = (
             output_attentions
@@ -1531,11 +1551,11 @@ class DalleBart(PretrainedFromWandbMixin, FlaxBartForConditionalGeneration):
             mutable = False
 
         def _decoder_forward(
-            module,
-            decoder_input_ids,
-            decoder_attention_mask,
-            decoder_position_ids,
-            **kwargs,
+                module,
+                decoder_input_ids,
+                decoder_attention_mask,
+                decoder_position_ids,
+                **kwargs,
         ):
             decoder_module = module._get_decoder_module()
             outputs = decoder_module(
@@ -1599,13 +1619,13 @@ class DalleBart(PretrainedFromWandbMixin, FlaxBartForConditionalGeneration):
         return outputs
 
     def prepare_inputs_for_generation(
-        self,
-        decoder_input_ids,
-        max_length,
-        attention_mask: Optional[jnp.DeviceArray] = None,
-        decoder_attention_mask: Optional[jnp.DeviceArray] = None,
-        encoder_outputs=None,
-        **kwargs,
+            self,
+            decoder_input_ids,
+            max_length,
+            attention_mask: Optional[jnp.DeviceArray] = None,
+            decoder_attention_mask: Optional[jnp.DeviceArray] = None,
+            encoder_outputs=None,
+            **kwargs,
     ):
         # initializing the cache
         batch_size, seq_length = decoder_input_ids.shape
@@ -1634,32 +1654,32 @@ class DalleBart(PretrainedFromWandbMixin, FlaxBartForConditionalGeneration):
         }
 
     def generate(
-        self,
-        input_ids: jnp.ndarray,
-        attention_mask: Optional[jnp.ndarray] = None,
-        max_length: Optional[int] = None,
-        pad_token_id: Optional[int] = None,
-        bos_token_id: Optional[int] = None,
-        eos_token_id: Optional[int] = None,
-        decoder_start_token_id: Optional[int] = None,
-        do_sample: Optional[bool] = None,
-        prng_key: Optional[jnp.ndarray] = None,
-        top_k: Optional[int] = None,
-        top_p: Optional[float] = None,
-        temperature: Optional[float] = None,
-        num_beams: Optional[int] = None,
-        no_repeat_ngram_size: Optional[int] = None,
-        min_length: Optional[int] = None,
-        forced_bos_token_id: Optional[int] = None,
-        forced_eos_token_id: Optional[int] = None,
-        length_penalty: Optional[float] = None,
-        early_stopping: Optional[bool] = None,
-        trace: bool = True,
-        params: Optional[Dict[str, jnp.ndarray]] = None,
-        condition_scale: Optional[float] = 1.0,
-        input_ids_uncond: Optional[jnp.ndarray] = None,
-        attention_mask_uncond: Optional[jnp.ndarray] = None,
-        **model_kwargs,
+            self,
+            input_ids: jnp.ndarray,
+            attention_mask: Optional[jnp.ndarray] = None,
+            max_length: Optional[int] = None,
+            pad_token_id: Optional[int] = None,
+            bos_token_id: Optional[int] = None,
+            eos_token_id: Optional[int] = None,
+            decoder_start_token_id: Optional[int] = None,
+            do_sample: Optional[bool] = None,
+            prng_key: Optional[jnp.ndarray] = None,
+            top_k: Optional[int] = None,
+            top_p: Optional[float] = None,
+            temperature: Optional[float] = None,
+            num_beams: Optional[int] = None,
+            no_repeat_ngram_size: Optional[int] = None,
+            min_length: Optional[int] = None,
+            forced_bos_token_id: Optional[int] = None,
+            forced_eos_token_id: Optional[int] = None,
+            length_penalty: Optional[float] = None,
+            early_stopping: Optional[bool] = None,
+            trace: bool = True,
+            params: Optional[Dict[str, jnp.ndarray]] = None,
+            condition_scale: Optional[float] = 1.0,
+            input_ids_uncond: Optional[jnp.ndarray] = None,
+            attention_mask_uncond: Optional[jnp.ndarray] = None,
+            **model_kwargs,
     ):
         """Edit: Allow super conditioning."""
 
@@ -1700,13 +1720,13 @@ class DalleBart(PretrainedFromWandbMixin, FlaxBartForConditionalGeneration):
                 )
                 if condition_scale != 1.0:
                     assert (
-                        input_ids_uncond is not None
+                            input_ids_uncond is not None
                     ), "`input_ids_uncond` has to be defined for super conditioning."
                     assert (
-                        do_sample is True
+                            do_sample is True
                     ), "`do_sample` has to be True for super conditioning."
                     assert (
-                        num_beams == 1
+                            num_beams == 1
                     ), "`num_beams` has to be 1 for super conditioning."
                     model_kwargs_uncond = (
                         self._prepare_encoder_decoder_kwargs_for_generation(
@@ -1722,7 +1742,7 @@ class DalleBart(PretrainedFromWandbMixin, FlaxBartForConditionalGeneration):
                     model_kwargs_uncond = None
             # prepare decoder_input_ids for generation
             input_ids = (
-                jnp.ones((input_ids.shape[0], 1), dtype="i4") * decoder_start_token_id
+                    jnp.ones((input_ids.shape[0], 1), dtype="i4") * decoder_start_token_id
             )
 
         if not do_sample and num_beams == 1:
@@ -1812,19 +1832,19 @@ class DalleBart(PretrainedFromWandbMixin, FlaxBartForConditionalGeneration):
             raise NotImplementedError("`Beam sampling is currently not implemented.")
 
     def _sample(
-        self,
-        input_ids: None,
-        max_length: Optional[int] = None,
-        pad_token_id: Optional[int] = None,
-        eos_token_id: Optional[int] = None,
-        prng_key: Optional[jnp.ndarray] = None,
-        logits_processor=None,
-        logits_warper=None,
-        trace: bool = True,
-        params: Optional[Dict[str, jnp.ndarray]] = None,
-        model_kwargs: Optional[Dict[str, jnp.ndarray]] = None,
-        condition_scale: float = 1.0,
-        model_kwargs_uncond: Optional[Dict[str, jnp.ndarray]] = None,
+            self,
+            input_ids: None,
+            max_length: Optional[int] = None,
+            pad_token_id: Optional[int] = None,
+            eos_token_id: Optional[int] = None,
+            prng_key: Optional[jnp.ndarray] = None,
+            logits_processor=None,
+            logits_warper=None,
+            trace: bool = True,
+            params: Optional[Dict[str, jnp.ndarray]] = None,
+            model_kwargs: Optional[Dict[str, jnp.ndarray]] = None,
+            condition_scale: float = 1.0,
+            model_kwargs_uncond: Optional[Dict[str, jnp.ndarray]] = None,
     ):
         # init values
         max_length = max_length if max_length is not None else self.config.max_length
@@ -1904,17 +1924,16 @@ class DalleBart(PretrainedFromWandbMixin, FlaxBartForConditionalGeneration):
 
             # apply min_length, ...
             logits = logits_processor(state.sequences, logits, state.cur_len)
-            # apply top_k, top_k, temperature
             logits = logits_warper(logits, logits, state.cur_len)
 
             next_token = jax.random.categorical(prng_key, logits, axis=-1)
 
             next_is_sent_finished = state.is_sent_finished | (
-                next_token == eos_token_id
+                    next_token == eos_token_id
             )
             next_token = (
-                next_token * ~next_is_sent_finished
-                + pad_token_id * next_is_sent_finished
+                    next_token * ~next_is_sent_finished
+                    + pad_token_id * next_is_sent_finished
             )
             next_token = next_token[:, None]
 
