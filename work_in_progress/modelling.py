@@ -441,10 +441,10 @@ class FlaxBartAttention(FlaxBartAttention):
         if self.config.use_cosine_attention:
             # normalize q and k
             query_states = query_states / (
-                jnp.linalg.norm(query_states, axis=-1, keepdims=True) + 1e-8
+                jnp.linalg.norm(query_states, axis=-1, keepdims=True) + 1e-08
             )
             key_states = key_states / (
-                jnp.linalg.norm(key_states, axis=-1, keepdims=True) + 1e-8
+                jnp.linalg.norm(key_states, axis=-1, keepdims=True) + 1e-08
             )
 
         # relative position embeddings
