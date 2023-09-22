@@ -19,9 +19,11 @@ def match_original_program(test_program='./test_programs/fib.py', run_program=Tr
     if run_program:
         _perform_sanity(test_program)
     # read whole file to a string
-    print(bcolors.WARNING + f"AST test for {test_program}\nORIGINAL PROGRAM:\n" + python_program_as_string, bcolors.ENDC)
+    print(bcolors.WARNING + f"AST test for {test_program}\n" , bcolors.ENDC)
+#    print(bcolors.WARNING + python_program_as_string, bcolors.ENDC)
     unparsed_program = ast.unparse(ast.parse(python_program_as_string))
-    print(bcolors.FAIL + f"\nAST test for {test_program}\nAST UNPARSED PROGRAM:\n" + unparsed_program, bcolors.ENDC)
+    print(bcolors.FAIL + f"\nAST test for {test_program}\nAST UNPARSED PROGRAM:\n" , bcolors.ENDC)
+#    print(bcolors.FAIL + unparsed_program , bcolors.ENDC)
     fib_node = GetNodeFromInput(python_program_as_string, 0, get_module=True)
     fib_node_matcher = GetDynamicMatcher(fib_node)
     try:
@@ -29,26 +31,31 @@ def match_original_program(test_program='./test_programs/fib.py', run_program=Tr
     except Exception as e:
         raise e
     fun_with_ast_source = fib_node_matcher.GetSource()
-    print(bcolors.OKBLUE + f"\nAST test for {test_program}\nFUN WITH AST PROGRAM:\n" + fun_with_ast_source, bcolors.ENDC)
+    print(bcolors.OKBLUE + f"\nAST test for {test_program}\nFUN WITH AST PROGRAM:\n", bcolors.ENDC)
+#    print(bcolors.OKBLUE  + fun_with_ast_source, bcolors.ENDC)
     if not fun_with_ast_source == python_program_as_string:
-        _assert_diff(python_program_as_string, fun_with_ast_source)
-
-def _assert_diff(original_if_source, new_code):
+        _assert_diff(python_program_as_string, fun_with_ast_source, stop_on_diff=True)
+    _assert_diff(python_program_as_string, unparsed_program, stop_on_diff=False)
+def _assert_diff(original_source, new_code, stop_on_diff=True):
     differ = Differ()
-    lines1 = original_if_source.split('\n')
+    lines1 = original_source.split('\n')
     lines2 = new_code.split('\n')
     diff_lines = []
     for line in differ.compare(lines1, lines2):
         if line.startswith('+'):
             print(bcolors.FAIL + line, bcolors.ENDC)
-            raise ValueError('diff lines: line added')
+            if stop_on_diff:
+                raise ValueError('diff lines: line added')
         elif line.startswith('-'):
             print(bcolors.OKBLUE + line, bcolors.ENDC)
-            raise ValueError('diff lines: line removed')
+            if stop_on_diff:
+                raise ValueError('diff lines: line removed')
         elif line.startswith(' '):
             pass
         else:
-            raise ValueError('diff lines')
+            print(bcolors.OKCYAN + line, bcolors.ENDC)
+            if stop_on_diff:
+                raise ValueError('diff lines')
 
 
 
@@ -81,7 +88,8 @@ def _run_on_example_programs(test_programs):
 
 
 if __name__ == "__main__":
-    test_programs = [('./test_programs/fib.py', True),
+    test_programs = [
+                    ('./test_programs/fib.py', True),
                      ('./test_programs/prime.py', True),
                      ('./test_programs/modified_fib.py', True),
                      ('./test_programs/portfolio.py', False),
@@ -94,9 +102,12 @@ if __name__ == "__main__":
                      ('./test_programs/modelling_modified5.py', False),
                      ('./test_programs/modelling_modified6.py', False),
                      ('./test_programs/modelling_modified7.py', False),
-                     ]
+                     ('./test_programs/modelling_modified8.py', False),
+                    ('./test_programs/modelling.py', False),
+
+    ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/modellin.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/modelling.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
         _run_on_example_programs(test_programs)
