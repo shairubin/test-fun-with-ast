@@ -7,8 +7,8 @@ from fun_with_ast.source_matchers.matcher_resolver import GetDynamicMatcher
 
 from common_utils import CommonUtils, bcolors
 
-RUN_TEST_PROGRAMS = False
-RUN_WIP_PROGRAMS = True
+RUN_TEST_PROGRAMS = True
+RUN_WIP_PROGRAMS = False
 
 
 
@@ -24,18 +24,32 @@ def match_original_program(test_program='./test_programs/fib.py', run_program=Tr
     unparsed_program = ast.unparse(ast.parse(python_program_as_string))
     print(bcolors.FAIL + f"\nAST test for {test_program}\nAST UNPARSED PROGRAM:\n" , bcolors.ENDC)
 #    print(bcolors.FAIL + unparsed_program , bcolors.ENDC)
-    fib_node = GetNodeFromInput(python_program_as_string, 0, get_module=True)
-    fib_node_matcher = GetDynamicMatcher(fib_node)
+    orig_node = GetNodeFromInput(python_program_as_string, 0, get_module=True)
+    orig_node_matcher = GetDynamicMatcher(orig_node)
     try:
-        fib_node_matcher.do_match(python_program_as_string)
+        orig_node_matcher.do_match(python_program_as_string)
     except Exception as e:
         raise e
-    fun_with_ast_source = fib_node_matcher.GetSource()
+    fun_with_ast_source = orig_node_matcher.GetSource()
     print(bcolors.OKBLUE + f"\nAST test for {test_program}\nFUN WITH AST PROGRAM:\n", bcolors.ENDC)
 #    print(bcolors.OKBLUE  + fun_with_ast_source, bcolors.ENDC)
     if not fun_with_ast_source == python_program_as_string:
         _assert_diff(python_program_as_string, fun_with_ast_source, stop_on_diff=True)
     _assert_diff(python_program_as_string, unparsed_program, stop_on_diff=False)
+    location_of_error  = len(fun_with_ast_source) // 2
+    _verify_we_catch_changes_in_code(fun_with_ast_source, location_of_error, python_program_as_string)
+
+
+def _verify_we_catch_changes_in_code(fun_with_ast_source, location_of_error, python_program_as_string):
+    new_char = 'X'
+    code_with_error = fun_with_ast_source
+    code_with_error_list = list(code_with_error)
+    code_with_error_list[location_of_error] = new_char
+    code_with_error = ''.join(code_with_error_list)
+    if code_with_error == python_program_as_string:
+        raise ValueError('new code is same as original code')
+
+
 def _assert_diff(original_source, new_code, stop_on_diff=True):
     differ = Differ()
     lines1 = original_source.split('\n')
@@ -103,11 +117,14 @@ if __name__ == "__main__":
                      ('./test_programs/modelling_modified6.py', False),
                      ('./test_programs/modelling_modified7.py', False),
                      ('./test_programs/modelling_modified8.py', False),
-                    ('./test_programs/modelling.py', False),
+                     ('./test_programs/sentence_modified.py', False),
+                     ('./test_programs/sentence.py', False),
+
+        ('./test_programs/modelling.py', False),
 
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/sentence_modified.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/sentence.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
         _run_on_example_programs(test_programs)
