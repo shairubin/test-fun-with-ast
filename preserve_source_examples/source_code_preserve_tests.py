@@ -7,8 +7,8 @@ from fun_with_ast.source_matchers.matcher_resolver import GetDynamicMatcher
 
 from common_utils import CommonUtils, bcolors
 
-RUN_TEST_PROGRAMS = False
-RUN_WIP_PROGRAMS = True
+RUN_TEST_PROGRAMS = True
+RUN_WIP_PROGRAMS = False
 
 
 
@@ -119,8 +119,7 @@ if __name__ == "__main__":
                      ('./test_programs/modelling_modified8.py', False),
                      ('./test_programs/sentence_modified.py', False),
                      ('./test_programs/sentence.py', False),
-
-        ('./test_programs/modelling.py', False),
+                     ('./test_programs/unbalanced_parentheses.py', False),
 
     ]
     wip_programs = [
