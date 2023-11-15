@@ -242,7 +242,7 @@ def gen_wrappers(xnnpack_path):
 
 def main(argv):
     if argv is None or len(argv) == 0:
-        gen_wrappers(".")
+        gen_wrappers("../../work_in_progress")
     else:
         gen_wrappers(argv[0])
 
