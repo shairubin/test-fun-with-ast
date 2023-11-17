@@ -7,8 +7,8 @@ from fun_with_ast.source_matchers.matcher_resolver import GetDynamicMatcher
 
 from common_utils import CommonUtils, bcolors
 
-RUN_TEST_PROGRAMS = False
-RUN_WIP_PROGRAMS = True
+RUN_TEST_PROGRAMS = True
+RUN_WIP_PROGRAMS = False
 
 
 
@@ -122,10 +122,12 @@ if __name__ == "__main__":
                      ('./test_programs/unbalanced_parentheses.py', False),
                      ('./test_programs/unbalanced_parentheses2.py', False),
                      ('./test_programs/unbalanced_parentheses_orig.py', False),
+                     ('./test_programs/_utils_internal2.py', False),
+                     ('./test_programs/_utils_internal_orig.py', False),
 
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/_utils_internal2.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/_utils_internal_orig.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
         _run_on_example_programs(test_programs)
