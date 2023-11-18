@@ -7,9 +7,6 @@ from fun_with_ast.source_matchers.matcher_resolver import GetDynamicMatcher
 
 from common_utils import CommonUtils, bcolors
 
-RUN_TEST_PROGRAMS = True
-RUN_WIP_PROGRAMS = False
-
 
 
 def match_original_program(test_program='./test_programs/fib.py', run_program=True):
@@ -101,6 +98,10 @@ def _run_on_example_programs(test_programs):
         print('TEST NUMBER: ' + str(index + 1) + ' END FOR: ' + p[0])
 
 
+RUN_TEST_PROGRAMS = True
+RUN_WIP_PROGRAMS = False
+
+
 if __name__ == "__main__":
     test_programs = [
                     ('./test_programs/fib.py', True),
@@ -124,6 +125,8 @@ if __name__ == "__main__":
                      ('./test_programs/unbalanced_parentheses_orig.py', False),
                      ('./test_programs/_utils_internal2.py', False),
                      ('./test_programs/_utils_internal_orig.py', False),
+                     ('./test_programs/native1.py', False),
+                    ('./test_programs/native_orig.py', False),
 
     ]
     wip_programs = [
