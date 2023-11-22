@@ -129,10 +129,10 @@ if __name__ == "__main__":
                      ('./test_programs/native_orig.py', False),
                     ('./test_programs/torch_sources1.py', False),
                     ('./test_programs/torch_sources.py', False),
-
+                    ('./test_programs/export_pytorch_labels.py', False),
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/torch_sources.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/export_pytorch_labels.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
         _run_on_example_programs(test_programs)
