@@ -135,10 +135,12 @@ if __name__ == "__main__":
                     ('./test_programs/build_bundled.py', False),
                     ('./test_programs/pytorch_classes.py', False),
                     ('./test_programs/get_python_cmake_flags.py', False),
+                    ('./test_programs/onnx_backend_test1.py', False),
+                    ('./test_programs/onnx_backend_test.py', False),
 
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/get_python_cmake_flags.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/onnx_backend_test.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
         _run_on_example_programs(test_programs)
