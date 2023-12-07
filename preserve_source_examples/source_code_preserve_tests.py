@@ -140,10 +140,11 @@ if __name__ == "__main__":
                     ('./test_programs/return_types.py', False),
                     ('./test_programs/pytorch_utils1.py', False),
                     ('./test_programs/pytorch_utils.py', False),
+                    ('./test_programs/pytorch_init.py', False),
 
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/pytorch_utils.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/pytorch_init.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
         _run_on_example_programs(test_programs)
