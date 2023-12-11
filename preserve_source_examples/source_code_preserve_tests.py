@@ -98,8 +98,8 @@ def _run_on_example_programs(test_programs):
         print('TEST NUMBER: ' + str(index + 1) + ' END FOR: ' + p[0])
 
 
-RUN_TEST_PROGRAMS = True
-RUN_WIP_PROGRAMS = False
+RUN_TEST_PROGRAMS = False
+RUN_WIP_PROGRAMS = True
 
 
 if __name__ == "__main__":
@@ -144,7 +144,7 @@ if __name__ == "__main__":
 
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/pytorch_init.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/pytorch_string_with_quotes1.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
         _run_on_example_programs(test_programs)
