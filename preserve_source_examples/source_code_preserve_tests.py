@@ -28,6 +28,7 @@ def match_original_program(test_program='./test_programs/fib.py', run_program=Tr
     except Exception as e:
         raise e
     fun_with_ast_source = orig_node_matcher.GetSource()
+    ast.parse(fun_with_ast_source)
     print(bcolors.OKBLUE + f"\nAST test for {test_program}\nFUN WITH AST PROGRAM:\n", bcolors.ENDC)
 #    print(bcolors.OKBLUE  + fun_with_ast_source, bcolors.ENDC)
     if not fun_with_ast_source == python_program_as_string:
@@ -143,10 +144,11 @@ if __name__ == "__main__":
                     ('./test_programs/pytorch_init.py', False),
                     ('./test_programs/pytorch_string_with_quotes.py', False),
                     ('./test_programs/pytorch_string_with_quotes1.py', False),
+                    ('./test_programs/_lowrank.py', False),
 
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/pytorch_string_with_quotes.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/_lowrank.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
         _run_on_example_programs(test_programs)
