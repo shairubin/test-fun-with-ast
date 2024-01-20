@@ -149,7 +149,7 @@ if __name__ == "__main__":
 
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/init_with_import.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/build_bundled.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
         _run_on_example_programs(test_programs)
