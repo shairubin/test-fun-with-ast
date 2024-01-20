@@ -146,10 +146,11 @@ if __name__ == "__main__":
                     ('./test_programs/pytorch_string_with_quotes1.py', False),
                     ('./test_programs/_lowrank.py', False),
                     ('./test_programs/init_with_import.py', False),
+                    ('./test_programs/_hook_iterator.py', False),
 
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/build_bundled.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/_hook_iterator.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
         _run_on_example_programs(test_programs)
