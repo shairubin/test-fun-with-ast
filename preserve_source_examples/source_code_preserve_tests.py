@@ -4,7 +4,7 @@ from difflib import Differ
 
 from fun_with_ast.manipulate_node.get_node_from_input import GetNodeFromInput
 from fun_with_ast.source_matchers.matcher_resolver import GetDynamicMatcher
-
+from fun_with_ast.source_matchers.reset_match import ResetMatch
 from common_utils import CommonUtils, bcolors
 
 
@@ -36,6 +36,7 @@ def match_original_program(test_program='./test_programs/fib.py', run_program=Tr
     _assert_diff(python_program_as_string, unparsed_program, stop_on_diff=False)
     location_of_error  = len(fun_with_ast_source) // 2
     _verify_we_catch_changes_in_code(fun_with_ast_source, location_of_error, python_program_as_string)
+    _verify_reset(orig_node)
 
 
 def _verify_we_catch_changes_in_code(fun_with_ast_source, location_of_error, python_program_as_string):
@@ -90,6 +91,13 @@ def _comparte_asts(test_program, output_program):
     assert utils.compare_ast(original_ast, rewrite_ast)
 
 
+def _verify_reset(module_node):
+    if not isinstance(module_node, ast.Module):
+        raise ValueError('original node must be a module node')
+    resetter = ResetMatch(module_node)
+    resetter.reset_match()
+
+
 def _run_on_example_programs(test_programs):
     for index, p in enumerate(test_programs):
         print('================================================')
@@ -99,8 +107,8 @@ def _run_on_example_programs(test_programs):
         print('TEST NUMBER: ' + str(index + 1) + ' END FOR: ' + p[0])
 
 
-RUN_TEST_PROGRAMS = True
-RUN_WIP_PROGRAMS = False
+RUN_TEST_PROGRAMS = False
+RUN_WIP_PROGRAMS = True
 
 
 if __name__ == "__main__":
