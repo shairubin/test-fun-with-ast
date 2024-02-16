@@ -5,7 +5,7 @@ from typing import Any, Optional, Union
 
 from torch._guards import ChainedSource, GuardSource, Source
 
-from . import utils
+from work_in_progress import utils
 from .bytecode_transformation import create_call_function, create_instruction
 from .utils import enum_repr
 
