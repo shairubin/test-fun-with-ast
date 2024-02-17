@@ -157,10 +157,11 @@ if __name__ == "__main__":
                     ('./test_programs/_hook_iterator.py', False),
                     ('./test_programs/vmap.py', False),
                     ('./test_programs/source.py', False),
+                    ('./test_programs/comment_on_pr.py', False),
 
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/source.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/comment_on_pr.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
         _run_on_example_programs(test_programs)
