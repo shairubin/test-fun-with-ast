@@ -160,7 +160,6 @@ if __name__ == "__main__":
                     ('./test_programs/comment_on_pr.py', False),
                     ('./test_programs/compare-fastrnn-results.py', False),
                     ('./test_programs/bench.py', False),
-
     ]
     wip_programs = [
                     ('/home/shai/test_fun_with_ast/work_in_progress/comment_on_pr.py', False),
