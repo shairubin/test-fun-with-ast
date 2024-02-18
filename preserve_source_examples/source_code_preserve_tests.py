@@ -107,8 +107,8 @@ def _run_on_example_programs(test_programs):
         print('TEST NUMBER: ' + str(index + 1) + ' END FOR: ' + p[0])
 
 
-RUN_TEST_PROGRAMS = False
-RUN_WIP_PROGRAMS = True
+RUN_TEST_PROGRAMS = True
+RUN_WIP_PROGRAMS = False
 
 
 if __name__ == "__main__":
@@ -158,6 +158,7 @@ if __name__ == "__main__":
                     ('./test_programs/vmap.py', False),
                     ('./test_programs/source.py', False),
                     ('./test_programs/comment_on_pr.py', False),
+                    ('./test_programs/bench.py', False),
 
     ]
     wip_programs = [
