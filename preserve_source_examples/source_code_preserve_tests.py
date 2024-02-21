@@ -161,10 +161,11 @@ if __name__ == "__main__":
                     ('./test_programs/compare-fastrnn-results.py', False),
                     ('./test_programs/bench.py', False),
                     ('./test_programs/hierarchical_model_averager.py', False),
+                    ('./test_programs/pytorch_build_definitions.py', False),
 
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/hierarchical_model_averager1.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/pytorch_build_definitions.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
         _run_on_example_programs(test_programs)
