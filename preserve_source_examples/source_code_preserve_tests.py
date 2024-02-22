@@ -162,7 +162,7 @@ if __name__ == "__main__":
                     ('./test_programs/bench.py', False),
                     ('./test_programs/hierarchical_model_averager.py', False),
                     ('./test_programs/pytorch_build_definitions.py', False),
-
+                    ('./test_programs/generate-xnnpack-wrappers.py', False),
     ]
     wip_programs = [
                     ('/home/shai/test_fun_with_ast/work_in_progress/pytorch_build_definitions.py', False),
