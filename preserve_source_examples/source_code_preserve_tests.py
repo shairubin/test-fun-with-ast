@@ -164,10 +164,11 @@ if __name__ == "__main__":
                     ('./test_programs/pytorch_build_definitions.py', False),
                     ('./test_programs/generate-xnnpack-wrappers.py', False),
                     ('./test_programs/_custom_ops.py', False),
+                    ('./test_programs/_view_with_dim_change.py', False),
 
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/_custom_ops1.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/_view_with_dim_change1.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
         _run_on_example_programs(test_programs)
