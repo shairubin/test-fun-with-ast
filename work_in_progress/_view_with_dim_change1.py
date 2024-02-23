@@ -1,4 +1,3 @@
-
 def forward(
     ctx,  # pyre-ignore[2]: Parameter must be annotated.
     self: DT,
