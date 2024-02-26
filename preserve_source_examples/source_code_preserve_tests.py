@@ -167,10 +167,11 @@ if __name__ == "__main__":
                     ('./test_programs/_view_with_dim_change.py', False),
                     ('./test_programs/cond.py', False),
                     ('./test_programs/inductor_utils.py', False),
+                    ('./test_programs/test_dlpack.py', False),
 
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/inductor_utils.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/test_dlpack.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
         _run_on_example_programs(test_programs)
