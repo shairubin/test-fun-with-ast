@@ -107,8 +107,8 @@ def _run_on_example_programs(test_programs):
         print('TEST NUMBER: ' + str(index + 1) + ' END FOR: ' + p[0])
 
 
-RUN_TEST_PROGRAMS = False
-RUN_WIP_PROGRAMS = True
+RUN_TEST_PROGRAMS = True
+RUN_WIP_PROGRAMS = False
 
 
 if __name__ == "__main__":
@@ -166,10 +166,11 @@ if __name__ == "__main__":
                     ('./test_programs/_custom_ops.py', False),
                     ('./test_programs/_view_with_dim_change.py', False),
                     ('./test_programs/cond.py', False),
+                    ('./test_programs/inductor_utils.py', False),
 
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/inductor_utils1.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/inductor_utils.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
         _run_on_example_programs(test_programs)
