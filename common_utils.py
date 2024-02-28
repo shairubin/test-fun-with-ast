@@ -38,5 +38,7 @@ class CommonUtils:
     def read_file_as_string(self, test_program):
         text_file = open(test_program, 'r')
         python_string = text_file.read()
+        #decoded_string = bytes(python_string, "utf-8").decode("unicode_escape")
         text_file.close()
+        #return decoded_string
         return python_string
