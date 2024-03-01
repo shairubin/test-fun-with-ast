@@ -169,10 +169,11 @@ if __name__ == "__main__":
                     ('./test_programs/inductor_utils.py', False),
                     ('./test_programs/test_dlpack.py', False),
                     ('./test_programs/annotations.py', False),
+                    ('./test_programs/heap.py', False),
 
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/annotations.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/heap.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
         _run_on_example_programs(test_programs)
