@@ -1,5 +1,4 @@
-def log_one_game(game_number: int, cost_function, seed : int = None) -> None:
-
+def log_one_game(game_number) -> None:
     table = Table(show_header=True, header_style="bold magenta")
         
     pass
