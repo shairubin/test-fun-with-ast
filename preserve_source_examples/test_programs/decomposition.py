@@ -22,7 +22,7 @@ from torch._decomp.decompositions_for_rng import extra_random_decomps
 from torch._higher_order_ops.out_dtype import out_dtype
 from torch._prims_common import type_to_dtype
 
-from . import config, inductor_prims
+from work_in_progress import config, inductor_prims
 
 log = logging.getLogger(__name__)
 aten = torch.ops.aten
