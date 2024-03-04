@@ -172,10 +172,11 @@ if __name__ == "__main__":
                     ('./test_programs/heap.py', False),
                     ('./test_programs/the_game.py', False),
                     ('./test_programs/decomposition.py', False),
+                    ('./test_programs/ensure_clipped_test.py', False),
 
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/decomposition.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/ensure_clipped_test1.py', False),
                     #('/home/shai/make-developers-brighter/e2e_tests/test_files/TheGame/the_game.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
