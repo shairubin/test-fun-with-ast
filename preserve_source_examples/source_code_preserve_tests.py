@@ -177,7 +177,7 @@ if __name__ == "__main__":
 
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/autotune_process.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/autotune_process1.py', False),
                     #('/home/shai/jrnl/jrnl/journals/Journal.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
