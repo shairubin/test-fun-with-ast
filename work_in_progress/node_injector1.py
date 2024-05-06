@@ -24,21 +24,3 @@ class NodeInjector:
 
 
 
-
-    # # this is co-pilot code -- nice
-    # def _replace_ellipsis(self, if_dict, back=False):
-    #     if back:
-    #         search = 'Ellipsis'
-    #         replace = Ellipsis
-    #     else:
-    #         search = Ellipsis
-    #         replace = 'Ellipsis'
-    #     for key, value in if_dict.items():
-    #         if value == search:
-    #             if_dict[key] = replace
-    #         elif isinstance(value, dict):
-    #             if_dict[key] = self._replace_ellipsis(value)
-    #         elif isinstance(value, list):
-    #             if_dict[key] = [self._replace_ellipsis(x) for x in value]
-    #     return if_dict
-    #
