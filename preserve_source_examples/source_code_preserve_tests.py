@@ -107,8 +107,8 @@ def _run_on_example_programs(test_programs):
         print('TEST NUMBER: ' + str(index + 1) + ' END FOR: ' + p[0])
 
 
-RUN_TEST_PROGRAMS = False
-RUN_WIP_PROGRAMS = True
+RUN_TEST_PROGRAMS = True
+RUN_WIP_PROGRAMS = False
 
 
 if __name__ == "__main__":
@@ -174,10 +174,11 @@ if __name__ == "__main__":
                     ('./test_programs/decomposition.py', False),
                     ('./test_programs/ensure_clipped_test.py', False),
                     ('./test_programs/context.py', False),
+                    ('./test_programs/node_injector.py', False),
 
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/node_injector1.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/node_injector.py', False),
                     #('/home/shai/jrnl/jrnl/journals/Journal.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
