@@ -107,8 +107,8 @@ def _run_on_example_programs(test_programs):
         print('TEST NUMBER: ' + str(index + 1) + ' END FOR: ' + p[0])
 
 
-RUN_TEST_PROGRAMS = False
-RUN_WIP_PROGRAMS = True
+RUN_TEST_PROGRAMS = True
+RUN_WIP_PROGRAMS = False
 
 
 if __name__ == "__main__":
@@ -176,6 +176,7 @@ if __name__ == "__main__":
                     ('./test_programs/context.py', False),
                     ('./test_programs/node_injector.py', False),
                     ('./test_programs/XT_bazel_linter.py', False),
+                    ('./test_programs/XB___init__.py', False),
 
     ]
     wip_programs = [
