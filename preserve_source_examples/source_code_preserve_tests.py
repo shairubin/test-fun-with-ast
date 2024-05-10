@@ -176,10 +176,11 @@ if __name__ == "__main__":
                     ('./test_programs/context.py', False),
                     ('./test_programs/node_injector.py', False),
                     ('./test_programs/XT_bazel_linter.py', False),
+                    ('./test_programs/XB___init__.py', False),
 
     ]
     wip_programs = [
-                    ('/home/shai/test_fun_with_ast/work_in_progress/XT_bazel_linter.py', False),
+                    ('/home/shai/test_fun_with_ast/work_in_progress/XB___init__.py', False),
                     #('/home/shai/jrnl/jrnl/journals/Journal.py', False),
                     ]
     if RUN_TEST_PROGRAMS:
